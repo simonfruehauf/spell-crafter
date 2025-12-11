@@ -1,0 +1,148 @@
+<app-window title="The Arena" windowId="combat" [initialX]="480" [initialY]="40" [width]="380" (closed)="onClose()">
+    <div class="combat-content" @fadeSlide>
+        @if (!combat().inCombat) {
+        <!-- Enemy Selection -->
+        <div class="arena-description">
+            <p>The arena awaits. Choose your foe and test your arcane might.</p>
+        </div>
+
+        <div class="player-status">
+            <div class="bar-container">
+                <div class="bar-fill health" [style.width.%]="(player().currentHP / player().maxHP) * 100">
+                </div>
+                <div class="bar-text">HP: {{ player().currentHP | number:'1.0-0' }} / {{ player().maxHP }}</div>
+            </div>
+        </div>
+
+        <div class="enemy-selection mt-2">
+            <div class="section-header">Choose Your Opponent</div>
+            <div class="list-box" style="height: 140px;">
+                @for (enemy of enemies; track enemy.id) {
+                <div class="list-item enemy-item" [class.selected]="selectedEnemy()?.id === enemy.id"
+                    (click)="selectEnemy(enemy)">
+                    <span class="enemy-level">[Lv{{ enemy.level }}]</span>
+                    <span class="enemy-name">{{ enemy.name }}</span>
+                    <span class="enemy-hp">HP:{{ enemy.maxHP }}</span>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- Idle Options -->
+        @if (idle().autoCombatUnlocked) {
+        <fieldset class="mt-2">
+            <legend>Idle Combat</legend>
+            <label class="checkbox-label">
+                <input type="checkbox" [checked]="idle().autoCombat" (change)="toggleAutoCombat()">
+                Auto-Combat
+            </label>
+            <div class="speed-control mt-1">
+                <label>Speed:</label>
+                <select [ngModel]="idle().combatTickMs" (ngModelChange)="setCombatSpeed($event)">
+                    <option [value]="2000">Slow</option>
+                    <option [value]="1000">Normal</option>
+                    <option [value]="500">Fast</option>
+                    <option [value]="250">Very Fast</option>
+                </select>
+            </div>
+        </fieldset>
+        }
+
+        @if (isLockedOut()) {
+        <div class="lockout-warning mt-2" @pulse>
+            <div class="lockout-icon">[X]</div>
+            <div class="lockout-text">Recovery in {{ getLockoutSeconds() }}s...</div>
+        </div>
+        }
+
+        <div class="actions mt-2 d-flex justify-center">
+            <button class="btn" [disabled]="!selectedEnemy() || player().currentHP <= 0 || isLockedOut()"
+                (click)="beginCombat()">
+                [>] Enter Battle
+            </button>
+        </div>
+
+        <div class="stats-display mt-2">
+            <span>Enemies Defeated: {{ combat().enemiesDefeated }}</span>
+        </div>
+        } @else {
+        <!-- Active Combat -->
+        <div class="combat-view" @fadeSlide>
+            <!-- Enemy Display -->
+            <div class="enemy-display">
+                <div class="enemy-name-display">{{ combat().currentEnemy?.name }}</div>
+                <pre class="enemy-ascii">{{ combat().currentEnemy?.ascii }}</pre>
+                <div class="bar-container">
+                    <div class="bar-fill health" [style.width.%]="enemyHPPercent()">
+                    </div>
+                    <div class="bar-text">
+                        HP: {{ combat().currentEnemy?.currentHP | number:'1.0-0' }} / {{ combat().currentEnemy?.maxHP }}
+                    </div>
+                </div>
+                @if (combat().enemyEffects.length > 0) {
+                <div class="effects-display">
+                    @for (effect of combat().enemyEffects; track effect.name) {
+                    <span class="effect-badge debuff">[{{ effect.name }}: {{ effect.remainingTurns }}]</span>
+                    }
+                </div>
+                }
+            </div>
+
+            <div class="combat-divider">---VS---</div>
+
+            <!-- Player Display -->
+            <div class="player-display">
+                <pre class="player-ascii">
+  /\\
+ /  \\
+|O  O|
+ \\__/
+          </pre>
+                <div class="bar-container mb-1">
+                    <div class="bar-fill health" [style.width.%]="(player().currentHP / player().maxHP) * 100">
+                    </div>
+                    <div class="bar-text">HP: {{ player().currentHP | number:'1.0-0' }} / {{ player().maxHP }}</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill mana" [style.width.%]="(resources().mana / resources().maxMana) * 100">
+                    </div>
+                    <div class="bar-text">MP: {{ resources().mana | number:'1.0-0' }} / {{ resources().maxMana }}</div>
+                </div>
+                @if (combat().playerEffects.length > 0) {
+                <div class="effects-display mt-1">
+                    @for (effect of combat().playerEffects; track effect.name) {
+                    <span class="effect-badge buff">[{{ effect.name }}: {{ effect.remainingTurns }}]</span>
+                    }
+                </div>
+                }
+            </div>
+
+            <!-- Spell Selection -->
+            <div class="spell-selection mt-2">
+                <div class="section-header">Select Spell</div>
+                <div class="list-box" style="height: 80px;">
+                    @for (spell of craftedSpells(); track spell.id) {
+                    <div class="list-item spell-item" [class.selected]="selectedSpell()?.id === spell.id"
+                        [class.unaffordable]="resources().mana < spell.totalManaCost" (click)="selectSpell(spell)">
+                        <span class="spell-symbol">{{ spell.symbol }}</span>
+                        <span class="spell-name">{{ spell.name }}</span>
+                        <span class="spell-cost">({{ spell.totalManaCost }}mp)</span>
+                    </div>
+                    } @empty {
+                    <div class="empty-message">No spells available!</div>
+                    }
+                </div>
+            </div>
+
+            <!-- Combat Actions -->
+            <div class="combat-actions mt-2 d-flex gap-2 justify-between">
+                <button class="btn btn-danger" (click)="flee()">
+                    [<] Flee </button>
+                        <button class="btn" [disabled]="!canCastSpell()" (click)="castSelectedSpell()">
+                            [*] Cast!
+                        </button>
+            </div>
+        </div>
+        }
+    </div>
+</app-window>

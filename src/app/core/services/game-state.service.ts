@@ -1,0 +1,345 @@
+import { Injectable, signal, computed, inject, OnDestroy } from '@angular/core';
+import { interval, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import {
+    GameState, Player, Resources, WindowStates, WindowState, Rune, Spell,
+    ResearchNode, CombatState, CombatLogEntry, Enemy, IdleSettings,
+    ActiveEffect, LootDrop, ResourceCost, Upgrade, DamageType
+} from '../models/game.interfaces';
+import { INITIAL_RESEARCH_TREE, RUNES, MAGIC_MISSILE, ENEMIES, INITIAL_UPGRADES } from '../models/game.data';
+import { INITIAL_CRAFTING_RESOURCES, RESOURCE_NAMES } from '../models/resources.data';
+
+// Import extracted services
+import { SaveService } from './save.service';
+import { ResourceService } from './resource.service';
+import { ResearchService } from './research.service';
+import { CombatService } from './combat.service';
+
+@Injectable({ providedIn: 'root' })
+export class GameStateService implements OnDestroy {
+    // Injected services
+    private saveService = inject(SaveService);
+    private resourceService = inject(ResourceService);
+    private researchService = inject(ResearchService);
+    private combatService = inject(CombatService);
+
+    // SIGNALS
+    private readonly _player = signal<Player>(this.createInitialPlayer());
+    private readonly _resources = signal<Resources>(this.resourceService.createInitialResources());
+    private readonly _windows = signal<WindowStates>(this.createInitialWindows());
+    private readonly _knownRunes = signal<Rune[]>([]);
+    private readonly _craftedSpells = signal<Spell[]>([MAGIC_MISSILE]);
+    private readonly _researchTree = signal<ResearchNode[]>(this.researchService.createInitialResearchTree());
+    private readonly _upgrades = signal<Upgrade[]>(this.researchService.createInitialUpgrades());
+    private readonly _combat = signal<CombatState>(this.combatService.createInitialCombatState());
+    private readonly _idle = signal<IdleSettings>(this.createInitialIdleSettings());
+
+    // Public readonly
+    readonly player = this._player.asReadonly();
+    readonly resources = this._resources.asReadonly();
+    readonly windows = this._windows.asReadonly();
+    readonly knownRunes = this._knownRunes.asReadonly();
+    readonly craftedSpells = this._craftedSpells.asReadonly();
+    readonly researchTree = this._researchTree.asReadonly();
+    readonly upgrades = this._upgrades.asReadonly();
+    readonly combat = this._combat.asReadonly();
+    readonly idle = this._idle.asReadonly();
+
+    // Computed
+    readonly availableResearch = computed(() =>
+        this._researchTree().filter(node => node.unlocked && !node.researched));
+    readonly visibleWindows = computed(() => {
+        const w = this._windows();
+        return Object.entries(w).filter(([_, s]) => s.unlocked && s.visible).map(([id]) => id as keyof WindowStates);
+    });
+    readonly closedWindows = computed(() => {
+        const w = this._windows();
+        return Object.entries(w).filter(([_, s]) => s.unlocked && !s.visible).map(([id]) => id as keyof WindowStates);
+    });
+
+    // Game loop
+    private readonly destroy$ = new Subject<void>();
+    private readonly TICK_RATE = 100;
+    private autoSaveCounter = 0;
+    private combatTickCounter = 0;
+
+    constructor() {
+        this.registerServicesSignals();
+        this.loadGame();
+        this.startGameLoop();
+    }
+
+    private registerServicesSignals(): void {
+        // Register resource service
+        this.resourceService.registerSignal(this._resources);
+
+        // Register save service
+        this.saveService.registerSignals({
+            player: this._player,
+            resources: this._resources,
+            windows: this._windows,
+            knownRunes: this._knownRunes,
+            craftedSpells: this._craftedSpells,
+            researchTree: this._researchTree,
+            upgrades: this._upgrades,
+            combat: this._combat,
+            idle: this._idle,
+        });
+
+        // Register research service
+        this.researchService.registerSignals({
+            researchTree: this._researchTree,
+            windows: this._windows,
+            player: this._player,
+            knownRunes: this._knownRunes,
+            upgrades: this._upgrades,
+        });
+        this.researchService.registerCallbacks({
+            spendMana: (amount) => this.spendMana(amount),
+            unlockAutoMeditate: () => this.unlockAutoMeditate(),
+            unlockAutoCombat: () => this.unlockAutoCombat(),
+            increaseMaxMana: (amount) => this.resourceService.increaseMaxMana(amount),
+            canAffordResources: (costs) => this.resourceService.canAffordResources(costs),
+            spendCraftingResources: (costs) => this.resourceService.spendCraftingResources(costs),
+        });
+
+        // Register combat service
+        this.combatService.registerSignals({
+            combat: this._combat,
+            player: this._player,
+            craftedSpells: this._craftedSpells,
+            idle: this._idle,
+        });
+        this.combatService.registerCallbacks({
+            spendMana: (amount) => this.spendMana(amount),
+            addMana: (amount) => this.addMana(amount),
+            addGold: (amount) => this.addGold(amount),
+            addCraftingResource: (id, amount) => this.addCraftingResource(id, amount),
+            getUpgradeBonus: (type) => this.getUpgradeBonus(type),
+            addSpellExperience: (spellId, xp) => this.addSpellExperience(spellId, xp),
+        });
+    }
+
+    private startGameLoop(): void {
+        interval(this.TICK_RATE).pipe(takeUntil(this.destroy$)).subscribe(() => this.tick());
+    }
+
+    private tick(): void {
+        const idle = this._idle();
+        const player = this._player();
+        const resources = this._resources();
+        const combat = this._combat();
+
+        // Mana regen
+        const manaRegenMult = 1 + this.getUpgradeBonus('manaRegen') / 100;
+        const manaRegen = player.WIS * 0.05 * manaRegenMult;
+        if (resources.mana < resources.maxMana) {
+            this._resources.update(r => ({ ...r, mana: Math.min(r.maxMana, r.mana + manaRegen) }));
+        }
+
+        // Auto-meditate
+        if (idle.autoMeditate && resources.mana < resources.maxMana * 0.9) {
+            this._resources.update(r => ({ ...r, mana: Math.min(r.maxMana, r.mana + player.WIS * 0.02) }));
+        }
+
+        // HP regen (out of combat)
+        if (!combat.inCombat && player.currentHP < player.maxHP) {
+            this._player.update(p => ({ ...p, currentHP: Math.min(p.maxHP, p.currentHP + p.VIT * 0.02) }));
+        }
+
+        // Auto-combat
+        if (idle.autoCombat && combat.inCombat) {
+            this.combatTickCounter += this.TICK_RATE;
+            const combatSpeed = idle.combatTickMs - this.getUpgradeBonus('combatSpeed');
+            if (this.combatTickCounter >= combatSpeed) {
+                this.combatTickCounter = 0;
+                this.combatService.autoCombatTick();
+            }
+        }
+
+        // Auto-save
+        this.autoSaveCounter += this.TICK_RATE;
+        if (this.autoSaveCounter >= 10000) {
+            this.autoSaveCounter = 0;
+            this.saveGame();
+        }
+    }
+
+    // UPGRADE BONUSES (delegated to research service)
+    getUpgradeBonus(type: string): number {
+        return this.researchService.getUpgradeBonus(type);
+    }
+
+    getMaxRunesPerSpell(): number {
+        return this.researchService.getMaxRunesPerSpell();
+    }
+
+    // SAVE/LOAD (delegated to save service)
+    saveGame(): void { this.saveService.saveGame(); }
+    loadGame(): boolean { return this.saveService.loadGame(); }
+    exportSave(): string { return this.saveService.exportSave(); }
+    importSave(data: string): boolean { return this.saveService.importSave(data); }
+
+    resetGame(): void {
+        this.saveService.resetGame();
+        this._player.set(this.createInitialPlayer());
+        this._resources.set(this.resourceService.createInitialResources());
+        this._windows.set(this.createInitialWindows());
+        this._knownRunes.set([]);
+        this._craftedSpells.set([MAGIC_MISSILE]);
+        this._researchTree.set(this.researchService.createInitialResearchTree());
+        this._upgrades.set(this.researchService.createInitialUpgrades());
+        this._combat.set(this.combatService.createInitialCombatState());
+        this._idle.set(this.createInitialIdleSettings());
+    }
+
+    // WINDOW
+    openWindow(id: keyof WindowStates): void {
+        this._windows.update(w => ({ ...w, [id]: { ...w[id], visible: true } }));
+    }
+    closeWindow(id: keyof WindowStates): void {
+        this._windows.update(w => ({ ...w, [id]: { ...w[id], visible: false } }));
+    }
+    toggleWindow(id: keyof WindowStates): void {
+        const c = this._windows()[id];
+        if (c.unlocked) this._windows.update(w => ({ ...w, [id]: { ...w[id], visible: !w[id].visible } }));
+    }
+
+    // RESOURCES (delegated to resource service)
+    addMana(amount: number): void { this.resourceService.addMana(amount); }
+    spendMana(amount: number): boolean { return this.resourceService.spendMana(amount); }
+    addGold(amount: number): void { this.resourceService.addGold(amount); }
+    addCraftingResource(id: string, amount: number): void { this.resourceService.addCraftingResource(id, amount); }
+    spendCraftingResources(costs: ResourceCost[]): boolean { return this.resourceService.spendCraftingResources(costs); }
+    canAffordResources(costs: ResourceCost[]): boolean { return this.resourceService.canAffordResources(costs); }
+
+    // MEDITATION
+    meditate(): void {
+        const manaGain = 1 + Math.floor(this._player().WIS * 0.5);
+        this.addMana(manaGain);
+    }
+
+    // IDLE
+    setAutoMeditate(e: boolean): void {
+        if (!this._idle().autoMeditateUnlocked) return;
+        this._idle.update(i => ({ ...i, autoMeditate: e }));
+    }
+    unlockAutoMeditate(): void {
+        this._idle.update(i => ({ ...i, autoMeditateUnlocked: true }));
+    }
+    setAutoCombat(e: boolean): void {
+        if (!this._idle().autoCombatUnlocked) return;
+        this._idle.update(i => ({ ...i, autoCombat: e }));
+        this._combat.update(c => ({ ...c, autoCombat: e }));
+    }
+    unlockAutoCombat(): void {
+        this._idle.update(i => ({ ...i, autoCombatUnlocked: true }));
+    }
+    setCombatSpeed(ms: number): void {
+        this._idle.update(i => ({ ...i, combatTickMs: ms }));
+        this._combat.update(c => ({ ...c, combatSpeed: ms }));
+    }
+    setSelectedSpell(id: string): void { this.combatService.setSelectedSpell(id); }
+
+    // RESEARCH (delegated to research service)
+    canResearch(id: string): boolean {
+        return this.researchService.canResearch(id, this._resources().mana);
+    }
+    research(id: string): boolean {
+        return this.researchService.research(id, this._resources().mana);
+    }
+
+    // UPGRADES (delegated to research service)
+    getUpgradeCost(u: Upgrade): ResourceCost[] {
+        return this.researchService.getUpgradeCost(u);
+    }
+    canAffordUpgrade(id: string): boolean {
+        return this.researchService.canAffordUpgrade(id);
+    }
+    purchaseUpgrade(id: string): boolean {
+        return this.researchService.purchaseUpgrade(id);
+    }
+
+    // SPELL CRAFTING
+    craftSpell(name: string, runes: Rune[], materialCost: ResourceCost[]): Spell | null {
+        if (runes.length === 0) return null;
+        if (!this.spendCraftingResources(materialCost)) return null;
+        const totalMana = runes.reduce((s, r) => s + r.manaCost, 0);
+        const baseDmg = runes.reduce((s, r) => s + r.baseDamage, 0);
+        const dmgMult = 1 + this._player().ARC * 0.1 + this.getUpgradeBonus('damage') / 100;
+        const dmgTypes = [...new Set(runes.map(r => r.damageType))];
+        const spell: Spell = {
+            id: `spell-${Date.now()}`, name, runes: [...runes],
+            totalManaCost: totalMana, calculatedDamage: Math.floor(baseDmg * dmgMult),
+            description: `Woven from ${runes.map(r => r.name).join(', ')}.`,
+            symbol: runes[0]?.symbol || '[*]', damageTypes: dmgTypes, craftCost: materialCost,
+            experience: 0, level: 1,
+        };
+        this._craftedSpells.update(s => [...s, spell]);
+        return spell;
+    }
+
+    addSpellExperience(spellId: string, xp: number): void {
+        this._craftedSpells.update(spells => spells.map(s => {
+            if (s.id !== spellId) return s;
+            let newXp = s.experience + xp;
+            let newLevel = s.level;
+            const xpToLevel = s.level * 50;
+            while (newXp >= xpToLevel && newLevel < 10) {
+                newXp -= xpToLevel;
+                newLevel++;
+            }
+            return { ...s, experience: newXp, level: newLevel };
+        }));
+    }
+
+    deleteSpell(id: string): void {
+        this._craftedSpells.update(s => s.filter(x => x.id !== id && !x.isDefault));
+    }
+
+    // COMBAT (delegated to combat service)
+    startCombat(enemy: Enemy): void { this.combatService.startCombat(enemy); }
+    castSpell(spell: Spell): void { this.combatService.castSpell(spell); }
+    fleeCombat(): void { this.combatService.fleeCombat(); }
+
+    // INITIAL STATE
+    private createInitialPlayer(): Player {
+        return {
+            id: 'player', name: 'Apprentice',
+            WIS: 1, HP: 50, ARC: 1, VIT: 1, BAR: 0, LCK: 1, SPD: 1,
+            currentHP: 50, maxHP: 50, currentMana: 0, maxMana: 25,
+            level: 1, experience: 0
+        };
+    }
+
+    private createInitialWindows(): WindowStates {
+        return {
+            altar: { unlocked: true, visible: true },
+            research: { unlocked: true, visible: true },
+            scriptorium: { unlocked: false, visible: false },
+            combat: { unlocked: false, visible: false },
+            inventory: { unlocked: false, visible: false },
+            workshop: { unlocked: false, visible: false },
+            runebook: { unlocked: false, visible: false },
+            grimoire: { unlocked: false, visible: false },
+            stats: { unlocked: true, visible: true },
+            bestiary: { unlocked: false, visible: false },
+            chronicle: { unlocked: false, visible: false },
+            settings: { unlocked: true, visible: false },
+        };
+    }
+
+    private createInitialIdleSettings(): IdleSettings {
+        return {
+            autoMeditate: false, autoMeditateUnlocked: false,
+            autoCombat: false, autoCombatUnlocked: false,
+            autoLoot: true, combatTickMs: 1000
+        };
+    }
+
+    ngOnDestroy(): void {
+        this.saveGame();
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+}

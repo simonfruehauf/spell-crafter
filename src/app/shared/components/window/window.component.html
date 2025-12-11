@@ -1,0 +1,26 @@
+<div class="window" @windowAnimation [class.minimized]="isMinimized()" [class.dragging]="isDragging()"
+  [style.left.px]="posX()" [style.top.px]="posY()" [style.width.px]="width"
+  [style.height]="height === 'auto' ? 'auto' : height + 'px'" [style.z-index]="zIndex()" (mousedown)="onWindowClick()">
+
+  <!-- Title Bar -->
+  <div class="title-bar" (mousedown)="onTitleBarMouseDown($event)">
+    <span class="title-text">{{ title }}</span>
+    <div class="title-buttons">
+      @if (showMinimize) {
+      <button class="title-btn minimize" (click)="toggleMinimize(); $event.stopPropagation()">
+        <span class="btn-icon">_</span>
+      </button>
+      }
+      @if (showClose) {
+      <button class="title-btn close" (click)="onClose(); $event.stopPropagation()">
+        <span class="btn-icon">×</span>
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- Content Area -->
+  <div class="window-content" [class.hidden]="isMinimized()">
+    <ng-content></ng-content>
+  </div>
+</div>

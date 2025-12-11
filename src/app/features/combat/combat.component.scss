@@ -1,0 +1,172 @@
+.combat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.arena-description {
+    padding: 8px;
+    border: 1px solid #808080;
+    background-color: #ffffcc;
+    margin-bottom: 8px;
+    font-style: italic;
+}
+
+.section-header {
+    background-color: #000080;
+    color: white;
+    padding: 2px 6px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+.enemy-item {
+    display: flex;
+    gap: 6px;
+    font-family: 'Courier New', monospace;
+
+    .enemy-level {
+        color: #808080;
+        font-size: 10px;
+    }
+
+    .enemy-hp {
+        margin-left: auto;
+        font-size: 10px;
+        color: #008800;
+    }
+}
+
+.enemy-display,
+.player-display {
+    text-align: center;
+    padding: 4px;
+}
+
+.enemy-ascii,
+.player-ascii {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    margin: 0;
+    line-height: 1.1;
+    color: #000000;
+}
+
+.enemy-name-display {
+    font-weight: bold;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+}
+
+.combat-divider {
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 2px;
+    color: #800000;
+    font-family: 'Courier New', monospace;
+}
+
+.spell-item {
+    display: flex;
+    gap: 6px;
+    font-family: 'Courier New', monospace;
+
+    &.unaffordable {
+        color: #808080;
+    }
+
+    .spell-symbol {
+        color: #000080;
+    }
+
+    .spell-cost {
+        margin-left: auto;
+        font-size: 10px;
+        color: #0066cc;
+    }
+}
+
+.empty-message {
+    color: #808080;
+    font-style: italic;
+    padding: 8px;
+    text-align: center;
+}
+
+.bar-container {
+    position: relative;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+
+    select {
+        padding: 2px 4px;
+    }
+}
+
+.stats-display {
+    text-align: center;
+    font-size: 11px;
+    color: #606060;
+}
+
+.effects-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+    margin-top: 4px;
+}
+
+.effect-badge {
+    font-size: 9px;
+    padding: 1px 4px;
+    font-family: 'Courier New', monospace;
+
+    &.buff {
+        background-color: #ccffcc;
+        color: #006600;
+    }
+
+    &.debuff {
+        background-color: #ffcccc;
+        color: #660000;
+    }
+}
+
+.lockout-warning {
+    text-align: center;
+    padding: 8px;
+    background-color: #ffcccc;
+    border: 2px solid #cc0000;
+    color: #800000;
+    font-weight: bold;
+}
+
+.lockout-icon {
+    font-size: 16px;
+}
+
+.lockout-text {
+    font-size: 11px;
+}
+
+.combat-view {
+    overflow: hidden;
+}
+
+.mb-1 {
+    margin-bottom: 4px;
+}

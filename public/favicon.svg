@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="15" fill="#1a0a30" stroke="#6644aa" stroke-width="2"/>
+  
+  <!-- Outer rune circle -->
+  <circle cx="16" cy="16" r="11" fill="none" stroke="#8866cc" stroke-width="1" opacity="0.6"/>
+  
+  <!-- Inner star/rune pattern -->
+  <path d="M16 5 L18 12 L25 12 L20 17 L22 24 L16 20 L10 24 L12 17 L7 12 L14 12 Z" 
+        fill="#aa88ff" stroke="#ffffff" stroke-width="0.5"/>
+  
+  <!-- Center glow -->
+  <circle cx="16" cy="16" r="4" fill="#cc99ff" opacity="0.8"/>
+  <circle cx="16" cy="16" r="2" fill="#ffffff"/>
+  
+  <!-- Sparkle accents -->
+  <circle cx="8" cy="8" r="1" fill="#ffffff" opacity="0.6"/>
+  <circle cx="24" cy="10" r="0.8" fill="#ffffff" opacity="0.5"/>
+  <circle cx="23" cy="23" r="0.7" fill="#ffffff" opacity="0.4"/>
+</svg>

@@ -1,0 +1,108 @@
+import { Injectable, signal } from '@angular/core';
+import {
+    GameState, Player, Resources, WindowStates, Rune, Spell,
+    ResearchNode, CombatState, IdleSettings, Upgrade
+} from '../models/game.interfaces';
+import { RUNES, MAGIC_MISSILE, INITIAL_RESEARCH_TREE, INITIAL_UPGRADES } from '../models/game.data';
+import { INITIAL_CRAFTING_RESOURCES } from '../models/resources.data';
+
+const SAVE_KEY = 'spellcrafter-save';
+const SAVE_VERSION = 2;
+
+export interface GameSignals {
+    player: ReturnType<typeof signal<Player>>;
+    resources: ReturnType<typeof signal<Resources>>;
+    windows: ReturnType<typeof signal<WindowStates>>;
+    knownRunes: ReturnType<typeof signal<Rune[]>>;
+    craftedSpells: ReturnType<typeof signal<Spell[]>>;
+    researchTree: ReturnType<typeof signal<ResearchNode[]>>;
+    upgrades: ReturnType<typeof signal<Upgrade[]>>;
+    combat: ReturnType<typeof signal<CombatState>>;
+    idle: ReturnType<typeof signal<IdleSettings>>;
+}
+
+@Injectable({ providedIn: 'root' })
+export class SaveService {
+    private signals: GameSignals | null = null;
+
+    registerSignals(signals: GameSignals): void {
+        this.signals = signals;
+    }
+
+    saveGame(): void {
+        if (!this.signals) return;
+
+        const state = {
+            version: SAVE_VERSION,
+            timestamp: Date.now(),
+            player: this.signals.player(),
+            resources: this.signals.resources(),
+            windows: this.signals.windows(),
+            knownRunes: this.signals.knownRunes().map(r => r.id),
+            craftedSpells: this.signals.craftedSpells(),
+            researchTree: this.signals.researchTree(),
+            upgrades: this.signals.upgrades(),
+            combat: {
+                ...this.signals.combat(),
+                combatLog: [],
+                currentEnemy: null,
+                inCombat: false
+            },
+            idle: this.signals.idle(),
+        };
+        localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    }
+
+    loadGame(): boolean {
+        if (!this.signals) return false;
+
+        const saved = localStorage.getItem(SAVE_KEY);
+        if (!saved) return false;
+
+        try {
+            const state = JSON.parse(saved);
+            if (state.version !== SAVE_VERSION) {
+                console.warn('Save version mismatch');
+                return false;
+            }
+
+            this.signals.player.set(state.player);
+            this.signals.resources.set(state.resources);
+            this.signals.windows.set(state.windows);
+            this.signals.knownRunes.set(
+                state.knownRunes.map((id: string) => RUNES[id]).filter(Boolean)
+            );
+            this.signals.craftedSpells.set(state.craftedSpells);
+            this.signals.researchTree.set(state.researchTree);
+            this.signals.upgrades.set(
+                state.upgrades || JSON.parse(JSON.stringify(INITIAL_UPGRADES))
+            );
+            this.signals.idle.set(state.idle);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    exportSave(): string {
+        this.saveGame();
+        const saved = localStorage.getItem(SAVE_KEY);
+        return saved ? btoa(saved) : '';
+    }
+
+    importSave(data: string): boolean {
+        try {
+            const decoded = atob(data);
+            const state = JSON.parse(decoded);
+            if (state.version !== SAVE_VERSION) return false;
+            localStorage.setItem(SAVE_KEY, decoded);
+            return this.loadGame();
+        } catch {
+            return false;
+        }
+    }
+
+    resetGame(): void {
+        localStorage.removeItem(SAVE_KEY);
+    }
+}
