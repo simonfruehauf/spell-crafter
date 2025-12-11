@@ -78,6 +78,16 @@ export class SaveService {
                 state.upgrades || JSON.parse(JSON.stringify(INITIAL_UPGRADES))
             );
             this.signals.idle.set(state.idle);
+            if (state.combat) {
+                // Restore combat state but ensure ephemeral flags are reset (just in case)
+                this.signals.combat.set({
+                    ...state.combat,
+                    inCombat: false,
+                    currentEnemy: null,
+                    combatLog: [],
+                    playerTurn: true
+                });
+            }
             return true;
         } catch {
             return false;

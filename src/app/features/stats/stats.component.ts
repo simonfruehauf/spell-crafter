@@ -45,30 +45,65 @@ const STAT_INFO: Record<string, StatInfo> = {
 
         <!-- Stats -->
         <fieldset class="mt-1">
-          <legend>Attributes</legend>
+          <legend>
+            Attributes
+            @if (player().attributePoints > 0) {
+              <span class="points-badge">[{{ player().attributePoints }} pts]</span>
+            }
+          </legend>
           <div class="stat-row">
             <button class="stat-btn" [class.active]="selectedStat()?.name === 'WIS'" (click)="toggleStatInfo('WIS')">WIS</button>
-            <span class="stat-value">{{ player().WIS }}</span>
+            <div class="stat-value-group">
+              <span class="stat-value">{{ player().WIS }}</span>
+              @if (player().attributePoints > 0) {
+                <button class="add-btn" (click)="spendPoint('WIS'); $event.stopPropagation()">[+]</button>
+              }
+            </div>
           </div>
           <div class="stat-row">
             <button class="stat-btn" [class.active]="selectedStat()?.name === 'ARC'" (click)="toggleStatInfo('ARC')">ARC</button>
-            <span class="stat-value">{{ player().ARC }}</span>
+            <div class="stat-value-group">
+              <span class="stat-value">{{ player().ARC }}</span>
+              @if (player().attributePoints > 0) {
+                <button class="add-btn" (click)="spendPoint('ARC'); $event.stopPropagation()">[+]</button>
+              }
+            </div>
           </div>
           <div class="stat-row">
             <button class="stat-btn" [class.active]="selectedStat()?.name === 'VIT'" (click)="toggleStatInfo('VIT')">VIT</button>
-            <span class="stat-value">{{ player().VIT }}</span>
+            <div class="stat-value-group">
+              <span class="stat-value">{{ player().VIT }}</span>
+              @if (player().attributePoints > 0) {
+                <button class="add-btn" (click)="spendPoint('VIT'); $event.stopPropagation()">[+]</button>
+              }
+            </div>
           </div>
           <div class="stat-row">
             <button class="stat-btn" [class.active]="selectedStat()?.name === 'BAR'" (click)="toggleStatInfo('BAR')">BAR</button>
-            <span class="stat-value">{{ player().BAR }}</span>
+            <div class="stat-value-group">
+              <span class="stat-value">{{ player().BAR }}</span>
+              @if (player().attributePoints > 0) {
+                <button class="add-btn" (click)="spendPoint('BAR'); $event.stopPropagation()">[+]</button>
+              }
+            </div>
           </div>
           <div class="stat-row">
             <button class="stat-btn" [class.active]="selectedStat()?.name === 'LCK'" (click)="toggleStatInfo('LCK')">LCK</button>
-            <span class="stat-value">{{ player().LCK }}</span>
+            <div class="stat-value-group">
+              <span class="stat-value">{{ player().LCK }}</span>
+              @if (player().attributePoints > 0) {
+                <button class="add-btn" (click)="spendPoint('LCK'); $event.stopPropagation()">[+]</button>
+              }
+            </div>
           </div>
           <div class="stat-row">
             <button class="stat-btn" [class.active]="selectedStat()?.name === 'SPD'" (click)="toggleStatInfo('SPD')">SPD</button>
-            <span class="stat-value">{{ player().SPD }}</span>
+            <div class="stat-value-group">
+              <span class="stat-value">{{ player().SPD }}</span>
+              @if (player().attributePoints > 0) {
+                <button class="add-btn" (click)="spendPoint('SPD'); $event.stopPropagation()">[+]</button>
+              }
+            </div>
           </div>
           @if (selectedStat()) {
             <div class="stat-info-box">
@@ -175,6 +210,30 @@ const STAT_INFO: Record<string, StatInfo> = {
       font-size: 10px;
       line-height: 1.4;
     }
+    .stat-value-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .add-btn {
+      font-size: 10px;
+      padding: 1px 4px;
+      background-color: #90ee90;
+      border: 1px solid;
+      border-color: #ffffff #808080 #808080 #ffffff;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      color: #006600;
+      &:hover { background-color: #70cc70; }
+      &:active { border-color: #808080 #ffffff #ffffff #808080; }
+    }
+    .points-badge {
+      font-size: 10px;
+      color: #006600;
+      font-weight: bold;
+    }
+    .mt-1 { margin-top: 8px; }
   `]
 })
 export class StatsComponent {
@@ -201,7 +260,11 @@ export class StatsComponent {
   }
 
   getXpToLevel(): number {
-    return this.player().level * 100;
+    return this.player().experienceToLevel;
+  }
+
+  spendPoint(stat: 'WIS' | 'ARC' | 'VIT' | 'BAR' | 'LCK' | 'SPD'): void {
+    this.gameState.spendAttributePoint(stat);
   }
 
   onClose(): void { this.closed.emit(); }

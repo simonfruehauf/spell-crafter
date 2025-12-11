@@ -163,6 +163,9 @@ export class GameStateService implements OnDestroy {
             this.autoSaveCounter = 0;
             this.saveGame();
         }
+
+        // Check for level up
+        this.checkLevelUp();
     }
 
     // UPGRADE BONUSES (delegated to research service)
@@ -302,13 +305,46 @@ export class GameStateService implements OnDestroy {
     castSpell(spell: Spell): void { this.combatService.castSpell(spell); }
     fleeCombat(): void { this.combatService.fleeCombat(); }
 
+    // LEVELING SYSTEM
+    getExperienceToLevel(level: number): number {
+        return Math.floor(100 * Math.pow(1.5, level - 1));
+    }
+
+    checkLevelUp(): void {
+        const player = this._player();
+        const expNeeded = player.experienceToLevel;
+        if (player.experience >= expNeeded) {
+            this._player.update(p => ({
+                ...p,
+                experience: p.experience - expNeeded,
+                level: p.level + 1,
+                experienceToLevel: this.getExperienceToLevel(p.level + 1),
+                attributePoints: p.attributePoints + 2,
+                maxHP: p.maxHP + 10,
+                currentHP: Math.min(p.currentHP + 10, p.maxHP + 10)
+            }));
+            this.combatService.addCombatLog(`Level Up! You are now level ${this._player().level}!`, 'victory');
+        }
+    }
+
+    spendAttributePoint(stat: 'WIS' | 'ARC' | 'VIT' | 'BAR' | 'LCK' | 'SPD'): boolean {
+        const player = this._player();
+        if (player.attributePoints <= 0) return false;
+        this._player.update(p => ({
+            ...p,
+            [stat]: p[stat] + 1,
+            attributePoints: p.attributePoints - 1
+        }));
+        return true;
+    }
+
     // INITIAL STATE
     private createInitialPlayer(): Player {
         return {
             id: 'player', name: 'Apprentice',
             WIS: 1, HP: 50, ARC: 1, VIT: 1, BAR: 0, LCK: 1, SPD: 1,
             currentHP: 50, maxHP: 50, currentMana: 0, maxMana: 25,
-            level: 1, experience: 0
+            level: 1, experience: 0, experienceToLevel: 100, attributePoints: 0
         };
     }
 
@@ -326,6 +362,7 @@ export class GameStateService implements OnDestroy {
             bestiary: { unlocked: false, visible: false },
             chronicle: { unlocked: false, visible: false },
             settings: { unlocked: true, visible: false },
+            discoveries: { unlocked: false, visible: false },
         };
     }
 

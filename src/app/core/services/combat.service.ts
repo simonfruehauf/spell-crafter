@@ -388,11 +388,14 @@ export class CombatService {
 
             if (this.signals.idle().autoCombat) {
                 setTimeout(() => {
-                    if (this.signals?.idle().autoCombat && this.signals.player().currentHP > 0) {
+                    // Check if auto-combat is still on AND we are not already in combat (prevent double triggers)
+                    // and player is alive
+                    if (this.signals?.idle().autoCombat &&
+                        this.signals.player().currentHP > 0 &&
+                        !this.signals.combat().inCombat) {
                         this.startCombat(enemy);
                     }
                 }, 1000);
-                return;
             }
         } else {
             this.addCombatLog('You have been defeated... (30s lockout)', 'defeat');

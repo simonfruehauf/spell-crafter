@@ -180,6 +180,7 @@ export interface WindowStates {
   bestiary: WindowState;
   chronicle: WindowState;
   settings: WindowState;
+  discoveries: WindowState;
 }
 
 /**

@@ -634,4 +634,107 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
         manaCost: 60, unlocked: false, researched: false,
         unlockEffect: { type: 'idle', idleId: 'autoCombat' }, prerequisites: ['unlock-combat']
     },
+
+    // Discoveries window
+    {
+        id: 'unlock-discoveries', name: 'Arcane Archives', description: 'Open the discoveries window to track progress.',
+        manaCost: 25, unlocked: true, researched: false,
+        unlockEffect: { type: 'window', windowId: 'discoveries' }, prerequisites: []
+    },
+
+    // Advanced stats research
+    {
+        id: 'wisdom-2', name: 'Enlightenment', description: 'Deep study of the arcane. (+2 WIS)',
+        manaCost: 80, unlocked: false, researched: false,
+        unlockEffect: { type: 'stat', stat: 'WIS', value: 2 }, prerequisites: ['basic-meditation']
+    },
+    {
+        id: 'arcane-focus', name: 'Arcane Focus', description: 'Sharpen your magical precision. (+2 ARC)',
+        manaCost: 70, unlocked: false, researched: false,
+        unlockEffect: { type: 'stat', stat: 'ARC', value: 2 }, prerequisites: ['unlock-combat']
+    },
+    {
+        id: 'iron-will', name: 'Iron Will', description: 'Strengthen your mental barriers. (+2 BAR)',
+        manaCost: 65, unlocked: false, researched: false,
+        unlockEffect: { type: 'stat', stat: 'BAR', value: 2 }, prerequisites: ['fortification']
+    },
+    {
+        id: 'vitality-training', name: 'Vitality Training', description: 'Train your body to heal. (+2 VIT)',
+        manaCost: 55, unlocked: false, researched: false,
+        unlockEffect: { type: 'stat', stat: 'VIT', value: 2 }, prerequisites: ['restoration']
+    },
+
+    // Advanced mana capacity
+    {
+        id: 'mana-capacity-4', name: 'Expanded Mind IV', description: 'Increase max mana to 125.',
+        manaCost: 80, unlocked: false, researched: false,
+        unlockEffect: { type: 'maxMana', value: 25 }, prerequisites: ['mana-capacity-3']
+    },
+    {
+        id: 'mana-capacity-5', name: 'Expanded Mind V', description: 'Increase max mana to 150.',
+        manaCost: 100, unlocked: false, researched: false,
+        unlockEffect: { type: 'maxMana', value: 25 }, prerequisites: ['mana-capacity-4']
+    },
+
+    // More rune unlocks
+    {
+        id: 'pyromancy-2', name: 'Pyromancy II', description: 'Unlock the Inferno rune.',
+        manaCost: 70, unlocked: false, researched: false,
+        unlockEffect: { type: 'rune', runeId: 'inferno' }, prerequisites: ['pyromancy']
+    },
+    {
+        id: 'cryomancy-2', name: 'Cryomancy II', description: 'Unlock the Frigus rune.',
+        manaCost: 70, unlocked: false, researched: false,
+        unlockEffect: { type: 'rune', runeId: 'frigus' }, prerequisites: ['cryomancy']
+    },
+    {
+        id: 'electromancy-2', name: 'Electromancy II', description: 'Unlock the Catena rune.',
+        manaCost: 90, unlocked: false, researched: false,
+        unlockEffect: { type: 'rune', runeId: 'catena' }, prerequisites: ['electromancy']
+    },
+    {
+        id: 'geomancy-2', name: 'Geomancy II', description: 'Unlock the Murus rune.',
+        manaCost: 90, unlocked: false, researched: false,
+        unlockEffect: { type: 'rune', runeId: 'murus' }, prerequisites: ['geomancy']
+    },
+    {
+        id: 'restoration-2', name: 'Restoration II', description: 'Unlock the Sana rune.',
+        manaCost: 80, unlocked: false, researched: false,
+        unlockEffect: { type: 'rune', runeId: 'sana' }, prerequisites: ['restoration']
+    },
+    {
+        id: 'shadow-magic', name: 'Shadow Magic', description: 'Unlock the Umbra rune.',
+        manaCost: 85, unlocked: false, researched: false,
+        unlockEffect: { type: 'rune', runeId: 'umbra' }, prerequisites: ['necromancy']
+    },
+    {
+        id: 'arcane-power', name: 'Arcane Power', description: 'Unlock the Potens rune.',
+        manaCost: 95, unlocked: false, researched: false,
+        unlockEffect: { type: 'rune', runeId: 'potens' }, prerequisites: ['swift-casting']
+    },
+    {
+        id: 'poison-arts', name: 'Poison Arts', description: 'Unlock the Venenum rune.',
+        manaCost: 75, unlocked: false, researched: false,
+        unlockEffect: { type: 'rune', runeId: 'venenum' }, prerequisites: ['necromancy']
+    },
+    {
+        id: 'fortune-magic', name: 'Fortune Magic', description: 'Unlock the Fortuna rune.',
+        manaCost: 100, unlocked: false, researched: false,
+        unlockEffect: { type: 'rune', runeId: 'fortuna' }, prerequisites: ['arcane-power']
+    },
+    {
+        id: 'piercing-arts', name: 'Piercing Arts', description: 'Unlock the Perforare rune.',
+        manaCost: 110, unlocked: false, researched: false,
+        unlockEffect: { type: 'rune', runeId: 'perforare' }, prerequisites: ['arcane-focus']
+    },
+    {
+        id: 'execution-magic', name: 'Execution Magic', description: 'Unlock the Occidere rune.',
+        manaCost: 120, unlocked: false, researched: false,
+        unlockEffect: { type: 'rune', runeId: 'occidere' }, prerequisites: ['blood-magic']
+    },
+    {
+        id: 'temporal-arts', name: 'Temporal Arts', description: 'Unlock the Stupor rune.',
+        manaCost: 130, unlocked: false, researched: false,
+        unlockEffect: { type: 'rune', runeId: 'stupor' }, prerequisites: ['fortune-magic']
+    },
 ];

@@ -12,6 +12,7 @@ import { StatsComponent } from './features/stats/stats.component';
 import { BestiaryComponent } from './features/bestiary/bestiary.component';
 import { ChronicleComponent } from './features/chronicle/chronicle.component';
 import { SettingsComponent } from './features/settings/settings.component';
+import { DiscoveriesComponent } from './features/discoveries/discoveries.component';
 import { GameStateService } from './core/services/game-state.service';
 import { WindowStates } from './core/models/game.interfaces';
 
@@ -24,6 +25,7 @@ import { WindowStates } from './core/models/game.interfaces';
     CombatComponent, InventoryComponent, WorkshopComponent,
     RunebookComponent, GrimoireComponent, StatsComponent,
     BestiaryComponent, ChronicleComponent, SettingsComponent,
+    DiscoveriesComponent,
   ],
   template: `
     <div class="desktop">
@@ -84,6 +86,9 @@ import { WindowStates } from './core/models/game.interfaces';
         }
         @if (windows().settings.unlocked && windows().settings.visible) {
           <app-settings (closed)="closeWindow('settings')"></app-settings>
+        }
+        @if (windows().discoveries.unlocked && windows().discoveries.visible) {
+          <app-discoveries (closed)="closeWindow('discoveries')"></app-discoveries>
         }
       </div>
     </div>
@@ -182,6 +187,7 @@ export class App {
       altar: '[A]', research: '[S]', scriptorium: '[R]', combat: '[C]',
       inventory: '[I]', workshop: '[W]', runebook: '[B]', grimoire: '[G]',
       stats: '[#]', bestiary: '[M]', chronicle: '[L]', settings: '[=]',
+      discoveries: '[*]',
     };
     return icons[id] || '[?]';
   }
@@ -191,6 +197,7 @@ export class App {
       altar: 'Altar', research: 'Study', scriptorium: 'Spells', combat: 'Arena',
       inventory: 'Vault', workshop: 'Workshop', runebook: 'Runebook', grimoire: 'Grimoire',
       stats: 'Stats', bestiary: 'Bestiary', chronicle: 'Chronicle', settings: 'Settings',
+      discoveries: 'Discoveries',
     };
     return labels[id] || id;
   }

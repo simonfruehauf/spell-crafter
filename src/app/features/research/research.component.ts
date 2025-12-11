@@ -27,20 +27,23 @@ import { ResearchNode } from '../../core/models/game.interfaces';
           <span class="value">{{ resources().mana | number:'1.0-0' }}</span>
         </div>
 
+        @if (completedCount() > 0) {
+          <button class="btn discoveries-btn mb-1" (click)="openDiscoveries()">
+            [*] View Discoveries ({{ completedCount() }})
+          </button>
+        }
+
         <div class="research-tree">
-          @for (node of sortedResearchTree(); track node.id) {
+          @for (node of availableResearch(); track node.id) {
             <div 
               class="research-node"
-              [class.unlocked]="node.unlocked && !node.researched"
-              [class.researched]="node.researched"
+              [class.unlocked]="node.unlocked"
               [class.locked]="!node.unlocked"
               (click)="attemptResearch(node)">
               
               <div class="node-header">
                 <span class="node-name">{{ node.name }}</span>
-                @if (node.researched) {
-                  <span class="node-status">[OK]</span>
-                } @else if (!node.unlocked) {
+                @if (!node.unlocked) {
                   <span class="node-status">[--]</span>
                 } @else {
                   <span class="node-cost-header">{{ node.manaCost }}mp</span>
@@ -49,12 +52,14 @@ import { ResearchNode } from '../../core/models/game.interfaces';
               
               <div class="node-description">{{ node.description }}</div>
               
-              @if (!node.researched && node.unlocked) {
+              @if (node.unlocked) {
                 <div class="node-cost" [class.affordable]="canAfford(node)">
                   Cost: {{ node.manaCost }} mana
                 </div>
               }
             </div>
+          } @empty {
+            <div class="empty-message">All research complete!</div>
           }
         </div>
       </div>
@@ -162,6 +167,27 @@ import { ResearchNode } from '../../core/models/game.interfaces';
         font-weight: bold;
       }
     }
+
+    .discoveries-btn {
+      width: 100%;
+      padding: 6px;
+      font-family: 'Courier New', monospace;
+      background-color: #c0c0c0;
+      border: 2px solid;
+      border-color: #ffffff #808080 #808080 #ffffff;
+      cursor: pointer;
+      &:hover { background-color: #d0d0d0; }
+      &:active { border-color: #808080 #ffffff #ffffff #808080; }
+    }
+
+    .empty-message {
+      color: #808080;
+      font-style: italic;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .mb-1 { margin-bottom: 8px; }
   `]
 })
 export class ResearchComponent {
@@ -172,19 +198,22 @@ export class ResearchComponent {
   readonly resources = this.gameState.resources;
   readonly researchTree = this.gameState.researchTree;
 
-  // Sort by: researched last, then by mana cost ascending
-  readonly sortedResearchTree = computed(() => {
-    return [...this.researchTree()].sort((a, b) => {
-      // Researched items go to bottom
-      if (a.researched && !b.researched) return 1;
-      if (!a.researched && b.researched) return -1;
-      // Unlocked items before locked
-      if (a.unlocked && !b.unlocked) return -1;
-      if (!a.unlocked && b.unlocked) return 1;
-      // Sort by cost
-      return a.manaCost - b.manaCost;
-    });
+  // Only show incomplete research, sorted by unlocked first then cost
+  readonly availableResearch = computed(() => {
+    return [...this.researchTree()]
+      .filter(node => !node.researched)
+      .sort((a, b) => {
+        // Unlocked items before locked
+        if (a.unlocked && !b.unlocked) return -1;
+        if (!a.unlocked && b.unlocked) return 1;
+        // Sort by cost
+        return a.manaCost - b.manaCost;
+      });
   });
+
+  readonly completedCount = computed(() =>
+    this.researchTree().filter(node => node.researched).length
+  );
 
   canAfford(node: ResearchNode): boolean {
     return this.resources().mana >= node.manaCost;
@@ -193,6 +222,10 @@ export class ResearchComponent {
   attemptResearch(node: ResearchNode): void {
     if (!node.unlocked || node.researched) return;
     this.gameState.research(node.id);
+  }
+
+  openDiscoveries(): void {
+    this.gameState.openWindow('discoveries');
   }
 
   onClose(): void {
