@@ -4,10 +4,12 @@ import { takeUntil } from 'rxjs/operators';
 import {
     GameState, Player, Resources, WindowStates, WindowState, Rune, Spell,
     ResearchNode, CombatState, CombatLogEntry, Enemy, IdleSettings,
-    ActiveEffect, LootDrop, ResourceCost, Upgrade, DamageType
+    ActiveEffect, LootDrop, ResourceCost, Upgrade, DamageType,
+    EquipmentItem, EquipmentRecipe, EquippedItems, EquipmentSlot, PlayerStats
 } from '../models/game.interfaces';
 import { INITIAL_RESEARCH_TREE, RUNES, MAGIC_MISSILE, ENEMIES, INITIAL_UPGRADES } from '../models/game.data';
 import { INITIAL_CRAFTING_RESOURCES, RESOURCE_NAMES } from '../models/resources.data';
+import { INITIAL_EQUIPMENT_RECIPES, INITIAL_EQUIPPED_ITEMS, EQUIPMENT_ITEMS } from '../models/equipment.data';
 
 // Import extracted services
 import { SaveService } from './save.service';
@@ -33,6 +35,9 @@ export class GameStateService implements OnDestroy {
     private readonly _upgrades = signal<Upgrade[]>(this.researchService.createInitialUpgrades());
     private readonly _combat = signal<CombatState>(this.combatService.createInitialCombatState());
     private readonly _idle = signal<IdleSettings>(this.createInitialIdleSettings());
+    private readonly _equippedItems = signal<EquippedItems>(this.createInitialEquippedItems());
+    private readonly _craftedEquipment = signal<EquipmentItem[]>([]);
+    private readonly _equipmentRecipes = signal<EquipmentRecipe[]>(JSON.parse(JSON.stringify(INITIAL_EQUIPMENT_RECIPES)));
 
     // Public readonly
     readonly player = this._player.asReadonly();
@@ -44,6 +49,9 @@ export class GameStateService implements OnDestroy {
     readonly upgrades = this._upgrades.asReadonly();
     readonly combat = this._combat.asReadonly();
     readonly idle = this._idle.asReadonly();
+    readonly equippedItems = this._equippedItems.asReadonly();
+    readonly craftedEquipment = this._craftedEquipment.asReadonly();
+    readonly equipmentRecipes = this._equipmentRecipes.asReadonly();
 
     // Computed
     readonly availableResearch = computed(() =>
@@ -84,6 +92,9 @@ export class GameStateService implements OnDestroy {
             upgrades: this._upgrades,
             combat: this._combat,
             idle: this._idle,
+            equippedItems: this._equippedItems,
+            craftedEquipment: this._craftedEquipment,
+            equipmentRecipes: this._equipmentRecipes,
         });
 
         // Register research service
@@ -150,7 +161,7 @@ export class GameStateService implements OnDestroy {
         // Auto-combat
         if (idle.autoCombat && combat.inCombat) {
             this.combatTickCounter += this.TICK_RATE;
-            const combatSpeed = idle.combatTickMs - this.getUpgradeBonus('combatSpeed');
+            const combatSpeed = this.combatService.getEffectiveCombatSpeed(player, idle.combatTickMs);
             if (this.combatTickCounter >= combatSpeed) {
                 this.combatTickCounter = 0;
                 this.combatService.autoCombatTick();
@@ -194,6 +205,9 @@ export class GameStateService implements OnDestroy {
         this._upgrades.set(this.researchService.createInitialUpgrades());
         this._combat.set(this.combatService.createInitialCombatState());
         this._idle.set(this.createInitialIdleSettings());
+        this._equippedItems.set(this.createInitialEquippedItems());
+        this._craftedEquipment.set([]);
+        this._equipmentRecipes.set(JSON.parse(JSON.stringify(INITIAL_EQUIPMENT_RECIPES)));
     }
 
     // WINDOW
@@ -338,6 +352,73 @@ export class GameStateService implements OnDestroy {
         return true;
     }
 
+    // EQUIPMENT SYSTEM
+    craftEquipment(recipeId: string): boolean {
+        const recipe = this._equipmentRecipes().find(r => r.id === recipeId);
+        if (!recipe || !recipe.unlocked) return false;
+        if (!this.resourceService.canAffordResources(recipe.cost)) return false;
+        if (!this.resourceService.spendCraftingResources(recipe.cost)) return false;
+
+        // Add item to crafted equipment inventory
+        this._craftedEquipment.update(items => [...items, { ...recipe.resultItem }]);
+        return true;
+    }
+
+    equipItem(itemId: string): boolean {
+        const items = this._craftedEquipment();
+        const itemIndex = items.findIndex(i => i.id === itemId);
+        if (itemIndex === -1) return false;
+
+        const item = items[itemIndex];
+        const currentEquipped = this._equippedItems()[item.slot];
+
+        // Remove item from inventory
+        this._craftedEquipment.update(inv => inv.filter((_, idx) => idx !== itemIndex));
+
+        // If something is already equipped in that slot, put it back in inventory
+        if (currentEquipped) {
+            this._craftedEquipment.update(inv => [...inv, currentEquipped]);
+        }
+
+        // Equip the new item
+        this._equippedItems.update(eq => ({ ...eq, [item.slot]: item }));
+        return true;
+    }
+
+    unequipItem(slot: EquipmentSlot): boolean {
+        const equipped = this._equippedItems()[slot];
+        if (!equipped) return false;
+
+        // Put item back in inventory
+        this._craftedEquipment.update(inv => [...inv, equipped]);
+
+        // Clear the slot
+        this._equippedItems.update(eq => ({ ...eq, [slot]: null }));
+        return true;
+    }
+
+    getEquipmentBonus(bonusType: string, stat?: keyof PlayerStats): number {
+        const equipped = this._equippedItems();
+        let total = 0;
+
+        for (const slot of Object.keys(equipped) as EquipmentSlot[]) {
+            const item = equipped[slot];
+            if (!item) continue;
+
+            for (const bonus of item.bonuses) {
+                if (bonus.type === bonusType) {
+                    if (bonusType === 'stat' && stat && bonus.stat === stat) {
+                        total += bonus.value;
+                    } else if (bonusType !== 'stat') {
+                        total += bonus.value;
+                    }
+                }
+            }
+        }
+
+        return total;
+    }
+
     // INITIAL STATE
     private createInitialPlayer(): Player {
         return {
@@ -363,6 +444,20 @@ export class GameStateService implements OnDestroy {
             chronicle: { unlocked: false, visible: false },
             settings: { unlocked: true, visible: false },
             discoveries: { unlocked: false, visible: false },
+            armory: { unlocked: false, visible: false },
+            equipment: { unlocked: false, visible: false },
+        };
+    }
+
+    private createInitialEquippedItems(): EquippedItems {
+        return {
+            head: null,
+            face: null,
+            accessory: null,
+            body: null,
+            handL: null,
+            handR: null,
+            relic: null,
         };
     }
 

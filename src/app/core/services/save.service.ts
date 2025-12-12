@@ -1,13 +1,15 @@
 import { Injectable, signal } from '@angular/core';
 import {
     GameState, Player, Resources, WindowStates, Rune, Spell,
-    ResearchNode, CombatState, IdleSettings, Upgrade
+    ResearchNode, CombatState, IdleSettings, Upgrade,
+    EquipmentItem, EquipmentRecipe, EquippedItems
 } from '../models/game.interfaces';
 import { RUNES, MAGIC_MISSILE, INITIAL_RESEARCH_TREE, INITIAL_UPGRADES } from '../models/game.data';
 import { INITIAL_CRAFTING_RESOURCES } from '../models/resources.data';
+import { INITIAL_EQUIPMENT_RECIPES } from '../models/equipment.data';
 
 const SAVE_KEY = 'spellcrafter-save';
-const SAVE_VERSION = 2;
+const SAVE_VERSION = 3;
 
 export interface GameSignals {
     player: ReturnType<typeof signal<Player>>;
@@ -19,6 +21,9 @@ export interface GameSignals {
     upgrades: ReturnType<typeof signal<Upgrade[]>>;
     combat: ReturnType<typeof signal<CombatState>>;
     idle: ReturnType<typeof signal<IdleSettings>>;
+    equippedItems: ReturnType<typeof signal<EquippedItems>>;
+    craftedEquipment: ReturnType<typeof signal<EquipmentItem[]>>;
+    equipmentRecipes: ReturnType<typeof signal<EquipmentRecipe[]>>;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -49,6 +54,9 @@ export class SaveService {
                 inCombat: false
             },
             idle: this.signals.idle(),
+            equippedItems: this.signals.equippedItems(),
+            craftedEquipment: this.signals.craftedEquipment(),
+            equipmentRecipes: this.signals.equipmentRecipes(),
         };
         localStorage.setItem(SAVE_KEY, JSON.stringify(state));
     }
@@ -87,6 +95,16 @@ export class SaveService {
                     combatLog: [],
                     playerTurn: true
                 });
+            }
+            // Load equipment state
+            if (state.equippedItems) {
+                this.signals.equippedItems.set(state.equippedItems);
+            }
+            if (state.craftedEquipment) {
+                this.signals.craftedEquipment.set(state.craftedEquipment);
+            }
+            if (state.equipmentRecipes) {
+                this.signals.equipmentRecipes.set(state.equipmentRecipes);
             }
             return true;
         } catch {

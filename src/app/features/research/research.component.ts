@@ -42,7 +42,10 @@ import { ResearchNode } from '../../core/models/game.interfaces';
               (click)="attemptResearch(node)">
               
               <div class="node-header">
-                <span class="node-name">{{ node.name }}</span>
+                <span class="node-name">
+                  {{ node.name }}
+                  <span class="unlock-tag" [class]="getUnlockTagClass(node)">{{ getUnlockTag(node) }}</span>
+                </span>
                 @if (!node.unlocked) {
                   <span class="node-status">[--]</span>
                 } @else {
@@ -141,6 +144,19 @@ import { ResearchNode } from '../../core/models/game.interfaces';
       font-weight: bold;
     }
 
+    .unlock-tag {
+      font-size: 9px;
+      font-weight: normal;
+      padding: 1px 4px;
+      margin-left: 6px;
+      border: 1px solid;
+      &.tag-feature { background-color: #ccccff; border-color: #8080cc; color: #4040aa; }
+      &.tag-rune { background-color: #ffccff; border-color: #cc80cc; color: #aa40aa; }
+      &.tag-stat { background-color: #ccffcc; border-color: #80cc80; color: #40aa40; }
+      &.tag-mana { background-color: #ccffff; border-color: #80cccc; color: #40aaaa; }
+      &.tag-idle { background-color: #ffffcc; border-color: #cccc80; color: #aaaa40; }
+    }
+
     .node-status {
       font-size: 11px;
       font-family: 'Courier New', monospace;
@@ -230,6 +246,29 @@ export class ResearchComponent {
 
   onClose(): void {
     this.closed.emit();
+  }
+
+  getUnlockTag(node: ResearchNode): string {
+    switch (node.unlockEffect.type) {
+      case 'window': return 'Feature';
+      case 'rune': return 'Rune';
+      case 'stat': return 'Stat';
+      case 'maxMana': return 'Mana';
+      case 'idle': return 'Idle';
+      case 'upgrade': return 'Upgrade';
+      default: return '';
+    }
+  }
+
+  getUnlockTagClass(node: ResearchNode): string {
+    switch (node.unlockEffect.type) {
+      case 'window': return 'tag-feature';
+      case 'rune': return 'tag-rune';
+      case 'stat': return 'tag-stat';
+      case 'maxMana': return 'tag-mana';
+      case 'idle': return 'tag-idle';
+      default: return '';
+    }
   }
 }
 

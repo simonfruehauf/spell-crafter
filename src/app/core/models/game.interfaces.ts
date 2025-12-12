@@ -181,6 +181,75 @@ export interface WindowStates {
   chronicle: WindowState;
   settings: WindowState;
   discoveries: WindowState;
+  armory: WindowState;
+  equipment: WindowState;
+}
+
+/**
+ * Equipment slot types
+ */
+export type EquipmentSlot = 'head' | 'face' | 'accessory' | 'body' | 'handL' | 'handR' | 'relic';
+
+/**
+ * Equipment bonus types
+ */
+export type EquipmentBonusType =
+  | 'stat'          // +stat value (WIS, ARC, VIT, BAR, LCK, SPD)
+  | 'maxMana'       // +maxMana
+  | 'maxHP'         // +maxHP
+  | 'damagePercent' // +X% spell damage
+  | 'critChance'    // +X% crit chance
+  | 'critDamage'    // +X% crit damage
+  | 'lootChance'    // +X% loot drop chance
+  | 'lootQuantity'; // +X% loot quantity
+
+/**
+ * Equipment bonus
+ */
+export interface EquipmentBonus {
+  type: EquipmentBonusType;
+  stat?: keyof PlayerStats; // Only for type 'stat'
+  value: number;
+}
+
+/**
+ * Equipment rarity
+ */
+export type EquipmentRarity = 'mundane' | 'elevated' | 'exceptional' | 'primal' | 'epochal' | 'unique';
+
+/**
+ * Equipment item definition
+ */
+export interface EquipmentItem {
+  id: string;
+  name: string;
+  description: string;
+  slot: EquipmentSlot;
+  bonuses: EquipmentBonus[];
+  rarity: EquipmentRarity;
+}
+
+/**
+ * Equipment crafting recipe
+ */
+export interface EquipmentRecipe {
+  id: string;
+  resultItem: EquipmentItem;
+  cost: ResourceCost[];
+  unlocked: boolean;
+}
+
+/**
+ * Player equipped items
+ */
+export interface EquippedItems {
+  head: EquipmentItem | null;
+  face: EquipmentItem | null;
+  accessory: EquipmentItem | null;
+  body: EquipmentItem | null;
+  handL: EquipmentItem | null;
+  handR: EquipmentItem | null;
+  relic: EquipmentItem | null;
 }
 
 /**
@@ -299,4 +368,8 @@ export interface GameState {
   combat: CombatState;
   idle: IdleSettings;
   tickRate: number;
+  // Equipment system
+  equippedItems: EquippedItems;
+  craftedEquipment: EquipmentItem[];
+  equipmentRecipes: EquipmentRecipe[];
 }

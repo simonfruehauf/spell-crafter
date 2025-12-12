@@ -139,14 +139,62 @@ export class CombatService {
         }
     }
 
+    // Stat caps
+    private readonly MAX_CRIT_CHANCE = 0.50; // 50% max crit chance
+    private readonly MAX_LCK_CRIT_BONUS = 0.25; // LCK can add up to 25% crit
+    private readonly MAX_LCK_LOOT_BONUS = 0.50; // LCK can add up to 50% loot bonus
+    private readonly MIN_COMBAT_TICK_MS = 200; // Minimum combat speed (fastest)
+    private readonly SPD_TICK_REDUCTION_PER_POINT = 15; // Each SPD reduces tick by 15ms
+
+    /**
+     * Calculate effective crit chance including LCK bonus (capped)
+     */
+    getEffectiveCritChance(player: Player): number {
+        const baseCrit = this.callbacks?.getUpgradeBonus('critChance') ?? 0;
+        const lckBonus = Math.min(player.LCK * 0.02, this.MAX_LCK_CRIT_BONUS); // 2% per LCK, max 25%
+        return Math.min((baseCrit / 100) + lckBonus, this.MAX_CRIT_CHANCE);
+    }
+
+    /**
+     * Calculate effective loot bonus from LCK (capped)
+     */
+    getEffectiveLootBonus(player: Player): number {
+        return Math.min(player.LCK * 0.03, this.MAX_LCK_LOOT_BONUS); // 3% per LCK, max 50%
+    }
+
+    /**
+     * Calculate effective combat tick speed including SPD bonus (capped at minimum)
+     */
+    getEffectiveCombatSpeed(player: Player, baseCombatMs: number): number {
+        const upgradeReduction = this.callbacks?.getUpgradeBonus('combatSpeed') ?? 0;
+        const spdReduction = player.SPD * this.SPD_TICK_REDUCTION_PER_POINT;
+        return Math.max(this.MIN_COMBAT_TICK_MS, baseCombatMs - upgradeReduction - spdReduction);
+    }
+
     private applyRuneEffect(rune: Rune, player: Player, enemy: Enemy, dmgMult: number): void {
         if (!this.signals || !this.callbacks) return;
 
         const effect = rune.effect;
         const arc = 1 + player.ARC * 0.1 + this.callbacks.getUpgradeBonus('damage') / 100;
-        const critChance = this.callbacks.getUpgradeBonus('critChance') / 100;
+        const critChance = this.getEffectiveCritChance(player);
         const critDmg = 1.5 + this.callbacks.getUpgradeBonus('critDamage') / 100;
         const isCrit = Math.random() < critChance;
+
+        // Helper to apply damage with optional armor penetration
+        const applyDamage = (baseDmg: number, ignoreArmorPercent: number = 0): number => {
+            const armorReduction = Math.floor(enemy.BAR * 0.5 * (1 - ignoreArmorPercent));
+            return Math.max(1, baseDmg - armorReduction);
+        };
+
+        // Helper to deal damage to enemy
+        const dealDamageToEnemy = (amount: number): void => {
+            this.signals!.combat.update(c => ({
+                ...c,
+                currentEnemy: c.currentEnemy
+                    ? { ...c.currentEnemy, currentHP: c.currentEnemy.currentHP - amount }
+                    : null
+            }));
+        };
 
         switch (effect.type) {
             case 'damage': {
@@ -155,13 +203,8 @@ export class CombatService {
                     d = Math.floor(d * critDmg);
                     this.addCombatLog(`  CRITICAL!`, 'crit');
                 }
-                const actual = Math.max(1, d - Math.floor(enemy.BAR * 0.5));
-                this.signals.combat.update(c => ({
-                    ...c,
-                    currentEnemy: c.currentEnemy
-                        ? { ...c.currentEnemy, currentHP: c.currentEnemy.currentHP - actual }
-                        : null
-                }));
+                const actual = applyDamage(d);
+                dealDamageToEnemy(actual);
                 this.addCombatLog(`  ${rune.symbol} ${rune.name} deals ${actual} damage!`, 'damage');
                 break;
             }
@@ -229,14 +272,9 @@ export class CombatService {
             }
             case 'lifesteal': {
                 let d = Math.floor(effect.value * arc * dmgMult);
-                const actual = Math.max(1, d - Math.floor(enemy.BAR * 0.5));
+                const actual = applyDamage(d);
                 const heal = Math.floor(actual * (effect.secondaryValue || 0.5));
-                this.signals.combat.update(c => ({
-                    ...c,
-                    currentEnemy: c.currentEnemy
-                        ? { ...c.currentEnemy, currentHP: c.currentEnemy.currentHP - actual }
-                        : null
-                }));
+                dealDamageToEnemy(actual);
                 this.signals.player.update(p => ({
                     ...p,
                     currentHP: Math.min(p.maxHP, p.currentHP + heal)
@@ -258,26 +296,155 @@ export class CombatService {
                 break;
             }
             case 'manaDrain': {
-                const actual = Math.max(1, Math.floor(effect.value * arc) - Math.floor(enemy.BAR * 0.5));
-                this.signals.combat.update(c => ({
-                    ...c,
-                    currentEnemy: c.currentEnemy
-                        ? { ...c.currentEnemy, currentHP: c.currentEnemy.currentHP - actual }
-                        : null
-                }));
+                const actual = applyDamage(Math.floor(effect.value * arc));
+                dealDamageToEnemy(actual);
                 this.callbacks.addMana(effect.secondaryValue || 5);
                 this.addCombatLog(`  ${rune.symbol} deals ${actual}, restores mana!`, 'damage');
                 break;
             }
-            default: {
-                const d = Math.floor(effect.value * arc * dmgMult);
-                const actual = Math.max(1, d - Math.floor(enemy.BAR * 0.5));
+            // === NEW EFFECT TYPES ===
+            case 'execute': {
+                // Deals base damage + bonus damage based on enemy missing HP
+                // secondaryValue = threshold (e.g., 0.3 = 30% HP)
+                const threshold = effect.secondaryValue || 0.3;
+                const enemyHPPercent = enemy.currentHP / enemy.maxHP;
+                let d = Math.floor(effect.value * arc * dmgMult);
+
+                // If enemy below threshold, deal massive bonus damage
+                if (enemyHPPercent <= threshold) {
+                    const executeMult = 2.5; // 250% damage to low HP targets
+                    d = Math.floor(d * executeMult);
+                    this.addCombatLog(`  EXECUTE! Enemy HP below ${Math.floor(threshold * 100)}%!`, 'crit');
+                }
+                if (isCrit) {
+                    d = Math.floor(d * critDmg);
+                    this.addCombatLog(`  CRITICAL!`, 'crit');
+                }
+                const actual = applyDamage(d);
+                dealDamageToEnemy(actual);
+                this.addCombatLog(`  ${rune.symbol} ${rune.name} deals ${actual} damage!`, 'damage');
+                break;
+            }
+            case 'crit': {
+                // Guaranteed crit chance increase for this hit
+                // secondaryValue = bonus crit chance (e.g., 0.25 = +25%)
+                const bonusCritChance = effect.secondaryValue || 0.25;
+                const guaranteedCrit = Math.random() < (critChance + bonusCritChance);
+                let d = Math.floor(effect.value * arc * dmgMult);
+
+                if (guaranteedCrit) {
+                    d = Math.floor(d * critDmg);
+                    this.addCombatLog(`  LUCKY CRITICAL!`, 'crit');
+                }
+                const actual = applyDamage(d);
+                dealDamageToEnemy(actual);
+                this.addCombatLog(`  ${rune.symbol} ${rune.name} deals ${actual} damage!`, 'damage');
+                break;
+            }
+            case 'stun': {
+                // Apply stun effect - skips enemy turn(s)
+                // value = duration in turns
                 this.signals.combat.update(c => ({
                     ...c,
-                    currentEnemy: c.currentEnemy
-                        ? { ...c.currentEnemy, currentHP: c.currentEnemy.currentHP - actual }
-                        : null
+                    enemyEffects: [...c.enemyEffects, {
+                        name: rune.name,
+                        type: 'stun',
+                        value: effect.value,
+                        remainingTurns: effect.duration || 1
+                    }]
                 }));
+                this.addCombatLog(`  ${rune.symbol} STUNS the enemy for ${effect.duration || 1} turn(s)!`, 'effect');
+                break;
+            }
+            case 'slow': {
+                // Apply slow debuff - reduces enemy SPD stat
+                // value = SPD reduction amount
+                this.signals.combat.update(c => ({
+                    ...c,
+                    enemyEffects: [...c.enemyEffects, {
+                        name: rune.name,
+                        type: 'debuff',
+                        value: effect.value,
+                        remainingTurns: effect.duration || 3,
+                        targetStat: 'SPD'
+                    }]
+                }));
+                // Also deal some damage
+                const slowDmg = Math.floor(effect.value * arc * 0.5);
+                const actual = applyDamage(slowDmg);
+                if (actual > 0) {
+                    dealDamageToEnemy(actual);
+                    this.addCombatLog(`  ${rune.symbol} slows enemy and deals ${actual} damage!`, 'damage');
+                } else {
+                    this.addCombatLog(`  ${rune.symbol} slows the enemy!`, 'effect');
+                }
+                break;
+            }
+            case 'piercing': {
+                // Ignores a percentage of enemy armor
+                // secondaryValue = armor ignore % (e.g., 0.5 = 50%)
+                const armorPenPercent = effect.secondaryValue || 0.5;
+                let d = Math.floor(effect.value * arc * dmgMult);
+                if (isCrit) {
+                    d = Math.floor(d * critDmg);
+                    this.addCombatLog(`  CRITICAL!`, 'crit');
+                }
+                const actual = applyDamage(d, armorPenPercent);
+                dealDamageToEnemy(actual);
+                this.addCombatLog(`  ${rune.symbol} ${rune.name} pierces armor for ${actual} damage!`, 'damage');
+                break;
+            }
+            case 'splash': {
+                // Deals damage with reduced secondary hits (simulated as bonus damage)
+                // In a single-target game, splash adds bonus damage
+                // secondaryValue = splash multiplier (e.g., 0.5 = +50% as splash)
+                const splashMult = effect.secondaryValue || 0.5;
+                let d = Math.floor(effect.value * arc * dmgMult);
+                const splashDmg = Math.floor(d * splashMult);
+                const totalDmg = d + splashDmg;
+
+                if (isCrit) {
+                    const critTotal = Math.floor(totalDmg * critDmg);
+                    const actual = applyDamage(critTotal);
+                    dealDamageToEnemy(actual);
+                    this.addCombatLog(`  CRITICAL!`, 'crit');
+                    this.addCombatLog(`  ${rune.symbol} ${rune.name} splashes for ${actual} total damage!`, 'damage');
+                } else {
+                    const actual = applyDamage(totalDmg);
+                    dealDamageToEnemy(actual);
+                    this.addCombatLog(`  ${rune.symbol} ${rune.name} splashes for ${actual} total damage!`, 'damage');
+                }
+                break;
+            }
+            case 'chain': {
+                // Hits multiple times with diminishing damage
+                // secondaryValue = number of chains (default 3)
+                const chainCount = Math.floor(effect.secondaryValue || 3);
+                let totalDamage = 0;
+
+                for (let i = 0; i < chainCount; i++) {
+                    // Each chain deals 70% of the previous
+                    const chainMult = Math.pow(0.7, i);
+                    let d = Math.floor(effect.value * arc * dmgMult * chainMult);
+
+                    // Only first hit can crit
+                    if (i === 0 && isCrit) {
+                        d = Math.floor(d * critDmg);
+                        this.addCombatLog(`  CRITICAL CHAIN!`, 'crit');
+                    }
+
+                    const actual = applyDamage(d);
+                    totalDamage += actual;
+                }
+
+                dealDamageToEnemy(totalDamage);
+                this.addCombatLog(`  ${rune.symbol} ${rune.name} chains ${chainCount}x for ${totalDamage} total damage!`, 'damage');
+                break;
+            }
+            default: {
+                const d = Math.floor(effect.value * arc * dmgMult);
+                const actual = applyDamage(d);
+                dealDamageToEnemy(actual);
                 this.addCombatLog(`  ${rune.symbol} deals ${actual}!`, 'damage');
             }
         }
@@ -312,6 +479,21 @@ export class CombatService {
 
         const combat = this.signals.combat();
         if (!combat.inCombat || !combat.currentEnemy) return;
+
+        // Check for stun effect - skip enemy turn if stunned
+        const stunEffect = combat.enemyEffects.find(e => e.type === 'stun');
+        if (stunEffect) {
+            this.addCombatLog(`  ${combat.currentEnemy.name} is STUNNED and cannot act!`, 'effect');
+            // Decrement stun duration
+            this.signals.combat.update(x => ({
+                ...x,
+                enemyEffects: x.enemyEffects
+                    .map(e => e.type === 'stun' ? { ...e, remainingTurns: e.remainingTurns - 1 } : e)
+                    .filter(e => e.type !== 'stun' || e.remainingTurns > 0),
+                playerTurn: true
+            }));
+            return;
+        }
 
         // Process player effects
         const remaining: ActiveEffect[] = [];
@@ -420,10 +602,14 @@ export class CombatService {
     }
 
     private processLoot(table: LootDrop[]): void {
-        if (!this.callbacks) return;
+        if (!this.callbacks || !this.signals) return;
 
-        const lootMult = 1 + this.callbacks.getUpgradeBonus('lootChance') / 100;
-        const qtyMult = 1 + this.callbacks.getUpgradeBonus('lootQuantity') / 100;
+        const player = this.signals.player();
+        const lckLootBonus = this.getEffectiveLootBonus(player);
+
+        // LCK affects both chance and quantity
+        const lootMult = 1 + this.callbacks.getUpgradeBonus('lootChance') / 100 + lckLootBonus;
+        const qtyMult = 1 + this.callbacks.getUpgradeBonus('lootQuantity') / 100 + (lckLootBonus * 0.5);
 
         for (const drop of table) {
             if (Math.random() < drop.chance * lootMult) {

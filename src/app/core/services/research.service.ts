@@ -84,6 +84,13 @@ export class ResearchService {
                     ...w,
                     [effect.windowId]: { unlocked: true, visible: true }
                 }));
+                // When armory is unlocked, also unlock equipment window
+                if (effect.windowId === 'armory') {
+                    this.signals.windows.update(w => ({
+                        ...w,
+                        equipment: { unlocked: true, visible: true }
+                    }));
+                }
                 break;
 
             case 'rune':

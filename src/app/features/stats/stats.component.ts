@@ -14,8 +14,8 @@ const STAT_INFO: Record<string, StatInfo> = {
   ARC: { name: 'ARC', fullName: 'Arcane Power', description: 'Increases spell damage. Each point gives +10% spell damage.' },
   VIT: { name: 'VIT', fullName: 'Vitality', description: 'Increases HP regeneration. Each point gives +1 HP per second.' },
   BAR: { name: 'BAR', fullName: 'Barrier', description: 'Reduces damage taken. Each point blocks 0.5 damage from attacks.' },
-  LCK: { name: 'LCK', fullName: 'Luck', description: 'Increases crit chance and loot drops. Each point gives +2% crit and +5% loot bonus.' },
-  SPD: { name: 'SPD', fullName: 'Speed', description: 'Reduces combat turn delay. Each point speeds up combat by 5%.' },
+  LCK: { name: 'LCK', fullName: 'Luck', description: 'Increases crit chance (+2% per point, max 25%) and loot drops (+3% chance, +1.5% quantity per point, max 50%).' },
+  SPD: { name: 'SPD', fullName: 'Speed', description: 'Reduces combat turn delay by 15ms per point. Minimum delay is 200ms.' },
 };
 
 @Component({

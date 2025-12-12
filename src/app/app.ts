@@ -13,6 +13,8 @@ import { BestiaryComponent } from './features/bestiary/bestiary.component';
 import { ChronicleComponent } from './features/chronicle/chronicle.component';
 import { SettingsComponent } from './features/settings/settings.component';
 import { DiscoveriesComponent } from './features/discoveries/discoveries.component';
+import { ArmoryComponent } from './features/armory/armory.component';
+import { EquipmentComponent } from './features/equipment/equipment.component';
 import { GameStateService } from './core/services/game-state.service';
 import { WindowStates } from './core/models/game.interfaces';
 
@@ -25,7 +27,7 @@ import { WindowStates } from './core/models/game.interfaces';
     CombatComponent, InventoryComponent, WorkshopComponent,
     RunebookComponent, GrimoireComponent, StatsComponent,
     BestiaryComponent, ChronicleComponent, SettingsComponent,
-    DiscoveriesComponent,
+    DiscoveriesComponent, ArmoryComponent, EquipmentComponent,
   ],
   template: `
     <div class="desktop">
@@ -89,6 +91,12 @@ import { WindowStates } from './core/models/game.interfaces';
         }
         @if (windows().discoveries.unlocked && windows().discoveries.visible) {
           <app-discoveries (closed)="closeWindow('discoveries')"></app-discoveries>
+        }
+        @if (windows().armory.unlocked && windows().armory.visible) {
+          <app-armory (closed)="closeWindow('armory')"></app-armory>
+        }
+        @if (windows().equipment.unlocked && windows().equipment.visible) {
+          <app-equipment (closed)="closeWindow('equipment')"></app-equipment>
         }
       </div>
     </div>
@@ -187,7 +195,7 @@ export class App {
       altar: '[A]', research: '[S]', scriptorium: '[R]', combat: '[C]',
       inventory: '[I]', workshop: '[W]', runebook: '[B]', grimoire: '[G]',
       stats: '[#]', bestiary: '[M]', chronicle: '[L]', settings: '[=]',
-      discoveries: '[*]',
+      discoveries: '[*]', armory: '[E]', equipment: '[+]',
     };
     return icons[id] || '[?]';
   }
@@ -197,7 +205,7 @@ export class App {
       altar: 'Altar', research: 'Study', scriptorium: 'Spells', combat: 'Arena',
       inventory: 'Vault', workshop: 'Workshop', runebook: 'Runebook', grimoire: 'Grimoire',
       stats: 'Stats', bestiary: 'Bestiary', chronicle: 'Chronicle', settings: 'Settings',
-      discoveries: 'Discoveries',
+      discoveries: 'Discoveries', armory: 'Armory', equipment: 'Equipment',
     };
     return labels[id] || id;
   }

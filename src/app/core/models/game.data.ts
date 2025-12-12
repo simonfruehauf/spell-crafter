@@ -577,6 +577,12 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
     },
 
     {
+        id: 'unlock-armory', name: 'The Armory', description: 'Craft magical equipment to empower yourself.',
+        manaCost: 70, unlocked: false, researched: false,
+        unlockEffect: { type: 'window', windowId: 'armory' }, prerequisites: ['unlock-workshop']
+    },
+
+    {
         id: 'swift-casting', name: 'Swift Incantations', description: 'Unlock the Velox rune.',
         manaCost: 40, unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'velox' }, prerequisites: ['unlock-combat']

@@ -98,22 +98,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
           </button>
         </div>
 
-        <!-- Crafted Spells -->
-        <div class="crafted-spells mt-2">
-          <div class="section-header">Bound Spells ({{ craftedSpells().length }})</div>
-          <div class="list-box" style="height: 80px;">
-            @for (spell of craftedSpells(); track spell.id) {
-              <div class="list-item spell-item">
-                <span class="spell-symbol">{{ spell.symbol }}</span>
-                <span class="spell-name">{{ spell.name }}</span>
-                <span class="spell-stats">({{ spell.totalManaCost }}mp)</span>
-                @if (!spell.isDefault) {
-                  <button class="btn-tiny" (click)="deleteSpell(spell)">[x]</button>
-                }
-              </div>
-            }
-          </div>
-        </div>
+        
       </div>
     </app-window>
   `,
