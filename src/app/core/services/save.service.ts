@@ -2,9 +2,9 @@ import { Injectable, signal } from '@angular/core';
 import {
     GameState, Player, Resources, WindowStates, Rune, Spell,
     ResearchNode, CombatState, IdleSettings, Upgrade,
-    EquipmentItem, EquipmentRecipe, EquippedItems
+    EquipmentItem, EquipmentRecipe, EquippedItems, AlchemyState, AlchemyRecipe
 } from '../models/game.interfaces';
-import { RUNES, MAGIC_MISSILE, INITIAL_RESEARCH_TREE, INITIAL_UPGRADES } from '../models/game.data';
+import { RUNES, MAGIC_MISSILE, INITIAL_RESEARCH_TREE, INITIAL_UPGRADES, INITIAL_ALCHEMY_RECIPES } from '../models/game.data';
 import { INITIAL_CRAFTING_RESOURCES } from '../models/resources.data';
 import { INITIAL_EQUIPMENT_RECIPES } from '../models/equipment.data';
 
@@ -24,6 +24,8 @@ export interface GameSignals {
     equippedItems: ReturnType<typeof signal<EquippedItems>>;
     craftedEquipment: ReturnType<typeof signal<EquipmentItem[]>>;
     equipmentRecipes: ReturnType<typeof signal<EquipmentRecipe[]>>;
+    alchemyRecipes: ReturnType<typeof signal<AlchemyRecipe[]>>;
+    alchemy: ReturnType<typeof signal<AlchemyState>>;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -57,6 +59,8 @@ export class SaveService {
             equippedItems: this.signals.equippedItems(),
             craftedEquipment: this.signals.craftedEquipment(),
             equipmentRecipes: this.signals.equipmentRecipes(),
+            alchemyRecipes: this.signals.alchemyRecipes(),
+            alchemy: this.signals.alchemy(),
         };
         localStorage.setItem(SAVE_KEY, JSON.stringify(state));
     }
@@ -105,6 +109,18 @@ export class SaveService {
             }
             if (state.equipmentRecipes) {
                 this.signals.equipmentRecipes.set(state.equipmentRecipes);
+            }
+            // Load alchemy state
+            if (state.alchemyRecipes) {
+                this.signals.alchemyRecipes.set(state.alchemyRecipes);
+            }
+            if (state.alchemy) {
+                // Reset active crafting on load (don't persist mid-craft state)
+                this.signals.alchemy.set({
+                    activeRecipeId: null,
+                    craftStartTime: 0,
+                    craftEndTime: 0,
+                });
             }
             return true;
         } catch {

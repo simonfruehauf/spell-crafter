@@ -15,6 +15,7 @@ import { SettingsComponent } from './features/settings/settings.component';
 import { DiscoveriesComponent } from './features/discoveries/discoveries.component';
 import { ArmoryComponent } from './features/armory/armory.component';
 import { EquipmentComponent } from './features/equipment/equipment.component';
+import { AlchemyComponent } from './features/alchemy/alchemy.component';
 import { GameStateService } from './core/services/game-state.service';
 import { WindowStates } from './core/models/game.interfaces';
 
@@ -27,7 +28,7 @@ import { WindowStates } from './core/models/game.interfaces';
     CombatComponent, InventoryComponent, WorkshopComponent,
     RunebookComponent, GrimoireComponent, StatsComponent,
     BestiaryComponent, ChronicleComponent, SettingsComponent,
-    DiscoveriesComponent, ArmoryComponent, EquipmentComponent,
+    DiscoveriesComponent, ArmoryComponent, EquipmentComponent, AlchemyComponent,
   ],
   template: `
     <div class="desktop">
@@ -97,6 +98,9 @@ import { WindowStates } from './core/models/game.interfaces';
         }
         @if (windows().equipment.unlocked && windows().equipment.visible) {
           <app-equipment (closed)="closeWindow('equipment')"></app-equipment>
+        }
+        @if (windows().alchemy.unlocked && windows().alchemy.visible) {
+          <app-alchemy (closed)="closeWindow('alchemy')"></app-alchemy>
         }
       </div>
     </div>
@@ -195,7 +199,7 @@ export class App {
       altar: '[A]', research: '[S]', scriptorium: '[R]', combat: '[C]',
       inventory: '[I]', workshop: '[W]', runebook: '[B]', grimoire: '[G]',
       stats: '[#]', bestiary: '[M]', chronicle: '[L]', settings: '[=]',
-      discoveries: '[*]', armory: '[E]', equipment: '[+]',
+      discoveries: '[*]', armory: '[E]', equipment: '[+]', alchemy: '[~]',
     };
     return icons[id] || '[?]';
   }
@@ -205,7 +209,7 @@ export class App {
       altar: 'Altar', research: 'Study', scriptorium: 'Spells', combat: 'Arena',
       inventory: 'Vault', workshop: 'Workshop', runebook: 'Runebook', grimoire: 'Grimoire',
       stats: 'Stats', bestiary: 'Bestiary', chronicle: 'Chronicle', settings: 'Settings',
-      discoveries: 'Discoveries', armory: 'Armory', equipment: 'Equipment',
+      discoveries: 'Discoveries', armory: 'Armory', equipment: 'Equipment', alchemy: 'Alembic',
     };
     return labels[id] || id;
   }

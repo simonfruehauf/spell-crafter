@@ -185,6 +185,7 @@ export interface WindowStates {
   discoveries: WindowState;
   armory: WindowState;
   equipment: WindowState;
+  alchemy: WindowState;
 }
 
 /**
@@ -239,6 +240,37 @@ export interface EquipmentRecipe {
   resultItem: EquipmentItem;
   cost: ResourceCost[];
   unlocked: boolean;
+}
+
+/**
+ * Possible output for alchemy (for random chance recipes)
+ */
+export interface AlchemyPossibleOutput {
+  outputs: ResourceCost[];
+  chance: number; // Weight for random selection (higher = more likely)
+}
+
+/**
+ * Alchemy recipe for transmuting materials
+ */
+export interface AlchemyRecipe {
+  id: string;
+  name: string;
+  description: string;
+  inputs: ResourceCost[];
+  outputs?: ResourceCost[]; // Fixed outputs (used if possibleOutputs not set)
+  possibleOutputs?: AlchemyPossibleOutput[]; // Random outputs - one will be chosen
+  craftTimeMs: number;
+  unlocked: boolean;
+}
+
+/**
+ * Active alchemy crafting state
+ */
+export interface AlchemyState {
+  activeRecipeId: string | null;
+  craftStartTime: number;
+  craftEndTime: number;
 }
 
 /**
@@ -304,7 +336,26 @@ export type UpgradeEffect =
   | { type: 'critChance'; percentPerLevel: number }
   | { type: 'critDamage'; percentPerLevel: number }
   | { type: 'maxRunes'; valuePerLevel: number }
-  | { type: 'unlockFeature'; feature: string };
+  | { type: 'unlockFeature'; feature: string }
+  // New effect types for expanded upgrades
+  | { type: 'armorPen'; percentPerLevel: number }
+  | { type: 'lifesteal'; percentPerLevel: number }
+  | { type: 'manaCostReduction'; percentPerLevel: number }
+  | { type: 'expBoost'; percentPerLevel: number }
+  | { type: 'goldBoost'; percentPerLevel: number }
+  | { type: 'hpRegen'; valuePerLevel: number }
+  | { type: 'runeCostReduction'; percentPerLevel: number }
+  | { type: 'runeDamage'; percentPerLevel: number }
+  | { type: 'spellExp'; percentPerLevel: number }
+  | { type: 'allStats'; valuePerLevel: number }
+  | { type: 'critAll'; percentPerLevel: number }
+  | { type: 'allEffects'; percentPerLevel: number }
+  | { type: 'spellChain'; valuePerLevel: number }
+  | { type: 'doubleEffect'; percentPerLevel: number }
+  | { type: 'allGains'; percentPerLevel: number }
+  | { type: 'soulBonus'; percentPerLevel: number }
+  | { type: 'allDefense'; percentPerLevel: number }
+  | { type: 'beastDamage'; percentPerLevel: number };
 
 /**
  * Combat log entry

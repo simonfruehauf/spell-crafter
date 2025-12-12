@@ -232,6 +232,243 @@ export const EQUIPMENT_ITEMS: Record<string, EquipmentItem> = {
         ],
         rarity: 'exceptional',
     },
+
+    // =========================================================================
+    // NEW EQUIPMENT - Using previously unused resources
+    // =========================================================================
+
+    // HEAD - Higher tiers
+    crown_of_ages: {
+        id: 'crown_of_ages',
+        name: 'Crown of Ages',
+        description: 'A crown that grants timeless wisdom.',
+        slot: 'head',
+        bonuses: [
+            { type: 'stat', stat: 'WIS', value: 5 },
+            { type: 'maxMana', value: 50 },
+            { type: 'stat', stat: 'ARC', value: 3 },
+        ],
+        rarity: 'primal',
+    },
+    helm_of_the_worldtree: {
+        id: 'helm_of_the_worldtree',
+        name: 'Helm of the Worldtree',
+        description: 'Woven from leaves of the great tree.',
+        slot: 'head',
+        bonuses: [
+            { type: 'stat', stat: 'VIT', value: 4 },
+            { type: 'maxHP', value: 50 },
+            { type: 'stat', stat: 'WIS', value: 2 },
+        ],
+        rarity: 'primal',
+    },
+
+    // FACE - Higher tiers
+    mask_of_shadows: {
+        id: 'mask_of_shadows',
+        name: 'Mask of Shadows',
+        description: 'A dark mask that hides the wearer.',
+        slot: 'face',
+        bonuses: [
+            { type: 'damagePercent', value: 15 },
+            { type: 'critChance', value: 5 },
+        ],
+        rarity: 'primal',
+    },
+    divine_visage: {
+        id: 'divine_visage',
+        name: 'Divine Visage',
+        description: 'A holy mask blessed by the divine.',
+        slot: 'face',
+        bonuses: [
+            { type: 'stat', stat: 'WIS', value: 3 },
+            { type: 'stat', stat: 'VIT', value: 3 },
+            { type: 'maxHP', value: 25 },
+        ],
+        rarity: 'primal',
+    },
+
+    // ACCESSORY - Higher tiers
+    pendant_of_stars: {
+        id: 'pendant_of_stars',
+        name: 'Pendant of Stars',
+        description: 'Captures the light of distant stars.',
+        slot: 'accessory',
+        bonuses: [
+            { type: 'stat', stat: 'ARC', value: 3 },
+            { type: 'damagePercent', value: 8 },
+            { type: 'maxMana', value: 20 },
+        ],
+        rarity: 'primal',
+    },
+    philosophers_amulet: {
+        id: 'philosophers_amulet',
+        name: "Philosopher's Amulet",
+        description: 'Contains a fragment of the legendary stone.',
+        slot: 'accessory',
+        bonuses: [
+            { type: 'lootChance', value: 15 },
+            { type: 'lootQuantity', value: 15 },
+            { type: 'stat', stat: 'LCK', value: 5 },
+        ],
+        rarity: 'epochal',
+    },
+
+    // BODY - Higher tiers
+    robes_of_the_void: {
+        id: 'robes_of_the_void',
+        name: 'Robes of the Void',
+        description: 'Woven from pure nothingness.',
+        slot: 'body',
+        bonuses: [
+            { type: 'damagePercent', value: 25 },
+            { type: 'stat', stat: 'ARC', value: 4 },
+            { type: 'maxMana', value: 40 },
+        ],
+        rarity: 'primal',
+    },
+    dragon_mail: {
+        id: 'dragon_mail',
+        name: 'Dragon Mail',
+        description: 'Armor forged from dragon scales.',
+        slot: 'body',
+        bonuses: [
+            { type: 'stat', stat: 'BAR', value: 5 },
+            { type: 'maxHP', value: 75 },
+            { type: 'stat', stat: 'VIT', value: 3 },
+        ],
+        rarity: 'primal',
+    },
+    genesis_vestments: {
+        id: 'genesis_vestments',
+        name: 'Genesis Vestments',
+        description: 'Robes woven at the dawn of creation.',
+        slot: 'body',
+        bonuses: [
+            { type: 'stat', stat: 'WIS', value: 5 },
+            { type: 'stat', stat: 'ARC', value: 5 },
+            { type: 'maxMana', value: 60 },
+            { type: 'maxHP', value: 50 },
+        ],
+        rarity: 'epochal',
+    },
+
+    // LEFT HAND - Higher tiers
+    grimoire_of_infinity: {
+        id: 'grimoire_of_infinity',
+        name: 'Grimoire of Infinity',
+        description: 'A tome with infinite pages of knowledge.',
+        slot: 'handL',
+        bonuses: [
+            { type: 'stat', stat: 'WIS', value: 5 },
+            { type: 'stat', stat: 'ARC', value: 4 },
+            { type: 'maxMana', value: 50 },
+        ],
+        rarity: 'epochal',
+    },
+    shield_of_the_titans: {
+        id: 'shield_of_the_titans',
+        name: 'Shield of the Titans',
+        description: 'Forged from the bones of giants.',
+        slot: 'handL',
+        bonuses: [
+            { type: 'stat', stat: 'BAR', value: 6 },
+            { type: 'maxHP', value: 60 },
+            { type: 'stat', stat: 'VIT', value: 2 },
+        ],
+        rarity: 'primal',
+    },
+
+    // RIGHT HAND - Higher tiers
+    staff_of_creation: {
+        id: 'staff_of_creation',
+        name: 'Staff of Creation',
+        description: 'A staff that can shape reality itself.',
+        slot: 'handR',
+        bonuses: [
+            { type: 'damagePercent', value: 30 },
+            { type: 'critDamage', value: 25 },
+            { type: 'stat', stat: 'ARC', value: 4 },
+        ],
+        rarity: 'epochal',
+    },
+    wand_of_dreams: {
+        id: 'wand_of_dreams',
+        name: 'Wand of Dreams',
+        description: 'A wand carved from dreamwood.',
+        slot: 'handR',
+        bonuses: [
+            { type: 'damagePercent', value: 12 },
+            { type: 'stat', stat: 'WIS', value: 3 },
+            { type: 'critChance', value: 4 },
+        ],
+        rarity: 'primal',
+    },
+    dragon_fang_dagger: {
+        id: 'dragon_fang_dagger',
+        name: 'Dragon Fang Dagger',
+        description: 'A blade made from a dragon tooth.',
+        slot: 'handR',
+        bonuses: [
+            { type: 'critChance', value: 8 },
+            { type: 'critDamage', value: 20 },
+            { type: 'damagePercent', value: 10 },
+        ],
+        rarity: 'primal',
+    },
+
+    // RELIC - Higher tiers
+    eye_of_ages_relic: {
+        id: 'eye_of_ages_relic',
+        name: 'Eye of Ages',
+        description: 'An ancient eye that sees through time.',
+        slot: 'relic',
+        bonuses: [
+            { type: 'stat', stat: 'WIS', value: 4 },
+            { type: 'stat', stat: 'LCK', value: 4 },
+            { type: 'critChance', value: 5 },
+        ],
+        rarity: 'primal',
+    },
+    heart_of_magic_relic: {
+        id: 'heart_of_magic_relic',
+        name: 'Heart of Magic',
+        description: 'The legendary source of all magic.',
+        slot: 'relic',
+        bonuses: [
+            { type: 'stat', stat: 'ARC', value: 6 },
+            { type: 'maxMana', value: 75 },
+            { type: 'damagePercent', value: 15 },
+        ],
+        rarity: 'epochal',
+    },
+    crown_fragment_relic: {
+        id: 'crown_fragment_relic',
+        name: 'Crown Fragment',
+        description: 'A piece of a divine crown.',
+        slot: 'relic',
+        bonuses: [
+            { type: 'stat', stat: 'WIS', value: 3 },
+            { type: 'stat', stat: 'ARC', value: 3 },
+            { type: 'stat', stat: 'VIT', value: 3 },
+            { type: 'stat', stat: 'BAR', value: 3 },
+        ],
+        rarity: 'primal',
+    },
+    world_seed_relic: {
+        id: 'world_seed_relic',
+        name: 'World Seed',
+        description: 'A seed that could create entire worlds.',
+        slot: 'relic',
+        bonuses: [
+            { type: 'stat', stat: 'WIS', value: 5 },
+            { type: 'stat', stat: 'ARC', value: 5 },
+            { type: 'maxHP', value: 50 },
+            { type: 'maxMana', value: 50 },
+            { type: 'damagePercent', value: 10 },
+        ],
+        rarity: 'epochal',
+    },
 };
 
 // =============================================================================
@@ -442,6 +679,204 @@ export const INITIAL_EQUIPMENT_RECIPES: EquipmentRecipe[] = [
             { resourceId: 'primal_essence', amount: 1 },
             { resourceId: 'arcane_essence', amount: 20 },
             { resourceId: 'diamond', amount: 2 },
+        ],
+        unlocked: true,
+    },
+
+    // =========================================================================
+    // NEW RECIPES - Using previously unused resources
+    // =========================================================================
+
+    // HEAD - Higher tiers
+    {
+        id: 'recipe_crown_of_ages',
+        resultItem: EQUIPMENT_ITEMS['crown_of_ages'],
+        cost: [
+            { resourceId: 'eye_of_ages', amount: 1 },
+            { resourceId: 'gold_ore', amount: 10 },
+            { resourceId: 'moonstone', amount: 3 },
+        ],
+        unlocked: true,
+    },
+    {
+        id: 'recipe_helm_of_the_worldtree',
+        resultItem: EQUIPMENT_ITEMS['helm_of_the_worldtree'],
+        cost: [
+            { resourceId: 'worldtree_leaf', amount: 3 },
+            { resourceId: 'voidbloom', amount: 1 },
+            { resourceId: 'dragonlily', amount: 5 },
+        ],
+        unlocked: true,
+    },
+
+    // FACE - Higher tiers
+    {
+        id: 'recipe_mask_of_shadows',
+        resultItem: EQUIPMENT_ITEMS['mask_of_shadows'],
+        cost: [
+            { resourceId: 'shadowcap', amount: 8 },
+            { resourceId: 'onyx', amount: 3 },
+            { resourceId: 'obsidian', amount: 2 },
+        ],
+        unlocked: true,
+    },
+    {
+        id: 'recipe_divine_visage',
+        resultItem: EQUIPMENT_ITEMS['divine_visage'],
+        cost: [
+            { resourceId: 'holy_essence', amount: 8 },
+            { resourceId: 'angel_feather', amount: 2 },
+            { resourceId: 'sunpetal', amount: 5 },
+        ],
+        unlocked: true,
+    },
+
+    // ACCESSORY - Higher tiers
+    {
+        id: 'recipe_pendant_of_stars',
+        resultItem: EQUIPMENT_ITEMS['pendant_of_stars'],
+        cost: [
+            { resourceId: 'starlight_shard', amount: 5 },
+            { resourceId: 'starmetal_ore', amount: 3 },
+            { resourceId: 'moonstone_powder', amount: 8 },
+        ],
+        unlocked: true,
+    },
+    {
+        id: 'recipe_philosophers_amulet',
+        resultItem: EQUIPMENT_ITEMS['philosophers_amulet'],
+        cost: [
+            { resourceId: 'philosophers_stone', amount: 1 },
+            { resourceId: 'gold_ore', amount: 15 },
+            { resourceId: 'amethyst', amount: 5 },
+        ],
+        unlocked: true,
+    },
+
+    // BODY - Higher tiers
+    {
+        id: 'recipe_robes_of_the_void',
+        resultItem: EQUIPMENT_ITEMS['robes_of_the_void'],
+        cost: [
+            { resourceId: 'void_crystal', amount: 1 },
+            { resourceId: 'voidbloom', amount: 2 },
+            { resourceId: 'voidsteel_ore', amount: 3 },
+        ],
+        unlocked: true,
+    },
+    {
+        id: 'recipe_dragon_mail',
+        resultItem: EQUIPMENT_ITEMS['dragon_mail'],
+        cost: [
+            { resourceId: 'dragon_scale', amount: 5 },
+            { resourceId: 'orichalcum_ore', amount: 3 },
+            { resourceId: 'adamantine_ore', amount: 5 },
+        ],
+        unlocked: true,
+    },
+    {
+        id: 'recipe_genesis_vestments',
+        resultItem: EQUIPMENT_ITEMS['genesis_vestments'],
+        cost: [
+            { resourceId: 'genesis_spark', amount: 1 },
+            { resourceId: 'primordial_ore', amount: 2 },
+            { resourceId: 'infinity_loop', amount: 1 },
+        ],
+        unlocked: true,
+    },
+
+    // LEFT HAND - Higher tiers
+    {
+        id: 'recipe_grimoire_of_infinity',
+        resultItem: EQUIPMENT_ITEMS['grimoire_of_infinity'],
+        cost: [
+            { resourceId: 'infinity_loop', amount: 1 },
+            { resourceId: 'enchanted_ink', amount: 10 },
+            { resourceId: 'spell_parchment', amount: 20 },
+        ],
+        unlocked: true,
+    },
+    {
+        id: 'recipe_shield_of_the_titans',
+        resultItem: EQUIPMENT_ITEMS['shield_of_the_titans'],
+        cost: [
+            { resourceId: 'titan_bone', amount: 2 },
+            { resourceId: 'titan_marrow', amount: 1 },
+            { resourceId: 'primordial_ore', amount: 2 },
+        ],
+        unlocked: true,
+    },
+
+    // RIGHT HAND - Higher tiers
+    {
+        id: 'recipe_staff_of_creation',
+        resultItem: EQUIPMENT_ITEMS['staff_of_creation'],
+        cost: [
+            { resourceId: 'world_seed', amount: 1 },
+            { resourceId: 'genesis_spark', amount: 1 },
+            { resourceId: 'primordial_glyph', amount: 2 },
+        ],
+        unlocked: true,
+    },
+    {
+        id: 'recipe_wand_of_dreams',
+        resultItem: EQUIPMENT_ITEMS['wand_of_dreams'],
+        cost: [
+            { resourceId: 'dreamweed', amount: 10 },
+            { resourceId: 'ghostcap', amount: 5 },
+            { resourceId: 'ether_glass', amount: 3 },
+        ],
+        unlocked: true,
+    },
+    {
+        id: 'recipe_dragon_fang_dagger',
+        resultItem: EQUIPMENT_ITEMS['dragon_fang_dagger'],
+        cost: [
+            { resourceId: 'dragon_fang', amount: 3 },
+            { resourceId: 'dragon_blood', amount: 2 },
+            { resourceId: 'bloodstone', amount: 2 },
+        ],
+        unlocked: true,
+    },
+
+    // RELIC - Higher tiers
+    {
+        id: 'recipe_eye_of_ages_relic',
+        resultItem: EQUIPMENT_ITEMS['eye_of_ages_relic'],
+        cost: [
+            { resourceId: 'eye_of_ages', amount: 1 },
+            { resourceId: 'elder_eye', amount: 2 },
+            { resourceId: 'temporal_sand', amount: 5 },
+        ],
+        unlocked: true,
+    },
+    {
+        id: 'recipe_heart_of_magic_relic',
+        resultItem: EQUIPMENT_ITEMS['heart_of_magic_relic'],
+        cost: [
+            { resourceId: 'heart_of_magic', amount: 1 },
+            { resourceId: 'elemental_core', amount: 5 },
+            { resourceId: 'dimensional_shard', amount: 3 },
+        ],
+        unlocked: true,
+    },
+    {
+        id: 'recipe_crown_fragment_relic',
+        resultItem: EQUIPMENT_ITEMS['crown_fragment_relic'],
+        cost: [
+            { resourceId: 'crown_fragment', amount: 1 },
+            { resourceId: 'divine_mark', amount: 1 },
+            { resourceId: 'holy_essence', amount: 10 },
+        ],
+        unlocked: true,
+    },
+    {
+        id: 'recipe_world_seed_relic',
+        resultItem: EQUIPMENT_ITEMS['world_seed_relic'],
+        cost: [
+            { resourceId: 'world_seed', amount: 1 },
+            { resourceId: 'voidbloom', amount: 2 },
+            { resourceId: 'elder_rune', amount: 1 },
         ],
         unlocked: true,
     },

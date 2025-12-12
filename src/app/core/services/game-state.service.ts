@@ -5,9 +5,10 @@ import {
     GameState, Player, Resources, WindowStates, WindowState, Rune, Spell,
     ResearchNode, CombatState, CombatLogEntry, Enemy, IdleSettings,
     ActiveEffect, LootDrop, ResourceCost, Upgrade, DamageType,
-    EquipmentItem, EquipmentRecipe, EquippedItems, EquipmentSlot, PlayerStats
+    EquipmentItem, EquipmentRecipe, EquippedItems, EquipmentSlot, PlayerStats,
+    AlchemyRecipe, AlchemyState
 } from '../models/game.interfaces';
-import { INITIAL_RESEARCH_TREE, RUNES, MAGIC_MISSILE, ENEMIES, INITIAL_UPGRADES } from '../models/game.data';
+import { INITIAL_RESEARCH_TREE, RUNES, MAGIC_MISSILE, ENEMIES, INITIAL_UPGRADES, INITIAL_ALCHEMY_RECIPES } from '../models/game.data';
 import { INITIAL_CRAFTING_RESOURCES, RESOURCE_NAMES } from '../models/resources.data';
 import { INITIAL_EQUIPMENT_RECIPES, INITIAL_EQUIPPED_ITEMS, EQUIPMENT_ITEMS } from '../models/equipment.data';
 
@@ -38,6 +39,8 @@ export class GameStateService implements OnDestroy {
     private readonly _equippedItems = signal<EquippedItems>(this.createInitialEquippedItems());
     private readonly _craftedEquipment = signal<EquipmentItem[]>([]);
     private readonly _equipmentRecipes = signal<EquipmentRecipe[]>(JSON.parse(JSON.stringify(INITIAL_EQUIPMENT_RECIPES)));
+    private readonly _alchemyRecipes = signal<AlchemyRecipe[]>(JSON.parse(JSON.stringify(INITIAL_ALCHEMY_RECIPES)));
+    private readonly _alchemy = signal<AlchemyState>(this.createInitialAlchemyState());
 
     // Public readonly
     readonly player = this._player.asReadonly();
@@ -52,6 +55,8 @@ export class GameStateService implements OnDestroy {
     readonly equippedItems = this._equippedItems.asReadonly();
     readonly craftedEquipment = this._craftedEquipment.asReadonly();
     readonly equipmentRecipes = this._equipmentRecipes.asReadonly();
+    readonly alchemyRecipes = this._alchemyRecipes.asReadonly();
+    readonly alchemy = this._alchemy.asReadonly();
 
     // Computed
     readonly availableResearch = computed(() =>
@@ -95,6 +100,8 @@ export class GameStateService implements OnDestroy {
             equippedItems: this._equippedItems,
             craftedEquipment: this._craftedEquipment,
             equipmentRecipes: this._equipmentRecipes,
+            alchemyRecipes: this._alchemyRecipes,
+            alchemy: this._alchemy,
         });
 
         // Register research service
@@ -178,6 +185,9 @@ export class GameStateService implements OnDestroy {
 
         // Check for level up
         this.checkLevelUp();
+
+        // Check alchemy completion
+        this.tickAlchemy();
     }
 
     // UPGRADE BONUSES (delegated to research service)
@@ -209,6 +219,8 @@ export class GameStateService implements OnDestroy {
         this._equippedItems.set(this.createInitialEquippedItems());
         this._craftedEquipment.set([]);
         this._equipmentRecipes.set(JSON.parse(JSON.stringify(INITIAL_EQUIPMENT_RECIPES)));
+        this._alchemyRecipes.set(JSON.parse(JSON.stringify(INITIAL_ALCHEMY_RECIPES)));
+        this._alchemy.set(this.createInitialAlchemyState());
     }
 
     // WINDOW
@@ -430,6 +442,73 @@ export class GameStateService implements OnDestroy {
         return total;
     }
 
+    // ALCHEMY SYSTEM
+    startAlchemy(recipeId: string): boolean {
+        const alchemy = this._alchemy();
+        if (alchemy.activeRecipeId) return false; // Already crafting
+
+        const recipe = this._alchemyRecipes().find(r => r.id === recipeId);
+        if (!recipe || !recipe.unlocked) return false;
+        if (!this.resourceService.canAffordResources(recipe.inputs)) return false;
+        if (!this.resourceService.spendCraftingResources(recipe.inputs)) return false;
+
+        const now = Date.now();
+        this._alchemy.set({
+            activeRecipeId: recipeId,
+            craftStartTime: now,
+            craftEndTime: now + recipe.craftTimeMs,
+        });
+        return true;
+    }
+
+    cancelAlchemy(): void {
+        this._alchemy.set(this.createInitialAlchemyState());
+    }
+
+    private tickAlchemy(): void {
+        const alchemy = this._alchemy();
+        if (!alchemy.activeRecipeId) return;
+
+        if (Date.now() >= alchemy.craftEndTime) {
+            const recipe = this._alchemyRecipes().find(r => r.id === alchemy.activeRecipeId);
+            if (recipe) {
+                let selectedOutputs: { resourceId: string; amount: number }[] = [];
+
+                if (recipe.possibleOutputs && recipe.possibleOutputs.length > 0) {
+                    // Random selection based on weighted chances
+                    const totalWeight = recipe.possibleOutputs.reduce((sum, po) => sum + po.chance, 0);
+                    let random = Math.random() * totalWeight;
+                    for (const possibleOutput of recipe.possibleOutputs) {
+                        random -= possibleOutput.chance;
+                        if (random <= 0) {
+                            selectedOutputs = possibleOutput.outputs;
+                            break;
+                        }
+                    }
+                    // Fallback to first if somehow none selected
+                    if (selectedOutputs.length === 0) {
+                        selectedOutputs = recipe.possibleOutputs[0].outputs;
+                    }
+                } else if (recipe.outputs) {
+                    selectedOutputs = recipe.outputs;
+                }
+
+                for (const output of selectedOutputs) {
+                    this.resourceService.addCraftingResource(output.resourceId, output.amount);
+                }
+            }
+            this._alchemy.set(this.createInitialAlchemyState());
+        }
+    }
+
+    private createInitialAlchemyState(): AlchemyState {
+        return {
+            activeRecipeId: null,
+            craftStartTime: 0,
+            craftEndTime: 0,
+        };
+    }
+
     // INITIAL STATE
     private createInitialPlayer(): Player {
         return {
@@ -457,6 +536,7 @@ export class GameStateService implements OnDestroy {
             discoveries: { unlocked: false, visible: false },
             armory: { unlocked: false, visible: false },
             equipment: { unlocked: false, visible: false },
+            alchemy: { unlocked: false, visible: false },
         };
     }
 
