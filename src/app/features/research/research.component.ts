@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, computed } from '@angular/core';
+import { Component, inject, Output, EventEmitter, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -32,6 +32,15 @@ import { ResearchNode } from '../../core/models/game.interfaces';
             [*] View Discoveries ({{ completedCount() }})
           </button>
         }
+
+        <div class="filter-buttons mb-1">
+          <button class="filter-btn" [class.active]="activeFilter() === null" (click)="setFilter(null)">All</button>
+          <button class="filter-btn tag-feature" [class.active]="activeFilter() === 'window'" (click)="setFilter('window')">Feature</button>
+          <button class="filter-btn tag-rune" [class.active]="activeFilter() === 'rune'" (click)="setFilter('rune')">Rune</button>
+          <button class="filter-btn tag-stat" [class.active]="activeFilter() === 'stat'" (click)="setFilter('stat')">Stat</button>
+          <button class="filter-btn tag-mana" [class.active]="activeFilter() === 'maxMana'" (click)="setFilter('maxMana')">Mana</button>
+          <button class="filter-btn tag-idle" [class.active]="activeFilter() === 'idle'" (click)="setFilter('idle')">Idle</button>
+        </div>
 
         <div class="research-tree">
           @for (node of availableResearch(); track node.id) {
@@ -204,6 +213,31 @@ import { ResearchNode } from '../../core/models/game.interfaces';
     }
 
     .mb-1 { margin-bottom: 8px; }
+
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .filter-btn {
+      padding: 2px 6px;
+      font-size: 10px;
+      font-family: 'Courier New', monospace;
+      border: 1px solid #808080;
+      background-color: #e0e0e0;
+      cursor: pointer;
+      &:hover { background-color: #d0d0d0; }
+      &.active { 
+        font-weight: bold; 
+        border-width: 2px;
+        border-style: inset;
+      }
+      &.tag-feature { background-color: #ccccff; border-color: #8080cc; }
+      &.tag-rune { background-color: #ffccff; border-color: #cc80cc; }
+      &.tag-stat { background-color: #ccffcc; border-color: #80cc80; }
+      &.tag-mana { background-color: #ccffff; border-color: #80cccc; }
+      &.tag-idle { background-color: #ffffcc; border-color: #cccc80; }
+    }
   `]
 })
 export class ResearchComponent {
@@ -214,10 +248,14 @@ export class ResearchComponent {
   readonly resources = this.gameState.resources;
   readonly researchTree = this.gameState.researchTree;
 
-  // Only show incomplete research, sorted by unlocked first then cost
+  readonly activeFilter = signal<string | null>(null);
+
+  // Only show incomplete research, sorted by unlocked first then cost, filtered by type
   readonly availableResearch = computed(() => {
+    const filter = this.activeFilter();
     return [...this.researchTree()]
       .filter(node => !node.researched)
+      .filter(node => filter === null || node.unlockEffect.type === filter)
       .sort((a, b) => {
         // Unlocked items before locked
         if (a.unlocked && !b.unlocked) return -1;
@@ -246,6 +284,10 @@ export class ResearchComponent {
 
   onClose(): void {
     this.closed.emit();
+  }
+
+  setFilter(type: string | null): void {
+    this.activeFilter.set(type);
   }
 
   getUnlockTag(node: ResearchNode): string {
