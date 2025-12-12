@@ -2,7 +2,7 @@
 
 > **⚠️ EXPERIMENTAL PROJECT: This is a Vibecoded AI experiment!**
 >
-> This project was created as an experiment in AI-assisted "vibecoding" – an exploratory approach where AI agents collaborate with developers to rapidly prototype and build software. The code, design decisions, and features were largely generated through AI conversation and iteration. There has been MINIMAL human intervention in the process, apart from initial design documents.
+> This project was created as an experiment in AI-assisted "vibecoding" - an exploratory approach where AI agents collaborate with developers to rapidly prototype and build software. The code, design decisions, and features were largely generated through AI conversation and iteration. There has been MINIMAL human intervention in the process, apart from extensive initial design documents.
 
 ---
 
