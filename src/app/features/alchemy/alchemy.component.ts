@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, computed } from '@angular/core';
+import { Component, inject, Output, EventEmitter, computed, signal, effect, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -194,7 +194,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
         #c0c0c0 8px, #c0c0c0 10px
       );
       height: 100%;
-      transition: width 100ms linear;
+      /* No transition - steps discretely like Win95 */
     }
     .progress-time {
       font-size: 10px;
@@ -213,13 +213,17 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     }
   `]
 })
-export class AlchemyComponent {
+export class AlchemyComponent implements OnDestroy {
   @Output() closed = new EventEmitter<void>();
   private gameState = inject(GameStateService);
 
   readonly recipes = this.gameState.alchemyRecipes;
   readonly resources = this.gameState.resources;
   readonly alchemy = this.gameState.alchemy;
+
+  // Tick signal for progress updates (updated every 100ms while crafting)
+  private readonly tick = signal(0);
+  private tickInterval: ReturnType<typeof setInterval> | null = null;
 
   readonly isCrafting = computed(() => this.alchemy().activeRecipeId !== null);
 
@@ -231,6 +235,7 @@ export class AlchemyComponent {
   });
 
   readonly progressPercent = computed(() => {
+    this.tick(); // Depend on tick for reactive updates
     const a = this.alchemy();
     if (!a.activeRecipeId) return 0;
     const total = a.craftEndTime - a.craftStartTime;
@@ -239,11 +244,41 @@ export class AlchemyComponent {
   });
 
   readonly remainingSeconds = computed(() => {
+    this.tick(); // Depend on tick for reactive updates
     const a = this.alchemy();
     if (!a.activeRecipeId) return 0;
     const remaining = Math.max(0, a.craftEndTime - Date.now());
     return Math.ceil(remaining / 1000);
   });
+
+  constructor() {
+    // Effect to start/stop tick interval when crafting state changes
+    effect(() => {
+      if (this.isCrafting()) {
+        this.startTicking();
+      } else {
+        this.stopTicking();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.stopTicking();
+  }
+
+  private startTicking(): void {
+    if (this.tickInterval) return;
+    this.tickInterval = setInterval(() => {
+      this.tick.update(t => t + 1);
+    }, 100);
+  }
+
+  private stopTicking(): void {
+    if (this.tickInterval) {
+      clearInterval(this.tickInterval);
+      this.tickInterval = null;
+    }
+  }
 
   getResourceName(id: string): string {
     return RESOURCE_NAMES[id] || id;

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AltarComponent } from './features/altar/altar.component';
 import { ResearchComponent } from './features/research/research.component';
@@ -16,6 +16,7 @@ import { DiscoveriesComponent } from './features/discoveries/discoveries.compone
 import { ArmoryComponent } from './features/armory/armory.component';
 import { EquipmentComponent } from './features/equipment/equipment.component';
 import { AlchemyComponent } from './features/alchemy/alchemy.component';
+import { DevConsoleComponent } from './features/dev-console/dev-console.component';
 import { GameStateService } from './core/services/game-state.service';
 import { WindowStates } from './core/models/game.interfaces';
 
@@ -29,12 +30,13 @@ import { WindowStates } from './core/models/game.interfaces';
     RunebookComponent, GrimoireComponent, StatsComponent,
     BestiaryComponent, ChronicleComponent, SettingsComponent,
     DiscoveriesComponent, ArmoryComponent, EquipmentComponent, AlchemyComponent,
+    DevConsoleComponent,
   ],
   template: `
     <div class="desktop">
       <!-- Header -->
       <div class="game-header">
-        <span class="game-title">-=[ Spell-Crafter: Chronicles of the Arcane ]=-</span>
+        <span class="game-title" (click)="onTitleClick()">-=[ Spell-Crafter: Chronicles of the Arcane ]=-</span>
         <div class="header-resources">
           <span class="resource">&lt;&gt; {{ resources().mana | number:'1.0-0' }}/{{ resources().maxMana }}</span>
           <span class="resource">(o) {{ resources().gold }}</span>
@@ -101,6 +103,9 @@ import { WindowStates } from './core/models/game.interfaces';
         }
         @if (windows().alchemy.unlocked && windows().alchemy.visible) {
           <app-alchemy (closed)="closeWindow('alchemy')"></app-alchemy>
+        }
+        @if (showDevConsole()) {
+          <app-dev-console (closed)="showDevConsole.set(false)"></app-dev-console>
         }
       </div>
     </div>
@@ -190,6 +195,35 @@ export class App {
   readonly resources = this.gameState.resources;
   readonly windows = this.gameState.windows;
   readonly closedWindows = this.gameState.closedWindows;
+
+  // Dev Console - secret activation
+  readonly showDevConsole = signal(false);
+  private titleClickCount = 0;
+  private titleClickTimer: ReturnType<typeof setTimeout> | null = null;
+
+  onTitleClick(): void {
+    this.titleClickCount++;
+
+    // Reset timer on each click
+    if (this.titleClickTimer) {
+      clearTimeout(this.titleClickTimer);
+    }
+
+    // Reset click count after 2 seconds of inactivity
+    this.titleClickTimer = setTimeout(() => {
+      this.titleClickCount = 0;
+    }, 2000);
+
+    // Open dev console after 10 clicks
+    if (this.titleClickCount >= 10) {
+      this.showDevConsole.set(true);
+      this.titleClickCount = 0;
+      if (this.titleClickTimer) {
+        clearTimeout(this.titleClickTimer);
+        this.titleClickTimer = null;
+      }
+    }
+  }
 
   openWindow(id: keyof WindowStates): void { this.gameState.openWindow(id); }
   closeWindow(id: keyof WindowStates): void { this.gameState.closeWindow(id); }
