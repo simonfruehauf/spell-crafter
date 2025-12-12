@@ -98,7 +98,6 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
           </button>
         </div>
 
-        
       </div>
     </app-window>
   `,

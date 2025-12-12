@@ -518,6 +518,11 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
         unlockEffect: { type: 'stat', stat: 'WIS', value: 1 }, prerequisites: []
     },
     {
+        id: 'mana-attunement', name: 'Mana Attunement', description: 'Your connection to the aether passively regenerates mana.',
+        manaCost: 10, unlocked: true, researched: false,
+        unlockEffect: { type: 'idle', idleId: 'passiveManaRegen' }, prerequisites: []
+    },
+    {
         id: 'unlock-scriptorium', name: 'The Scriptorium', description: 'Discover the art of spell-crafting.',
         manaCost: 35, unlocked: true, researched: false,
         unlockEffect: { type: 'window', windowId: 'scriptorium' }, prerequisites: []

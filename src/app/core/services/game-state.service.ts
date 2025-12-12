@@ -109,6 +109,7 @@ export class GameStateService implements OnDestroy {
             spendMana: (amount) => this.spendMana(amount),
             unlockAutoMeditate: () => this.unlockAutoMeditate(),
             unlockAutoCombat: () => this.unlockAutoCombat(),
+            unlockPassiveManaRegen: () => this.unlockPassiveManaRegen(),
             increaseMaxMana: (amount) => this.resourceService.increaseMaxMana(amount),
             canAffordResources: (costs) => this.resourceService.canAffordResources(costs),
             spendCraftingResources: (costs) => this.resourceService.spendCraftingResources(costs),
@@ -141,10 +142,10 @@ export class GameStateService implements OnDestroy {
         const resources = this._resources();
         const combat = this._combat();
 
-        // Mana regen
-        const manaRegenMult = 1 + this.getUpgradeBonus('manaRegen') / 100;
-        const manaRegen = player.WIS * 0.05 * manaRegenMult;
-        if (resources.mana < resources.maxMana) {
+        // Passive mana regen (requires unlock)
+        if (idle.passiveManaRegenUnlocked && resources.mana < resources.maxMana) {
+            const manaRegenMult = 1 + this.getUpgradeBonus('manaRegen') / 100;
+            const manaRegen = player.WIS * 0.05 * manaRegenMult;
             this._resources.update(r => ({ ...r, mana: Math.min(r.maxMana, r.mana + manaRegen) }));
         }
 
@@ -221,6 +222,13 @@ export class GameStateService implements OnDestroy {
         const c = this._windows()[id];
         if (c.unlocked) this._windows.update(w => ({ ...w, [id]: { ...w[id], visible: !w[id].visible } }));
     }
+    updateWindowPosition(id: keyof WindowStates, x: number, y: number): void {
+        this._windows.update(w => ({ ...w, [id]: { ...w[id], x, y } }));
+    }
+    getWindowPosition(id: keyof WindowStates): { x?: number; y?: number } {
+        const w = this._windows()[id];
+        return { x: w?.x, y: w?.y };
+    }
 
     // RESOURCES (delegated to resource service)
     addMana(amount: number): void { this.resourceService.addMana(amount); }
@@ -251,6 +259,9 @@ export class GameStateService implements OnDestroy {
     }
     unlockAutoCombat(): void {
         this._idle.update(i => ({ ...i, autoCombatUnlocked: true }));
+    }
+    unlockPassiveManaRegen(): void {
+        this._idle.update(i => ({ ...i, passiveManaRegenUnlocked: true }));
     }
     setCombatSpeed(ms: number): void {
         this._idle.update(i => ({ ...i, combatTickMs: ms }));
@@ -465,7 +476,8 @@ export class GameStateService implements OnDestroy {
         return {
             autoMeditate: false, autoMeditateUnlocked: false,
             autoCombat: false, autoCombatUnlocked: false,
-            autoLoot: true, combatTickMs: 1000
+            autoLoot: true, combatTickMs: 1000,
+            passiveManaRegenUnlocked: false
         };
     }
 

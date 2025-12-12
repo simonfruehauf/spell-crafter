@@ -165,6 +165,8 @@ export interface Resources {
 export interface WindowState {
   unlocked: boolean;
   visible: boolean;
+  x?: number;  // Position on screen
+  y?: number;
 }
 
 export interface WindowStates {
@@ -352,6 +354,7 @@ export interface IdleSettings {
   autoCombatUnlocked: boolean;
   autoLoot: boolean;
   combatTickMs: number;
+  passiveManaRegenUnlocked: boolean;
 }
 
 /**

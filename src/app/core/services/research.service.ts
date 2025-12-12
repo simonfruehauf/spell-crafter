@@ -16,6 +16,7 @@ export interface ResearchCallbacks {
     spendMana: (amount: number) => boolean;
     unlockAutoMeditate: () => void;
     unlockAutoCombat: () => void;
+    unlockPassiveManaRegen: () => void;
     increaseMaxMana: (amount: number) => void;
     canAffordResources: (costs: ResourceCost[]) => boolean;
     spendCraftingResources: (costs: ResourceCost[]) => boolean;
@@ -109,6 +110,7 @@ export class ResearchService {
             case 'idle':
                 if (effect.idleId === 'autoMeditate') this.callbacks.unlockAutoMeditate();
                 if (effect.idleId === 'autoCombat') this.callbacks.unlockAutoCombat();
+                if (effect.idleId === 'passiveManaRegen') this.callbacks.unlockPassiveManaRegen();
                 break;
 
             case 'maxMana':

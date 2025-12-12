@@ -1,6 +1,8 @@
 import { Component, Input, Output, EventEmitter, ElementRef, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { windowAnimation } from '../../animations/animations';
+import { GameStateService } from '../../../core/services/game-state.service';
+import { WindowStates } from '../../../core/models/game.interfaces';
 
 @Component({
     selector: 'app-window',
@@ -23,6 +25,7 @@ export class WindowComponent implements OnInit {
     @Output() closed = new EventEmitter<void>();
 
     private el = inject(ElementRef);
+    private gameState = inject(GameStateService);
 
     // Position state
     readonly posX = signal(0);
@@ -39,8 +42,15 @@ export class WindowComponent implements OnInit {
     private static highestZIndex = 1;
 
     ngOnInit(): void {
-        this.posX.set(this.initialX);
-        this.posY.set(this.initialY);
+        // Try to load saved position, fall back to initial values
+        if (this.windowId) {
+            const savedPos = this.gameState.getWindowPosition(this.windowId as keyof WindowStates);
+            this.posX.set(savedPos.x ?? this.initialX);
+            this.posY.set(savedPos.y ?? this.initialY);
+        } else {
+            this.posX.set(this.initialX);
+            this.posY.set(this.initialY);
+        }
     }
 
     // Dragging handlers - works both minimized and normal
@@ -74,6 +84,15 @@ export class WindowComponent implements OnInit {
         this.isDragging.set(false);
         document.removeEventListener('mousemove', this.onMouseMove);
         document.removeEventListener('mouseup', this.onMouseUp);
+
+        // Save position when drag ends
+        if (this.windowId) {
+            this.gameState.updateWindowPosition(
+                this.windowId as keyof WindowStates,
+                this.posX(),
+                this.posY()
+            );
+        }
     };
 
     onWindowClick(): void {
