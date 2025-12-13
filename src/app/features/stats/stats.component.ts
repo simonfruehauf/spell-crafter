@@ -10,7 +10,7 @@ interface StatInfo {
 }
 
 const STAT_INFO: Record<string, StatInfo> = {
-  WIS: { name: 'WIS', fullName: 'Wisdom', description: 'Increases mana gained per meditation. Each point gives +0.5 mana per click.' },
+  WIS: { name: 'WIS', fullName: 'Wisdom', description: 'Increases mana gained per meditation. Each point gives +0.25 mana per click.' },
   ARC: { name: 'ARC', fullName: 'Arcane Power', description: 'Increases spell damage. Each point gives +10% spell damage.' },
   VIT: { name: 'VIT', fullName: 'Vitality', description: 'Increases HP regeneration. Each point gives +1 HP per second.' },
   BAR: { name: 'BAR', fullName: 'Barrier', description: 'Reduces damage taken. Each point blocks 0.5 damage from attacks.' },

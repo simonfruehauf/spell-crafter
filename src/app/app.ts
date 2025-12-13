@@ -18,6 +18,7 @@ import { EquipmentComponent } from './features/equipment/equipment.component';
 import { AlchemyComponent } from './features/alchemy/alchemy.component';
 import { LaboratoryComponent } from './features/laboratory/laboratory.component';
 import { ApothecaryComponent } from './features/apothecary/apothecary.component';
+import { GoblinApprenticeComponent } from './features/goblin-apprentice/goblin-apprentice.component';
 import { DevConsoleComponent } from './features/dev-console/dev-console.component';
 import { GameStateService } from './core/services/game-state.service';
 import { WindowStates } from './core/models/game.interfaces';
@@ -32,7 +33,7 @@ import { WindowStates } from './core/models/game.interfaces';
     RunebookComponent, GrimoireComponent, StatsComponent,
     BestiaryComponent, ChronicleComponent, SettingsComponent,
     DiscoveriesComponent, ArmoryComponent, EquipmentComponent, AlchemyComponent,
-    LaboratoryComponent, ApothecaryComponent,
+    LaboratoryComponent, ApothecaryComponent, GoblinApprenticeComponent,
     DevConsoleComponent,
   ],
   template: `
@@ -113,6 +114,9 @@ import { WindowStates } from './core/models/game.interfaces';
         @if (windows().apothecary.unlocked && windows().apothecary.visible) {
           <app-apothecary (closed)="closeWindow('apothecary')"></app-apothecary>
         }
+        @if (windows().goblinApprentice.unlocked && windows().goblinApprentice.visible) {
+          <app-goblin-apprentice (closed)="closeWindow('goblinApprentice')"></app-goblin-apprentice>
+        }
         @if (showDevConsole()) {
           <app-dev-console (closed)="showDevConsole.set(false)"></app-dev-console>
         }
@@ -166,7 +170,7 @@ export class App {
       inventory: '[I]', workshop: '[W]', runebook: '[B]', grimoire: '[G]',
       stats: '[#]', bestiary: '[M]', chronicle: '[L]', settings: '[=]',
       discoveries: '[*]', armory: '[E]', equipment: '[+]', alchemy: '[~]',
-      laboratory: '[%]', apothecary: '[♥]',
+      laboratory: '[%]', apothecary: '[♥]', goblinApprentice: '[g]',
     };
     return icons[id] || '[?]';
   }
@@ -177,7 +181,7 @@ export class App {
       inventory: 'Vault', workshop: 'Workshop', runebook: 'Runebook', grimoire: 'Grimoire',
       stats: 'Stats', bestiary: 'Bestiary', chronicle: 'Chronicle', settings: 'Settings',
       discoveries: 'Discoveries', armory: 'Armory', equipment: 'Equipment', alchemy: 'Alembic',
-      laboratory: 'Laboratory', apothecary: 'Potions',
+      laboratory: 'Laboratory', apothecary: 'Potions', goblinApprentice: 'Goblin',
     };
     return labels[id] || id;
   }

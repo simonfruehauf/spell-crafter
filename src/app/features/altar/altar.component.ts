@@ -38,7 +38,7 @@ import { GameStateService } from '../../core/services/game-state.service';
 /  \\
 / <span class="runes">{{ eyes() }}</span> \\
 |______|
-@if (idle().passiveManaRegenUnlocked) {
+@if (idle().passiveManaRegenUnlocked || idle().goblinApprenticeUnlocked) {
 {{ manaRegenPerSecond() | number:'1.2-2' }}/s}</pre>
         </div>
         <div class="mana-display">
@@ -146,20 +146,29 @@ export class AltarComponent implements OnInit, OnDestroy {
   private isBlinking = false;
 
   readonly manaPerClick = computed(() => {
-    return 1 + Math.floor(this.player().WIS * 0.5);
+    return 1 + Math.floor(this.player().WIS * 0.25);
   });
 
   readonly manaRegenPerSecond = computed(() => {
-    if (!this.idle().passiveManaRegenUnlocked) return 0;
-
     // Create dependency on upgrades so this re-computes when they change
     this.upgrades();
 
-    const bonus = this.gameState.getUpgradeBonus('manaRegen');
-    const multiplier = 1 + bonus / 100;
-    // 0.025 per tick * 10 ticks/second
-    // 0.025 per tick * 10 ticks/second
-    return this.player().WIS * 0.025 * multiplier * 10;
+    let total = 0;
+
+    // WIS-based passive mana regen (requires unlock)
+    if (this.idle().passiveManaRegenUnlocked) {
+      const bonus = this.gameState.getUpgradeBonus('manaRegen');
+      const multiplier = 1 + bonus / 100;
+      // 0.025 per tick * 10 ticks/second
+      total += this.player().WIS * 0.025 * multiplier * 10;
+    }
+
+    // Goblin Apprentice bonus (+1 mana/s)
+    if (this.idle().goblinApprenticeUnlocked) {
+      total += 1;
+    }
+
+    return total;
   });
 
   readonly showHeaderMeditate = computed(() => {

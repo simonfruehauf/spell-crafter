@@ -84,7 +84,9 @@ export class SaveService {
 
             this.signals.player.set(state.player);
             this.signals.resources.set(state.resources);
-            this.signals.windows.set(state.windows);
+            // Merge saved windows with current defaults to handle newly added windows
+            const currentWindows = this.signals.windows();
+            this.signals.windows.set({ ...currentWindows, ...state.windows });
             this.signals.knownRunes.set(
                 state.knownRunes.map((id: string) => RUNES[id]).filter(Boolean)
             );
@@ -93,7 +95,9 @@ export class SaveService {
             this.signals.upgrades.set(
                 state.upgrades || JSON.parse(JSON.stringify(INITIAL_UPGRADES))
             );
-            this.signals.idle.set(state.idle);
+            // Merge saved idle settings with current defaults to handle newly added flags
+            const currentIdle = this.signals.idle();
+            this.signals.idle.set({ ...currentIdle, ...state.idle });
             if (state.combat) {
                 // Restore combat state but ensure ephemeral flags are reset (just in case)
                 this.signals.combat.set({

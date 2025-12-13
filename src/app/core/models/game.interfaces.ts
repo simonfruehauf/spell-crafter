@@ -188,6 +188,7 @@ export interface WindowStates {
   equipment: WindowState;
   alchemy: WindowState;
   apothecary: WindowState;
+  goblinApprentice: WindowState;
 }
 
 /**
@@ -467,6 +468,7 @@ export interface IdleSettings {
   combatTickMs: number;
   passiveManaRegenUnlocked: boolean;
   usePotionUnlocked: boolean;
+  goblinApprenticeUnlocked: boolean;
 }
 
 /**

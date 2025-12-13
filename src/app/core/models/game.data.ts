@@ -831,6 +831,14 @@ export const INITIAL_UPGRADES: Upgrade[] = [
         cost: [{ resourceId: 'wolf_leather', amount: 3 }, { resourceId: 'spider_silk', amount: 5 }],
         costMultiplier: 1.5, effect: { type: 'beastDamage', percentPerLevel: 10 }, unlocked: true
     },
+
+    // SPECIAL UNLOCKS
+    {
+        id: 'goblin_apprentice', name: 'Goblin Apprentice', description: 'Summon a goblin apprentice that generates 1 mana/s.',
+        category: 'special', level: 0, maxLevel: 1,
+        cost: [{ resourceId: 'goblin_tooth', amount: 20 }, { resourceId: 'goblin_skull', amount: 1 }],
+        costMultiplier: 1.0, effect: { type: 'unlockFeature', feature: 'goblinApprentice' }, unlocked: true
+    },
 ];
 
 // =============================================================================

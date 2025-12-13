@@ -17,6 +17,7 @@ export interface ResearchCallbacks {
     unlockAutoCombat: () => void;
     unlockPassiveManaRegen: () => void;
     unlockUsePotions: () => void;
+    unlockGoblinApprentice: () => void;
     increaseMaxMana: (amount: number) => void;
     canAffordResources: (costs: ResourceCost[]) => boolean;
     spendCraftingResources: (costs: ResourceCost[]) => boolean;
@@ -214,6 +215,15 @@ export class ResearchService {
             }));
         } else if (effect.type === 'maxMana') {
             this.callbacks.increaseMaxMana(effect.valuePerLevel);
+        } else if (effect.type === 'unlockFeature') {
+            // Handle feature unlocks (like goblin apprentice)
+            if (effect.feature === 'goblinApprentice') {
+                this.callbacks.unlockGoblinApprentice();
+                this.signals.windows.update(w => ({
+                    ...w,
+                    goblinApprentice: { ...w.goblinApprentice, unlocked: true, visible: true }
+                }));
+            }
         }
 
         // Increment level

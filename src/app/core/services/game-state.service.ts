@@ -125,6 +125,7 @@ export class GameStateService implements OnDestroy {
             unlockAutoCombat: () => this.unlockAutoCombat(),
             unlockPassiveManaRegen: () => this.unlockPassiveManaRegen(),
             unlockUsePotions: () => this.unlockUsePotions(),
+            unlockGoblinApprentice: () => this.unlockGoblinApprentice(),
             increaseMaxMana: (amount) => this.resourceService.increaseMaxMana(amount),
             canAffordResources: (costs) => this.resourceService.canAffordResources(costs),
             spendCraftingResources: (costs) => this.resourceService.spendCraftingResources(costs),
@@ -163,6 +164,12 @@ export class GameStateService implements OnDestroy {
             // Base regen: WIS * 0.025 per tick
             const manaRegen = player.WIS * 0.025 * manaRegenMult;
             this._resources.update(r => ({ ...r, mana: Math.min(r.maxMana, r.mana + manaRegen) }));
+        }
+
+        // Goblin Apprentice passive mana regen (1 mana/s = 0.1 mana per tick at 100ms tick rate)
+        if (idle.goblinApprenticeUnlocked && resources.mana < resources.maxMana) {
+            const goblinManaRegen = 0.1; // 1 mana/s at 100ms tick rate (10 ticks/s)
+            this._resources.update(r => ({ ...r, mana: Math.min(r.maxMana, r.mana + goblinManaRegen) }));
         }
 
         // Auto-meditate removed (consolidated)
@@ -264,7 +271,7 @@ export class GameStateService implements OnDestroy {
 
     // MEDITATION
     meditate(): void {
-        const manaGain = 1 + Math.floor(this._player().WIS * 0.5);
+        const manaGain = 1 + Math.floor(this._player().WIS * 0.25);
         this.addMana(manaGain);
     }
 
@@ -279,6 +286,9 @@ export class GameStateService implements OnDestroy {
     }
     unlockPassiveManaRegen(): void {
         this._idle.update(i => ({ ...i, passiveManaRegenUnlocked: true }));
+    }
+    unlockGoblinApprentice(): void {
+        this._idle.update(i => ({ ...i, goblinApprenticeUnlocked: true }));
     }
     setCombatSpeed(ms: number): void {
         this._idle.update(i => ({ ...i, combatTickMs: ms }));
@@ -827,6 +837,7 @@ export class GameStateService implements OnDestroy {
             equipment: { unlocked: false, visible: false },
             alchemy: { unlocked: false, visible: false },
             apothecary: { unlocked: false, visible: false },
+            goblinApprentice: { unlocked: false, visible: false },
         };
     }
 
@@ -848,6 +859,7 @@ export class GameStateService implements OnDestroy {
             autoLoot: true, combatTickMs: 1000,
             passiveManaRegenUnlocked: false,
             usePotionUnlocked: false,
+            goblinApprenticeUnlocked: false,
         };
     }
 

@@ -11,7 +11,7 @@ import { WindowStates } from '../../../core/models/game.interfaces';
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [windowAnimation],
     template: `
-    <div class="absolute min-w-[200px] p-[2px] bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray shadow-[inset_1px_1px_0_#dfdfdf] font-system text-xs"
+    <div class="absolute min-w-[150px] p-[2px] bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray shadow-[inset_1px_1px_0_#dfdfdf] font-system text-xs"
          @windowAnimation
          [class.h-auto]="isMinimized()"
          [class.cursor-move]="isDragging()"

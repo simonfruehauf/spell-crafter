@@ -108,6 +108,7 @@ export class WorkshopComponent {
     { id: 'combat', name: 'Combat' },
     { id: 'idle', name: 'Idle' },
     { id: 'crafting', name: 'Crafting' },
+    { id: 'special', name: 'Special' },
   ];
 
   getUpgradesByCategory(cat: string): Upgrade[] {
