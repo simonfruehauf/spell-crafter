@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, ChangeDetectionStrategy, computed } from '@angular/core';
+import { Component, inject, Output, EventEmitter, ChangeDetectionStrategy, computed, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -27,7 +27,7 @@ import { GameStateService } from '../../core/services/game-state.service';
           <pre class="altar-ascii">
 /\\
 /  \\
-/ :: \\
+/ <span class="runes">{{ eyes() }}</span> \\
 |______|
 @if (idle().passiveManaRegenUnlocked) {
 {{ manaRegenPerSecond() | number:'1.2-2' }}/s}</pre>
@@ -82,6 +82,13 @@ import { GameStateService } from '../../core/services/game-state.service';
       margin: 0;
     }
 
+    /* Fixed width for eyes to prevent jitter */
+    .altar-ascii .runes {
+      display: inline-block;
+      width: 17px; 
+      text-align: center;
+    }
+
     .mana-display {
       margin-top: 8px;
     }
@@ -114,7 +121,7 @@ import { GameStateService } from '../../core/services/game-state.service';
     }
   `]
 })
-export class AltarComponent {
+export class AltarComponent implements OnInit, OnDestroy {
   @Output() closed = new EventEmitter<void>();
 
   private gameState = inject(GameStateService);
@@ -124,6 +131,10 @@ export class AltarComponent {
   readonly idle = this.gameState.idle;
   // Track upgrades to ensure reactivity for regeneration bonuses
   readonly upgrades = this.gameState.upgrades;
+
+  readonly eyes = signal<string>('::');
+  private blinkTimer: any;
+  private isBlinking = false;
 
   readonly manaPerClick = computed(() => {
     return 1 + Math.floor(this.player().WIS * 0.5);
@@ -140,6 +151,44 @@ export class AltarComponent {
     // 0.025 per tick * 10 ticks/second
     return this.player().WIS * 0.025 * multiplier * 10;
   });
+
+  ngOnInit() {
+    this.scheduleBlink();
+  }
+
+  ngOnDestroy() {
+    if (this.blinkTimer) clearTimeout(this.blinkTimer);
+  }
+
+  private scheduleBlink() {
+    // Random interval between 3s and 8s
+    const delay = 3000 + Math.random() * 5000;
+
+    this.blinkTimer = setTimeout(() => {
+      this.performBlink();
+    }, delay);
+  }
+
+  private performBlink() {
+    this.isBlinking = true;
+
+    // Blink sequence: :: -> .. -> spaces -> .. -> ::
+    this.eyes.set('..');
+
+    setTimeout(() => {
+      this.eyes.set('  ');
+
+      setTimeout(() => {
+        this.eyes.set('..');
+
+        setTimeout(() => {
+          this.isBlinking = false;
+          this.eyes.set('::');
+          this.scheduleBlink();
+        }, 100);
+      }, 150);
+    }, 100);
+  }
 
   meditate(): void {
     this.gameState.meditate();
