@@ -1,4 +1,4 @@
-import { Component, inject, signal, Output, EventEmitter } from '@angular/core';
+import { Component, inject, signal, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WindowComponent } from '../../shared/components/window/window.component';
@@ -10,6 +10,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
   selector: 'app-spell-crafting',
   standalone: true,
   imports: [CommonModule, FormsModule, WindowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-window 
       title="The Scriptorium" 

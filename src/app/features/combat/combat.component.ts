@@ -1,4 +1,4 @@
-import { Component, inject, signal, Output, EventEmitter } from '@angular/core';
+import { Component, inject, signal, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WindowComponent } from '../../shared/components/window/window.component';
@@ -13,7 +13,8 @@ import { fadeSlide, pulse } from '../../shared/animations/animations';
   imports: [CommonModule, FormsModule, WindowComponent],
   templateUrl: './combat.component.html',
   styleUrl: './combat.component.scss',
-  animations: [fadeSlide, pulse]
+  animations: [fadeSlide, pulse],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CombatComponent {
   @Output() closed = new EventEmitter<void>();
