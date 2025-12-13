@@ -14,7 +14,6 @@ export interface ResearchSignals {
 
 export interface ResearchCallbacks {
     spendMana: (amount: number) => boolean;
-    unlockAutoMeditate: () => void;
     unlockAutoCombat: () => void;
     unlockPassiveManaRegen: () => void;
     increaseMaxMana: (amount: number) => void;
@@ -108,7 +107,7 @@ export class ResearchService {
                 break;
 
             case 'idle':
-                if (effect.idleId === 'autoMeditate') this.callbacks.unlockAutoMeditate();
+                if (effect.idleId === 'autoMeditate') { /* Removed */ }
                 if (effect.idleId === 'autoCombat') this.callbacks.unlockAutoCombat();
                 if (effect.idleId === 'passiveManaRegen') this.callbacks.unlockPassiveManaRegen();
                 break;

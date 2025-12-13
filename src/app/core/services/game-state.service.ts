@@ -114,7 +114,6 @@ export class GameStateService implements OnDestroy {
         });
         this.researchService.registerCallbacks({
             spendMana: (amount) => this.spendMana(amount),
-            unlockAutoMeditate: () => this.unlockAutoMeditate(),
             unlockAutoCombat: () => this.unlockAutoCombat(),
             unlockPassiveManaRegen: () => this.unlockPassiveManaRegen(),
             increaseMaxMana: (amount) => this.resourceService.increaseMaxMana(amount),
@@ -152,14 +151,12 @@ export class GameStateService implements OnDestroy {
         // Passive mana regen (requires unlock)
         if (idle.passiveManaRegenUnlocked && resources.mana < resources.maxMana) {
             const manaRegenMult = 1 + this.getUpgradeBonus('manaRegen') / 100;
-            const manaRegen = player.WIS * 0.05 * manaRegenMult;
+            // Base regen: WIS * 0.025 per tick
+            const manaRegen = player.WIS * 0.025 * manaRegenMult;
             this._resources.update(r => ({ ...r, mana: Math.min(r.maxMana, r.mana + manaRegen) }));
         }
 
-        // Auto-meditate
-        if (idle.autoMeditate && resources.mana < resources.maxMana * 0.9) {
-            this._resources.update(r => ({ ...r, mana: Math.min(r.maxMana, r.mana + player.WIS * 0.02) }));
-        }
+        // Auto-meditate removed (consolidated)
 
         // HP regen (out of combat)
         if (!combat.inCombat && player.currentHP < player.maxHP) {
@@ -257,13 +254,6 @@ export class GameStateService implements OnDestroy {
     }
 
     // IDLE
-    setAutoMeditate(e: boolean): void {
-        if (!this._idle().autoMeditateUnlocked) return;
-        this._idle.update(i => ({ ...i, autoMeditate: e }));
-    }
-    unlockAutoMeditate(): void {
-        this._idle.update(i => ({ ...i, autoMeditateUnlocked: true }));
-    }
     setAutoCombat(e: boolean): void {
         if (!this._idle().autoCombatUnlocked) return;
         this._idle.update(i => ({ ...i, autoCombat: e }));
@@ -554,7 +544,6 @@ export class GameStateService implements OnDestroy {
 
     private createInitialIdleSettings(): IdleSettings {
         return {
-            autoMeditate: false, autoMeditateUnlocked: false,
             autoCombat: false, autoCombatUnlocked: false,
             autoLoot: true, combatTickMs: 1000,
             passiveManaRegenUnlocked: false

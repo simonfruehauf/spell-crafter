@@ -18,27 +18,30 @@ import { GameStateService } from '../../core/services/game-state.service';
       <div class="altar-content">
         <div class="altar-description">
           <p>A sacred altar where arcane energies converge. 
-             Focus your mind to draw mana from the aether.</p>
+             Focus your mind to draw mana from the aether.
+            </p>
         </div>
 
         <div class="altar-visual">
           <pre class="altar-ascii">
-  /\\
-  /  \\
-  / :: \\
-  |______|
-  </pre>
+/\\
+/  \\
+/ :: \\
+|______|
+@if (idle().passiveManaRegenUnlocked) {
+{{ manaRegenPerSecond | number:'1.2-2' }}/s}</pre>
         </div>
-
         <div class="mana-display">
           <div class="bar-container">
             <div 
               class="bar-fill mana" 
-              [style.width.%]="(resources().mana / resources().maxMana) * 100">
+              [style.width.%]="(resources().mana / resources().maxMana) * 100"> 
+            
             </div>
             <div class="bar-text">
-              Mana: {{ resources().mana | number:'1.0-0' }} / {{ resources().maxMana }}
+              Mana: {{ resources().mana | number:'1.0-0' }} / {{ resources().maxMana | number:'1.0-0' }}
             </div>
+            
           </div>
         </div>
 
@@ -48,19 +51,7 @@ import { GameStateService } from '../../core/services/game-state.service';
           </button>
         </div>
 
-        <!-- Idle Options -->
-        @if (idle().autoMeditateUnlocked) {
-          <fieldset class="mt-2">
-            <legend>Idle Options</legend>
-            <label class="checkbox-label">
-              <input 
-                type="checkbox" 
-                [checked]="idle().autoMeditate"
-                (change)="toggleAutoMeditate()">
-              Auto-Meditate
-            </label>
-          </fieldset>
-        }
+
       </div>
     </app-window>
   `,
@@ -135,12 +126,16 @@ export class AltarComponent {
     return 1 + Math.floor(this.player().WIS * 0.5);
   }
 
-  meditate(): void {
-    this.gameState.meditate();
+  get manaRegenPerSecond(): number {
+    if (!this.idle().passiveManaRegenUnlocked) return 0;
+    const bonus = this.gameState.getUpgradeBonus('manaRegen');
+    const multiplier = 1 + bonus / 100;
+    // 0.025 per tick * 10 ticks/second
+    return this.player().WIS * 0.025 * multiplier * 10;
   }
 
-  toggleAutoMeditate(): void {
-    this.gameState.setAutoMeditate(!this.idle().autoMeditate);
+  meditate(): void {
+    this.gameState.meditate();
   }
 
   onClose(): void {

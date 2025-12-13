@@ -399,8 +399,7 @@ export interface CombatState {
  * Idle settings
  */
 export interface IdleSettings {
-  autoMeditate: boolean;
-  autoMeditateUnlocked: boolean;
+  // autoMeditate removed (consolidated into passiveManaRegen)
   autoCombat: boolean;
   autoCombatUnlocked: boolean;
   autoLoot: boolean;

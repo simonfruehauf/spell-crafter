@@ -953,12 +953,12 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
         unlockEffect: { type: 'maxMana', value: 25 }, prerequisites: ['mana-capacity-2']
     },
     {
-        id: 'basic-meditation', name: 'Deep Meditation', description: 'Draw more mana from the aether. (+1 WIS)',
+        id: 'basic-meditation', name: 'Deep Meditation', description: 'Draw more mana from the aether.',
         manaCost: 15, unlocked: true, researched: false,
         unlockEffect: { type: 'stat', stat: 'WIS', value: 1 }, prerequisites: []
     },
     {
-        id: 'mana-attunement', name: 'Mana Attunement', description: 'Your connection to the aether passively regenerates mana.',
+        id: 'mana-attunement', name: 'Mana Attunement', description: 'Passively regenerate mana.',
         manaCost: 10, unlocked: true, researched: false,
         unlockEffect: { type: 'idle', idleId: 'passiveManaRegen' }, prerequisites: []
     },
@@ -1081,11 +1081,7 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
         manaCost: 30, unlocked: false, researched: false,
         unlockEffect: { type: 'window', windowId: 'chronicle' }, prerequisites: ['unlock-combat']
     },
-    {
-        id: 'auto-meditate', name: 'Focused Mind', description: 'Unlock automatic meditation.',
-        manaCost: 50, unlocked: false, researched: false,
-        unlockEffect: { type: 'idle', idleId: 'autoMeditate' }, prerequisites: ['basic-meditation']
-    },
+    // Auto-meditate removed - consolidated into Mana Attunement
     {
         id: 'auto-combat', name: 'Battle Instinct', description: 'Unlock automatic combat.',
         manaCost: 60, unlocked: false, researched: false,
@@ -1101,22 +1097,22 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
 
     // Advanced stats research
     {
-        id: 'wisdom-2', name: 'Enlightenment', description: 'Deep study of the arcane. (+2 WIS)',
+        id: 'wisdom-2', name: 'Enlightenment', description: 'Deep study of the arcane.',
         manaCost: 80, unlocked: false, researched: false,
         unlockEffect: { type: 'stat', stat: 'WIS', value: 2 }, prerequisites: ['basic-meditation']
     },
     {
-        id: 'arcane-focus', name: 'Arcane Focus', description: 'Sharpen your magical precision. (+2 ARC)',
+        id: 'arcane-focus', name: 'Arcane Focus', description: 'Sharpen your magical precision.',
         manaCost: 70, unlocked: false, researched: false,
         unlockEffect: { type: 'stat', stat: 'ARC', value: 2 }, prerequisites: ['unlock-combat']
     },
     {
-        id: 'iron-will', name: 'Iron Will', description: 'Strengthen your mental barriers. (+2 BAR)',
+        id: 'iron-will', name: 'Iron Will', description: 'Strengthen your mental barriers.',
         manaCost: 65, unlocked: false, researched: false,
         unlockEffect: { type: 'stat', stat: 'BAR', value: 2 }, prerequisites: ['fortification']
     },
     {
-        id: 'vitality-training', name: 'Vitality Training', description: 'Train your body to heal. (+2 VIT)',
+        id: 'vitality-training', name: 'Vitality Training', description: 'Train your body to heal.',
         manaCost: 55, unlocked: false, researched: false,
         unlockEffect: { type: 'stat', stat: 'VIT', value: 2 }, prerequisites: ['restoration']
     },

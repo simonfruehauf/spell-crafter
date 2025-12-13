@@ -4,10 +4,10 @@ import { WindowComponent } from '../../shared/components/window/window.component
 import { GameStateService } from '../../core/services/game-state.service';
 
 @Component({
-    selector: 'app-discoveries',
-    standalone: true,
-    imports: [CommonModule, WindowComponent],
-    template: `
+  selector: 'app-discoveries',
+  standalone: true,
+  imports: [CommonModule, WindowComponent],
+  template: `
     <app-window 
       title="Discoveries" 
       windowId="discoveries"
@@ -52,9 +52,9 @@ import { GameStateService } from '../../core/services/game-state.service';
 
         <div class="section-header mt-2">Idle Abilities</div>
         <div class="discoveries-list">
-          @if (idle().autoMeditateUnlocked) {
+          @if (idle().passiveManaRegenUnlocked) {
             <div class="discovery-item">
-              <span class="ability-name">Auto-Meditate</span>
+              <span class="ability-name">Mana Attunement</span>
               <span class="discovery-check">[✓]</span>
             </div>
           }
@@ -64,14 +64,14 @@ import { GameStateService } from '../../core/services/game-state.service';
               <span class="discovery-check">[✓]</span>
             </div>
           }
-          @if (!idle().autoMeditateUnlocked && !idle().autoCombatUnlocked) {
+          @if (!idle().passiveManaRegenUnlocked && !idle().autoCombatUnlocked) {
             <div class="empty-message">No abilities unlocked...</div>
           }
         </div>
       </div>
     </app-window>
   `,
-    styles: [`
+  styles: [`
     .discoveries-content {
       max-height: 450px;
       overflow-y: auto;
@@ -138,44 +138,44 @@ import { GameStateService } from '../../core/services/game-state.service';
   `]
 })
 export class DiscoveriesComponent {
-    @Output() closed = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
 
-    private gameState = inject(GameStateService);
+  private gameState = inject(GameStateService);
 
-    readonly researchTree = this.gameState.researchTree;
-    readonly knownRunes = this.gameState.knownRunes;
-    readonly windows = this.gameState.windows;
-    readonly idle = this.gameState.idle;
+  readonly researchTree = this.gameState.researchTree;
+  readonly knownRunes = this.gameState.knownRunes;
+  readonly windows = this.gameState.windows;
+  readonly idle = this.gameState.idle;
 
-    readonly completedResearch = computed(() =>
-        this.researchTree().filter(node => node.researched)
-    );
+  readonly completedResearch = computed(() =>
+    this.researchTree().filter(node => node.researched)
+  );
 
-    readonly unlockedWindows = computed(() => {
-        const w = this.windows();
-        return Object.entries(w)
-            .filter(([id, state]) => state.unlocked && id !== 'altar' && id !== 'research' && id !== 'stats' && id !== 'settings' && id !== 'discoveries')
-            .map(([id]) => id);
-    });
+  readonly unlockedWindows = computed(() => {
+    const w = this.windows();
+    return Object.entries(w)
+      .filter(([id, state]) => state.unlocked && id !== 'altar' && id !== 'research' && id !== 'stats' && id !== 'settings' && id !== 'discoveries')
+      .map(([id]) => id);
+  });
 
-    getWindowIcon(id: string): string {
-        const icons: Record<string, string> = {
-            scriptorium: '[R]', combat: '[C]', inventory: '[I]', workshop: '[W]',
-            runebook: '[B]', grimoire: '[G]', bestiary: '[M]', chronicle: '[L]',
-        };
-        return icons[id] || '[?]';
-    }
+  getWindowIcon(id: string): string {
+    const icons: Record<string, string> = {
+      scriptorium: '[R]', combat: '[C]', inventory: '[I]', workshop: '[W]',
+      runebook: '[B]', grimoire: '[G]', bestiary: '[M]', chronicle: '[L]',
+    };
+    return icons[id] || '[?]';
+  }
 
-    getWindowLabel(id: string): string {
-        const labels: Record<string, string> = {
-            scriptorium: 'Scriptorium', combat: 'Arena', inventory: 'Vault',
-            workshop: 'Workshop', runebook: 'Runebook', grimoire: 'Grimoire',
-            bestiary: 'Bestiary', chronicle: 'Chronicle',
-        };
-        return labels[id] || id;
-    }
+  getWindowLabel(id: string): string {
+    const labels: Record<string, string> = {
+      scriptorium: 'Scriptorium', combat: 'Arena', inventory: 'Vault',
+      workshop: 'Workshop', runebook: 'Runebook', grimoire: 'Grimoire',
+      bestiary: 'Bestiary', chronicle: 'Chronicle',
+    };
+    return labels[id] || id;
+  }
 
-    onClose(): void {
-        this.closed.emit();
-    }
+  onClose(): void {
+    this.closed.emit();
+  }
 }
