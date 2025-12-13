@@ -136,17 +136,25 @@ export class ResearchComponent {
 
   readonly activeFilter = signal<string | null>(null);
 
-  // Only show incomplete research, sorted by unlocked first then cost, filtered by type
+  // Only show incomplete research, sorted by: buyable -> unlocked but not buyable -> locked
   readonly availableResearch = computed(() => {
     const filter = this.activeFilter();
     return [...this.researchTree()]
       .filter(node => !node.researched)
       .filter(node => filter === null || node.unlockEffect.type === filter)
       .sort((a, b) => {
-        // Unlocked items before locked
+        const aCanAfford = this.canAfford(a);
+        const bCanAfford = this.canAfford(b);
+
+        // Priority 1: Buyable (unlocked + can afford)
+        if (a.unlocked && aCanAfford && !(b.unlocked && bCanAfford)) return -1;
+        if (b.unlocked && bCanAfford && !(a.unlocked && aCanAfford)) return 1;
+
+        // Priority 2: Unlocked but not affordable
         if (a.unlocked && !b.unlocked) return -1;
         if (!a.unlocked && b.unlocked) return 1;
-        // Sort by cost
+
+        // Within same priority, sort by mana cost
         return a.manaCost - b.manaCost;
       });
   });

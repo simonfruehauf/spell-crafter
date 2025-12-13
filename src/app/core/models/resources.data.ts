@@ -92,7 +92,7 @@ export const ALL_RESOURCES: ResourceDef[] = [
     { id: 'goblin_tooth', name: 'Goblin Tooth', category: 'creature', description: 'Sharp and dirty.', rarity: 'common' },
     { id: 'skeleton_bone', name: 'Skeleton Bone', category: 'creature', description: 'Animated remains.', rarity: 'common' },
     { id: 'imp_horn', name: 'Imp Horn', category: 'creature', description: 'Small demon horn.', rarity: 'common' },
-    { id: 'wolf_pelt', name: 'Wolf Pelt', category: 'creature', description: 'Beast fur.', rarity: 'common' },
+    { id: 'wolf_leather', name: 'Wolf Leather', category: 'creature', description: 'Beast fur.', rarity: 'common' },
     { id: 'spider_silk', name: 'Spider Silk', category: 'creature', description: 'Sticky and strong.', rarity: 'common' },
     { id: 'elemental_core', name: 'Elemental Core', category: 'creature', description: 'Heart of an elemental.', rarity: 'uncommon' },
     { id: 'wraith_essence', name: 'Wraith Essence', category: 'creature', description: 'Ghostly remains.', rarity: 'uncommon' },

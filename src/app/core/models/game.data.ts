@@ -265,7 +265,7 @@ export const ENEMIES: Enemy[] = [
 (o   o)
  \\mmm/`, weakness: 'fire',
         lootTable: [
-            { resourceId: 'wolf_pelt', minAmount: 1, maxAmount: 2, chance: 0.7 },
+            { resourceId: 'wolf_leather', minAmount: 1, maxAmount: 2, chance: 0.7 },
             { resourceId: 'healing_moss', minAmount: 1, maxAmount: 2, chance: 0.4 },
             { resourceId: 'thornroot', minAmount: 1, maxAmount: 2, chance: 0.3 },
             { resourceId: 'fireweed', minAmount: 1, maxAmount: 1, chance: 0.2 },
@@ -827,7 +827,7 @@ export const INITIAL_UPGRADES: Upgrade[] = [
     {
         id: 'beast_slayer', name: 'Beast Slayer', description: '+10% damage vs beasts per level.',
         category: 'combat', level: 0, maxLevel: 5,
-        cost: [{ resourceId: 'wolf_pelt', amount: 3 }, { resourceId: 'spider_silk', amount: 5 }],
+        cost: [{ resourceId: 'wolf_leather', amount: 3 }, { resourceId: 'spider_silk', amount: 5 }],
         costMultiplier: 1.5, effect: { type: 'beastDamage', percentPerLevel: 10 }, unlocked: true
     },
 ];
@@ -888,7 +888,7 @@ export const INITIAL_ALCHEMY_RECIPES: AlchemyRecipe[] = [
     {
         id: 'distill-wind', name: 'Distill Wind Essence',
         description: 'Extract wind essence from pelts and moss.',
-        inputs: [{ resourceId: 'wolf_pelt', amount: 3 }, { resourceId: 'healing_moss', amount: 3 }],
+        inputs: [{ resourceId: 'wolf_leather', amount: 3 }, { resourceId: 'healing_moss', amount: 3 }],
         outputs: [{ resourceId: 'wind_essence', amount: 3 }],
         craftTimeMs: 20000, unlocked: true,
     },
@@ -974,12 +974,12 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
     },
     {
         id: 'unlock-runebook', name: 'The Runebook', description: 'A tome of arcane rune knowledge.',
-        manaCost: 55, unlocked: true, researched: false,
+        manaCost: 55, resourceCost: [{ resourceId: 'iron_ingot', amount: 1 }], unlocked: true, researched: false,
         unlockEffect: { type: 'window', windowId: 'runebook' }, prerequisites: []
     },
     {
         id: 'unlock-grimoire', name: 'The Grimoire', description: 'Track your bound spells and mastery.',
-        manaCost: 15, unlocked: false, researched: false,
+        manaCost: 15, resourceCost: [{ resourceId: 'wolf_leather', amount: 1 }], unlocked: false, researched: false,
         unlockEffect: { type: 'window', windowId: 'grimoire' }, prerequisites: ['unlock-scriptorium']
     },
 
@@ -1029,7 +1029,7 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
 
     {
         id: 'unlock-workshop', name: 'The Workshop', description: 'Craft powerful upgrades.',
-        manaCost: 60, resourceCost: [{ resourceId: 'knowledge', amount: 10 }], unlocked: false, researched: false,
+        manaCost: 60, resourceCost: [{ resourceId: 'iron_ore', amount: 5 }, { resourceId: 'copper_ore', amount: 5 }], unlocked: false, researched: false,
         unlockEffect: { type: 'window', windowId: 'workshop' }, prerequisites: ['unlock-combat']
     },
 
@@ -1041,7 +1041,7 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
 
     {
         id: 'unlock-alchemy', name: 'The Alembic', description: 'Unlock the art of transmutation.',
-        manaCost: 65, resourceCost: [{ resourceId: 'insight', amount: 5 }], unlocked: false, researched: false,
+        manaCost: 65, resourceCost: [{ resourceId: 'insight', amount: 3 }], unlocked: false, researched: false,
         unlockEffect: { type: 'window', windowId: 'alchemy' }, prerequisites: ['unlock-workshop']
     },
 

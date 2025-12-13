@@ -73,7 +73,6 @@ export class CombatService {
             ...c,
             inCombat: true,
             currentEnemy: { ...enemy, currentHP: enemy.maxHP },
-            combatLog: [],
             playerTurn: true,
             playerEffects: [],
             enemyEffects: [],
@@ -645,7 +644,7 @@ export class CombatService {
         this.signals.combat.update(c => ({
             ...c,
             combatLog: [
-                ...c.combatLog.slice(-50),
+                ...c.combatLog.slice(-99),
                 { timestamp: new Date(), message: msg, type }
             ]
         }));
