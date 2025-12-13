@@ -523,12 +523,24 @@ export class CombatService {
         if (shield > 0) {
             const absorbed = Math.min(shield, dmg);
             dmg -= absorbed;
-            this.signals.combat.update(x => ({
-                ...x,
-                playerEffects: x.playerEffects
-                    .map(e => e.type === 'shield' ? { ...e, value: e.value - absorbed } : e)
-                    .filter(e => e.type !== 'shield' || e.value > 0)
-            }));
+            // Distribute absorbed damage across shields (drain from first shield first)
+            let remainingAbsorb = absorbed;
+            this.signals.combat.update(x => {
+                const updatedEffects: ActiveEffect[] = [];
+                for (const e of x.playerEffects) {
+                    if (e.type === 'shield' && remainingAbsorb > 0) {
+                        const drain = Math.min(e.value, remainingAbsorb);
+                        remainingAbsorb -= drain;
+                        const newValue = e.value - drain;
+                        if (newValue > 0) {
+                            updatedEffects.push({ ...e, value: newValue });
+                        }
+                    } else {
+                        updatedEffects.push(e);
+                    }
+                }
+                return { ...x, playerEffects: updatedEffects };
+            });
             if (absorbed > 0) this.addCombatLog(`  Shield absorbs ${absorbed}!`, 'effect');
         }
 
