@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, computed, signal, effect, OnDestroy } from '@angular/core';
+import { Component, inject, Output, EventEmitter, computed, signal, effect, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -9,6 +9,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
   selector: 'app-alchemy',
   standalone: true,
   imports: [CommonModule, WindowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-window 
       title="The Alembic" 
