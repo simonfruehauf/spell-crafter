@@ -1,11 +1,11 @@
-import { Component, inject, signal, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, Output, EventEmitter, ChangeDetectionStrategy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
 import { Spell, Enemy } from '../../core/models/game.interfaces';
 import { ENEMIES } from '../../core/models/game.data';
-import { fadeSlide, pulse } from '../../shared/animations/animations';
+import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
 
 @Component({
   selector: 'app-combat',
@@ -13,7 +13,7 @@ import { fadeSlide, pulse } from '../../shared/animations/animations';
   imports: [CommonModule, FormsModule, WindowComponent],
   templateUrl: './combat.component.html',
   styleUrl: './combat.component.scss',
-  animations: [fadeSlide, pulse],
+  animations: [fadeSlide, pulse, shake],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CombatComponent {
@@ -30,6 +30,45 @@ export class CombatComponent {
   readonly enemies = ENEMIES;
   readonly selectedEnemy = signal<Enemy | null>(null);
   readonly selectedSpell = signal<Spell | null>(null);
+
+  // Shake animation state - changes to trigger animation
+  readonly enemyShakeState = signal<'idle' | 'shake'>('idle');
+  readonly playerShakeState = signal<'idle' | 'shake'>('idle');
+
+  // Track previous HP to detect damage
+  private previousEnemyHP = 0;
+  private previousPlayerHP = 0;
+
+  constructor() {
+    // Effect to detect HP changes and trigger shake animations
+    effect(() => {
+      const combat = this.combat();
+      const player = this.player();
+
+      // Check for enemy damage (enemy HP decreased)
+      const currentEnemyHP = combat.currentEnemy?.currentHP ?? 0;
+      if (currentEnemyHP < this.previousEnemyHP && this.previousEnemyHP > 0) {
+        this.triggerEnemyShake();
+      }
+      this.previousEnemyHP = currentEnemyHP;
+
+      // Check for player damage (player HP decreased)
+      if (player.currentHP < this.previousPlayerHP && this.previousPlayerHP > 0) {
+        this.triggerPlayerShake();
+      }
+      this.previousPlayerHP = player.currentHP;
+    });
+  }
+
+  private triggerEnemyShake(): void {
+    this.enemyShakeState.set('shake');
+    setTimeout(() => this.enemyShakeState.set('idle'), 350);
+  }
+
+  private triggerPlayerShake(): void {
+    this.playerShakeState.set('shake');
+    setTimeout(() => this.playerShakeState.set('idle'), 350);
+  }
 
   isLockedOut(): boolean {
     return Date.now() < this.combat().deathLockoutUntil;

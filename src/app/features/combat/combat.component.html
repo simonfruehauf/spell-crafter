@@ -69,7 +69,7 @@
         <!-- Active Combat -->
         <div class="combat-view" @fadeSlide>
             <!-- Enemy Display -->
-            <div class="enemy-display">
+            <div class="enemy-display" [@shake]="enemyShakeState()">
                 <div class="enemy-name-display">{{ combat().currentEnemy?.name }}</div>
                 <pre class="enemy-ascii">{{ combat().currentEnemy?.ascii }}</pre>
                 <div class="bar-container">
@@ -91,7 +91,7 @@
             <div class="combat-divider">---VS---</div>
 
             <!-- Player Display -->
-            <div class="player-display">
+            <div class="player-display" [@shake]="playerShakeState()">
                 <pre class="player-ascii">
     /\
    /  \
