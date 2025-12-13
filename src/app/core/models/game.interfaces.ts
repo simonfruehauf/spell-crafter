@@ -306,7 +306,8 @@ export type ResearchUnlockEffect =
   | { type: 'stat'; stat: keyof PlayerStats; value: number }
   | { type: 'upgrade'; upgradeId: string }
   | { type: 'idle'; idleId: string }
-  | { type: 'maxMana'; value: number };
+  | { type: 'maxMana'; value: number }
+  | { type: 'misc'; value: string }; // For special UI features
 
 /**
  * Workshop upgrade

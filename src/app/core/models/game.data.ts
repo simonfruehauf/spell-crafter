@@ -1000,6 +1000,12 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
     },
 
     {
+        id: 'meditate-header', name: 'Focus Crystal', description: 'Install a meditation focus on the Altar window.',
+        manaCost: 150, unlocked: false, researched: false,
+        unlockEffect: { type: 'misc', value: 'headerMeditate' }, prerequisites: ['basic-meditation']
+    },
+
+    {
         id: 'electromancy', name: 'Electromancy I', description: 'Unlock the Fulgur rune.',
         manaCost: 50, unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'fulgur' }, prerequisites: ['unlock-combat']
@@ -1099,22 +1105,22 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
     {
         id: 'wisdom-2', name: 'Enlightenment', description: 'Deep study of the arcane.',
         manaCost: 100, unlocked: false, researched: false,
-        unlockEffect: { type: 'stat', stat: 'WIS', value: 2 }, prerequisites: ['basic-meditation']
+        unlockEffect: { type: 'stat', stat: 'WIS', value: 1 }, prerequisites: ['basic-meditation']
     },
     {
         id: 'arcane-focus', name: 'Arcane Focus', description: 'Sharpen your magical precision.',
         manaCost: 70, unlocked: false, researched: false,
-        unlockEffect: { type: 'stat', stat: 'ARC', value: 2 }, prerequisites: ['unlock-combat']
+        unlockEffect: { type: 'stat', stat: 'ARC', value: 1 }, prerequisites: ['unlock-combat']
     },
     {
         id: 'iron-will', name: 'Iron Will', description: 'Strengthen your mental barriers.',
         manaCost: 65, unlocked: false, researched: false,
-        unlockEffect: { type: 'stat', stat: 'BAR', value: 2 }, prerequisites: ['fortification']
+        unlockEffect: { type: 'stat', stat: 'BAR', value: 1 }, prerequisites: ['fortification']
     },
     {
         id: 'vitality-training', name: 'Vitality Training', description: 'Train your body to heal.',
         manaCost: 55, unlocked: false, researched: false,
-        unlockEffect: { type: 'stat', stat: 'VIT', value: 2 }, prerequisites: ['restoration']
+        unlockEffect: { type: 'stat', stat: 'VIT', value: 1 }, prerequisites: ['restoration']
     },
 
     // Advanced mana capacity

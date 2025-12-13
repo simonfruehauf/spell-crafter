@@ -27,7 +27,8 @@ import { WindowStates } from '../../../core/models/game.interfaces';
       <div class="bg-gradient-to-r from-win95-blue-start to-win95-blue-end text-white p-[3px_4px] font-bold flex items-center select-none cursor-move"
            (mousedown)="onTitleBarMouseDown($event)">
         <span class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{{ title() }}</span>
-        <div class="flex gap-[2px] ml-1">
+        <div class="flex gap-[2px] ml-1 items-center">
+          <ng-content select="[header-actions]"></ng-content>
           @if (showMinimize()) {
           <button class="w-4 h-[14px] p-0 flex items-center justify-center bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray cursor-pointer text-[10px] leading-none active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[1px] active:pt-[1px]"
                   (click)="toggleMinimize(); $event.stopPropagation()">

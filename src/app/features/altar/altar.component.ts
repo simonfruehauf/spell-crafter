@@ -16,6 +16,15 @@ import { GameStateService } from '../../core/services/game-state.service';
       [initialY]="40" 
       [width]="300"
       (closed)="onClose()">
+      
+      @if (showHeaderMeditate()) {
+        <button header-actions 
+                class="w-20 h-[14px] p-0 flex items-center justify-center bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray cursor-pointer text-[10px] leading-none active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[1px] active:pt-[1px] mr-[2px]"
+                (click)="meditate(); $event.stopPropagation()">
+          <span class="text-win95-black text-[9px]"> -~Meditate~- </span>
+        </button>
+      }
+
       <div class="altar-content">
         <div class="altar-description">
           <p>A sacred altar where arcane energies converge. 
@@ -149,7 +158,15 @@ export class AltarComponent implements OnInit, OnDestroy {
     const bonus = this.gameState.getUpgradeBonus('manaRegen');
     const multiplier = 1 + bonus / 100;
     // 0.025 per tick * 10 ticks/second
+    // 0.025 per tick * 10 ticks/second
     return this.player().WIS * 0.025 * multiplier * 10;
+  });
+
+  readonly showHeaderMeditate = computed(() => {
+    // Need to track researchTree changes if we want this to be reactive to research completion
+    // But researchTree is a signal in GameStateService? Let's check.
+    // Yes, researchTree is a signal in GameStateService (based on usage elsewhere).
+    return this.gameState.researchTree().some(r => r.id === 'meditate-header' && r.researched);
   });
 
   ngOnInit() {
