@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -7,10 +7,11 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
 import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/equipment.data';
 
 @Component({
-    selector: 'app-armory',
-    standalone: true,
-    imports: [CommonModule, WindowComponent],
-    template: `
+  selector: 'app-armory',
+  standalone: true,
+  imports: [CommonModule, WindowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
     <app-window 
       title="The Armory" 
       windowId="armory"
@@ -78,7 +79,7 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
       </div>
     </app-window>
   `,
-    styles: [`
+  styles: [`
     .armory-content {
       display: flex;
       flex-direction: column;
@@ -179,63 +180,63 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
   `]
 })
 export class ArmoryComponent {
-    @Output() closed = new EventEmitter<void>();
-    private gameState = inject(GameStateService);
+  @Output() closed = new EventEmitter<void>();
+  private gameState = inject(GameStateService);
 
-    readonly recipes = this.gameState.equipmentRecipes;
-    readonly resources = this.gameState.resources;
-    readonly craftedEquipment = this.gameState.craftedEquipment;
+  readonly recipes = this.gameState.equipmentRecipes;
+  readonly resources = this.gameState.resources;
+  readonly craftedEquipment = this.gameState.craftedEquipment;
 
-    readonly slots: { id: EquipmentSlot; name: string }[] = [
-        { id: 'head', name: 'Head' },
-        { id: 'face', name: 'Face' },
-        { id: 'accessory', name: 'Accessory' },
-        { id: 'body', name: 'Body' },
-        { id: 'handL', name: 'Left Hand' },
-        { id: 'handR', name: 'Right Hand' },
-        { id: 'relic', name: 'Relic' },
-    ];
+  readonly slots: { id: EquipmentSlot; name: string }[] = [
+    { id: 'head', name: 'Head' },
+    { id: 'face', name: 'Face' },
+    { id: 'accessory', name: 'Accessory' },
+    { id: 'body', name: 'Body' },
+    { id: 'handL', name: 'Left Hand' },
+    { id: 'handR', name: 'Right Hand' },
+    { id: 'relic', name: 'Relic' },
+  ];
 
-    getRecipesBySlot(slot: EquipmentSlot): EquipmentRecipe[] {
-        return this.recipes().filter(r => r.resultItem.slot === slot && r.unlocked);
+  getRecipesBySlot(slot: EquipmentSlot): EquipmentRecipe[] {
+    return this.recipes().filter(r => r.resultItem.slot === slot && r.unlocked);
+  }
+
+  getResourceName(id: string): string {
+    return RESOURCE_NAMES[id] || id;
+  }
+
+  getSlotName(slot: EquipmentSlot): string {
+    return EQUIPMENT_SLOT_NAMES[slot] || slot;
+  }
+
+  hasResource(cost: ResourceCost): boolean {
+    return (this.resources().crafting[cost.resourceId] || 0) >= cost.amount;
+  }
+
+  canCraft(recipe: EquipmentRecipe): boolean {
+    return recipe.cost.every(c => this.hasResource(c));
+  }
+
+  hasCrafted(recipe: EquipmentRecipe): boolean {
+    return this.craftedEquipment().some(i => i.id === recipe.resultItem.id) ||
+      Object.values(this.gameState.equippedItems()).some(i => i?.id === recipe.resultItem.id);
+  }
+
+  formatBonus(bonus: { type: string; stat?: string; value: number }): string {
+    const sign = bonus.value >= 0 ? '+' : '';
+    if (bonus.type === 'stat' && bonus.stat) {
+      return `${sign}${bonus.value} ${bonus.stat}`;
     }
+    const name = EQUIPMENT_BONUS_NAMES[bonus.type] || bonus.type;
+    const isPercent = ['damagePercent', 'critChance', 'critDamage', 'lootChance', 'lootQuantity'].includes(bonus.type);
+    return `${sign}${bonus.value}${isPercent ? '%' : ''} ${name}`;
+  }
 
-    getResourceName(id: string): string {
-        return RESOURCE_NAMES[id] || id;
-    }
+  craft(recipeId: string): void {
+    this.gameState.craftEquipment(recipeId);
+  }
 
-    getSlotName(slot: EquipmentSlot): string {
-        return EQUIPMENT_SLOT_NAMES[slot] || slot;
-    }
-
-    hasResource(cost: ResourceCost): boolean {
-        return (this.resources().crafting[cost.resourceId] || 0) >= cost.amount;
-    }
-
-    canCraft(recipe: EquipmentRecipe): boolean {
-        return recipe.cost.every(c => this.hasResource(c));
-    }
-
-    hasCrafted(recipe: EquipmentRecipe): boolean {
-        return this.craftedEquipment().some(i => i.id === recipe.resultItem.id) ||
-            Object.values(this.gameState.equippedItems()).some(i => i?.id === recipe.resultItem.id);
-    }
-
-    formatBonus(bonus: { type: string; stat?: string; value: number }): string {
-        const sign = bonus.value >= 0 ? '+' : '';
-        if (bonus.type === 'stat' && bonus.stat) {
-            return `${sign}${bonus.value} ${bonus.stat}`;
-        }
-        const name = EQUIPMENT_BONUS_NAMES[bonus.type] || bonus.type;
-        const isPercent = ['damagePercent', 'critChance', 'critDamage', 'lootChance', 'lootQuantity'].includes(bonus.type);
-        return `${sign}${bonus.value}${isPercent ? '%' : ''} ${name}`;
-    }
-
-    craft(recipeId: string): void {
-        this.gameState.craftEquipment(recipeId);
-    }
-
-    onClose(): void {
-        this.closed.emit();
-    }
+  onClose(): void {
+    this.closed.emit();
+  }
 }

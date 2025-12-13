@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, signal } from '@angular/core';
+import { Component, inject, Output, EventEmitter, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WindowComponent } from '../../shared/components/window/window.component';
@@ -11,6 +11,7 @@ import { INITIAL_EQUIPMENT_RECIPES } from '../../core/models/equipment.data';
     selector: 'app-dev-console',
     standalone: true,
     imports: [CommonModule, FormsModule, WindowComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <app-window 
             title="Developer Console"

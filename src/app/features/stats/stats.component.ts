@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, signal } from '@angular/core';
+import { Component, inject, Output, EventEmitter, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -22,6 +22,7 @@ const STAT_INFO: Record<string, StatInfo> = {
   selector: 'app-stats',
   standalone: true,
   imports: [CommonModule, WindowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-window 
       title="Mage Statistics" 

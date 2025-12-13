@@ -1,14 +1,15 @@
-import { Component, inject, signal, Output, EventEmitter } from '@angular/core';
+import { Component, inject, signal, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
 
 @Component({
-    selector: 'app-settings',
-    standalone: true,
-    imports: [CommonModule, FormsModule, WindowComponent],
-    template: `
+  selector: 'app-settings',
+  standalone: true,
+  imports: [CommonModule, FormsModule, WindowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
     <app-window 
       title="Settings" 
       windowId="settings"
@@ -92,7 +93,7 @@ import { GameStateService } from '../../core/services/game-state.service';
       </div>
     </app-window>
   `,
-    styles: [`
+  styles: [`
     .settings-content {
       display: flex;
       flex-direction: column;
@@ -144,51 +145,51 @@ import { GameStateService } from '../../core/services/game-state.service';
   `]
 })
 export class SettingsComponent {
-    @Output() closed = new EventEmitter<void>();
-    private gameState = inject(GameStateService);
+  @Output() closed = new EventEmitter<void>();
+  private gameState = inject(GameStateService);
 
-    readonly combat = this.gameState.combat;
-    readonly resources = this.gameState.resources;
-    readonly craftedSpells = this.gameState.craftedSpells;
+  readonly combat = this.gameState.combat;
+  readonly resources = this.gameState.resources;
+  readonly craftedSpells = this.gameState.craftedSpells;
 
-    readonly exportedData = signal<string>('');
-    readonly showResetConfirm = signal(false);
-    readonly importMessage = signal<string>('');
-    readonly importError = signal(false);
-    importData = '';
+  readonly exportedData = signal<string>('');
+  readonly showResetConfirm = signal(false);
+  readonly importMessage = signal<string>('');
+  readonly importError = signal(false);
+  importData = '';
 
-    exportSave(): void {
-        this.exportedData.set(this.gameState.exportSave());
+  exportSave(): void {
+    this.exportedData.set(this.gameState.exportSave());
+  }
+
+  selectAll(event: Event): void {
+    (event.target as HTMLTextAreaElement).select();
+  }
+
+  importSave(): void {
+    if (this.gameState.importSave(this.importData.trim())) {
+      this.importMessage.set('Import successful!');
+      this.importError.set(false);
+      this.importData = '';
+    } else {
+      this.importMessage.set('Invalid save data!');
+      this.importError.set(true);
     }
+    setTimeout(() => this.importMessage.set(''), 3000);
+  }
 
-    selectAll(event: Event): void {
-        (event.target as HTMLTextAreaElement).select();
-    }
+  confirmReset(): void {
+    this.showResetConfirm.set(true);
+  }
 
-    importSave(): void {
-        if (this.gameState.importSave(this.importData.trim())) {
-            this.importMessage.set('Import successful!');
-            this.importError.set(false);
-            this.importData = '';
-        } else {
-            this.importMessage.set('Invalid save data!');
-            this.importError.set(true);
-        }
-        setTimeout(() => this.importMessage.set(''), 3000);
-    }
+  cancelReset(): void {
+    this.showResetConfirm.set(false);
+  }
 
-    confirmReset(): void {
-        this.showResetConfirm.set(true);
-    }
+  doReset(): void {
+    this.gameState.resetGame();
+    this.showResetConfirm.set(false);
+  }
 
-    cancelReset(): void {
-        this.showResetConfirm.set(false);
-    }
-
-    doReset(): void {
-        this.gameState.resetGame();
-        this.showResetConfirm.set(false);
-    }
-
-    onClose(): void { this.closed.emit(); }
+  onClose(): void { this.closed.emit(); }
 }

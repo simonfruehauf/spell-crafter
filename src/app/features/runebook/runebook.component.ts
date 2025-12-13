@@ -1,14 +1,15 @@
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
 import { RUNES } from '../../core/models/game.data';
 
 @Component({
-    selector: 'app-runebook',
-    standalone: true,
-    imports: [CommonModule, WindowComponent],
-    template: `
+  selector: 'app-runebook',
+  standalone: true,
+  imports: [CommonModule, WindowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
     <app-window 
       title="Runebook" 
       windowId="runebook"
@@ -62,7 +63,7 @@ import { RUNES } from '../../core/models/game.data';
       </div>
     </app-window>
   `,
-    styles: [`
+  styles: [`
     .runebook-content {
       display: flex;
       flex-direction: column;
@@ -101,36 +102,36 @@ import { RUNES } from '../../core/models/game.data';
   `]
 })
 export class RunebookComponent {
-    @Output() closed = new EventEmitter<void>();
-    private gameState = inject(GameStateService);
-    readonly knownRunes = this.gameState.knownRunes;
+  @Output() closed = new EventEmitter<void>();
+  private gameState = inject(GameStateService);
+  readonly knownRunes = this.gameState.knownRunes;
 
-    get undiscoveredRunes() {
-        const known = new Set(this.knownRunes().map(r => r.id));
-        return Object.values(RUNES).filter(r => !known.has(r.id));
-    }
+  get undiscoveredRunes() {
+    const known = new Set(this.knownRunes().map(r => r.id));
+    return Object.values(RUNES).filter(r => !known.has(r.id));
+  }
 
-    getEffectDescription(type: string): string {
-        const descriptions: Record<string, string> = {
-            damage: 'Deals direct damage',
-            heal: 'Restores health',
-            dot: 'Damage over time',
-            hot: 'Healing over time',
-            buff: 'Increases a stat',
-            debuff: 'Decreases enemy stat',
-            lifesteal: 'Damage that heals you',
-            shield: 'Absorbs damage',
-            manaDrain: 'Restores mana on hit',
-            execute: 'Bonus vs low HP',
-            crit: 'Chance to double damage',
-            stun: 'Briefly stuns enemy',
-            slow: 'Slows enemy actions',
-            piercing: 'Ignores some armor',
-            splash: 'Hits multiple targets',
-            chain: 'Jumps between enemies',
-        };
-        return descriptions[type] || 'Special effect';
-    }
+  getEffectDescription(type: string): string {
+    const descriptions: Record<string, string> = {
+      damage: 'Deals direct damage',
+      heal: 'Restores health',
+      dot: 'Damage over time',
+      hot: 'Healing over time',
+      buff: 'Increases a stat',
+      debuff: 'Decreases enemy stat',
+      lifesteal: 'Damage that heals you',
+      shield: 'Absorbs damage',
+      manaDrain: 'Restores mana on hit',
+      execute: 'Bonus vs low HP',
+      crit: 'Chance to double damage',
+      stun: 'Briefly stuns enemy',
+      slow: 'Slows enemy actions',
+      piercing: 'Ignores some armor',
+      splash: 'Hits multiple targets',
+      chain: 'Jumps between enemies',
+    };
+    return descriptions[type] || 'Special effect';
+  }
 
-    onClose(): void { this.closed.emit(); }
+  onClose(): void { this.closed.emit(); }
 }

@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -6,10 +6,11 @@ import { Upgrade, ResourceCost } from '../../core/models/game.interfaces';
 import { RESOURCE_NAMES } from '../../core/models/resources.data';
 
 @Component({
-    selector: 'app-workshop',
-    standalone: true,
-    imports: [CommonModule, WindowComponent],
-    template: `
+  selector: 'app-workshop',
+  standalone: true,
+  imports: [CommonModule, WindowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
     <app-window 
       title="The Workshop" 
       windowId="workshop"
@@ -58,7 +59,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       </div>
     </app-window>
   `,
-    styles: [`
+  styles: [`
     .workshop-content {
       display: flex;
       flex-direction: column;
@@ -97,41 +98,41 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
   `]
 })
 export class WorkshopComponent {
-    @Output() closed = new EventEmitter<void>();
-    private gameState = inject(GameStateService);
-    readonly upgrades = this.gameState.upgrades;
-    readonly resources = this.gameState.resources;
+  @Output() closed = new EventEmitter<void>();
+  private gameState = inject(GameStateService);
+  readonly upgrades = this.gameState.upgrades;
+  readonly resources = this.gameState.resources;
 
-    readonly categories = [
-        { id: 'stats', name: 'Statistics' },
-        { id: 'combat', name: 'Combat' },
-        { id: 'idle', name: 'Idle' },
-        { id: 'crafting', name: 'Crafting' },
-    ];
+  readonly categories = [
+    { id: 'stats', name: 'Statistics' },
+    { id: 'combat', name: 'Combat' },
+    { id: 'idle', name: 'Idle' },
+    { id: 'crafting', name: 'Crafting' },
+  ];
 
-    getUpgradesByCategory(cat: string): Upgrade[] {
-        return this.upgrades().filter(u => u.category === cat && u.unlocked);
-    }
+  getUpgradesByCategory(cat: string): Upgrade[] {
+    return this.upgrades().filter(u => u.category === cat && u.unlocked);
+  }
 
-    getUpgradeCost(u: Upgrade): ResourceCost[] {
-        return this.gameState.getUpgradeCost(u);
-    }
+  getUpgradeCost(u: Upgrade): ResourceCost[] {
+    return this.gameState.getUpgradeCost(u);
+  }
 
-    getResourceName(id: string): string {
-        return RESOURCE_NAMES[id] || id;
-    }
+  getResourceName(id: string): string {
+    return RESOURCE_NAMES[id] || id;
+  }
 
-    hasResource(cost: ResourceCost): boolean {
-        return (this.resources().crafting[cost.resourceId] || 0) >= cost.amount;
-    }
+  hasResource(cost: ResourceCost): boolean {
+    return (this.resources().crafting[cost.resourceId] || 0) >= cost.amount;
+  }
 
-    canAffordUpgrade(id: string): boolean {
-        return this.gameState.canAffordUpgrade(id);
-    }
+  canAffordUpgrade(id: string): boolean {
+    return this.gameState.canAffordUpgrade(id);
+  }
 
-    purchaseUpgrade(id: string): void {
-        this.gameState.purchaseUpgrade(id);
-    }
+  purchaseUpgrade(id: string): void {
+    this.gameState.purchaseUpgrade(id);
+  }
 
-    onClose(): void { this.closed.emit(); }
+  onClose(): void { this.closed.emit(); }
 }

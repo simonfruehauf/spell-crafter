@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ElementRef, OnInit, inject, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ElementRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { windowAnimation } from '../../animations/animations';
 import { GameStateService } from '../../../core/services/game-state.service';
@@ -10,6 +10,7 @@ import { WindowStates } from '../../../core/models/game.interfaces';
     imports: [CommonModule],
     templateUrl: './window.component.html',
     styleUrl: './window.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [windowAnimation]
 })
 export class WindowComponent implements OnInit {

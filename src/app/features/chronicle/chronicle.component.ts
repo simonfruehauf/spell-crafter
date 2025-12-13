@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, ElementRef, ViewChild, effect } from '@angular/core';
+import { Component, inject, Output, EventEmitter, ElementRef, ViewChild, effect, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -7,6 +7,7 @@ import { GameStateService } from '../../core/services/game-state.service';
   selector: 'app-chronicle',
   standalone: true,
   imports: [CommonModule, WindowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-window 
       title="Battle Chronicle" 

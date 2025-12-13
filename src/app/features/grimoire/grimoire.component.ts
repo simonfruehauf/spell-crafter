@@ -1,13 +1,14 @@
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
 
 @Component({
-    selector: 'app-grimoire',
-    standalone: true,
-    imports: [CommonModule, WindowComponent],
-    template: `
+  selector: 'app-grimoire',
+  standalone: true,
+  imports: [CommonModule, WindowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
     <app-window 
       title="Grimoire" 
       windowId="grimoire"
@@ -53,7 +54,7 @@ import { GameStateService } from '../../core/services/game-state.service';
       </div>
     </app-window>
   `,
-    styles: [`
+  styles: [`
     .grimoire-content {
       display: flex;
       flex-direction: column;
@@ -127,24 +128,24 @@ import { GameStateService } from '../../core/services/game-state.service';
   `]
 })
 export class GrimoireComponent {
-    @Output() closed = new EventEmitter<void>();
-    private gameState = inject(GameStateService);
-    readonly craftedSpells = this.gameState.craftedSpells;
-    readonly player = this.gameState.player;
+  @Output() closed = new EventEmitter<void>();
+  private gameState = inject(GameStateService);
+  readonly craftedSpells = this.gameState.craftedSpells;
+  readonly player = this.gameState.player;
 
-    getXpPercent(spell: { experience: number; level: number }): number {
-        const xpToLevel = spell.level * 50;
-        return Math.min(100, (spell.experience / xpToLevel) * 100);
-    }
+  getXpPercent(spell: { experience: number; level: number }): number {
+    const xpToLevel = spell.level * 50;
+    return Math.min(100, (spell.experience / xpToLevel) * 100);
+  }
 
-    getXpToLevel(spell: { level: number }): number {
-        return spell.level * 50;
-    }
+  getXpToLevel(spell: { level: number }): number {
+    return spell.level * 50;
+  }
 
-    getSpellDamage(spell: { calculatedDamage: number; level: number }): number {
-        // Level bonus: +10% per level
-        return Math.floor(spell.calculatedDamage * (1 + (spell.level - 1) * 0.1));
-    }
+  getSpellDamage(spell: { calculatedDamage: number; level: number }): number {
+    // Level bonus: +10% per level
+    return Math.floor(spell.calculatedDamage * (1 + (spell.level - 1) * 0.1));
+  }
 
-    onClose(): void { this.closed.emit(); }
+  onClose(): void { this.closed.emit(); }
 }

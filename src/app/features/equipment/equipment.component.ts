@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, signal } from '@angular/core';
+import { Component, inject, Output, EventEmitter, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -6,10 +6,11 @@ import { EquipmentItem, EquipmentSlot } from '../../core/models/game.interfaces'
 import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/equipment.data';
 
 @Component({
-    selector: 'app-equipment',
-    standalone: true,
-    imports: [CommonModule, WindowComponent],
-    template: `
+  selector: 'app-equipment',
+  standalone: true,
+  imports: [CommonModule, WindowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
     <app-window 
       title="Equipment" 
       windowId="equipment"
@@ -81,7 +82,7 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
       </div>
     </app-window>
   `,
-    styles: [`
+  styles: [`
     .equipment-content {
       display: flex;
       flex-direction: column;
@@ -208,63 +209,63 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
   `]
 })
 export class EquipmentComponent {
-    @Output() closed = new EventEmitter<void>();
-    private gameState = inject(GameStateService);
+  @Output() closed = new EventEmitter<void>();
+  private gameState = inject(GameStateService);
 
-    readonly equippedItems = this.gameState.equippedItems;
-    readonly craftedEquipment = this.gameState.craftedEquipment;
+  readonly equippedItems = this.gameState.equippedItems;
+  readonly craftedEquipment = this.gameState.craftedEquipment;
 
-    readonly selectedSlot = signal<EquipmentSlot | null>(null);
+  readonly selectedSlot = signal<EquipmentSlot | null>(null);
 
-    readonly slots: { id: EquipmentSlot; name: string }[] = [
-        { id: 'head', name: 'Head' },
-        { id: 'face', name: 'Face' },
-        { id: 'accessory', name: 'Accessory' },
-        { id: 'body', name: 'Body' },
-        { id: 'handL', name: 'Left Hand' },
-        { id: 'handR', name: 'Right Hand' },
-        { id: 'relic', name: 'Relic' },
-    ];
+  readonly slots: { id: EquipmentSlot; name: string }[] = [
+    { id: 'head', name: 'Head' },
+    { id: 'face', name: 'Face' },
+    { id: 'accessory', name: 'Accessory' },
+    { id: 'body', name: 'Body' },
+    { id: 'handL', name: 'Left Hand' },
+    { id: 'handR', name: 'Right Hand' },
+    { id: 'relic', name: 'Relic' },
+  ];
 
-    getEquipped(slot: EquipmentSlot): EquipmentItem | null {
-        return this.equippedItems()[slot];
+  getEquipped(slot: EquipmentSlot): EquipmentItem | null {
+    return this.equippedItems()[slot];
+  }
+
+  getSlotName(slot: EquipmentSlot): string {
+    return EQUIPMENT_SLOT_NAMES[slot] || slot;
+  }
+
+  getAvailableForSlot(slot: EquipmentSlot): EquipmentItem[] {
+    return this.craftedEquipment().filter(i => i.slot === slot);
+  }
+
+  toggleSlot(slot: EquipmentSlot): void {
+    if (this.selectedSlot() === slot) {
+      this.selectedSlot.set(null);
+    } else {
+      this.selectedSlot.set(slot);
     }
+  }
 
-    getSlotName(slot: EquipmentSlot): string {
-        return EQUIPMENT_SLOT_NAMES[slot] || slot;
+  formatBonus(bonus: { type: string; stat?: string; value: number }): string {
+    const sign = bonus.value >= 0 ? '+' : '';
+    if (bonus.type === 'stat' && bonus.stat) {
+      return `${sign}${bonus.value} ${bonus.stat}`;
     }
+    const name = EQUIPMENT_BONUS_NAMES[bonus.type] || bonus.type;
+    const isPercent = ['damagePercent', 'critChance', 'critDamage', 'lootChance', 'lootQuantity'].includes(bonus.type);
+    return `${sign}${bonus.value}${isPercent ? '%' : ''} ${name}`;
+  }
 
-    getAvailableForSlot(slot: EquipmentSlot): EquipmentItem[] {
-        return this.craftedEquipment().filter(i => i.slot === slot);
-    }
+  equip(itemId: string): void {
+    this.gameState.equipItem(itemId);
+  }
 
-    toggleSlot(slot: EquipmentSlot): void {
-        if (this.selectedSlot() === slot) {
-            this.selectedSlot.set(null);
-        } else {
-            this.selectedSlot.set(slot);
-        }
-    }
+  unequip(slot: EquipmentSlot): void {
+    this.gameState.unequipItem(slot);
+  }
 
-    formatBonus(bonus: { type: string; stat?: string; value: number }): string {
-        const sign = bonus.value >= 0 ? '+' : '';
-        if (bonus.type === 'stat' && bonus.stat) {
-            return `${sign}${bonus.value} ${bonus.stat}`;
-        }
-        const name = EQUIPMENT_BONUS_NAMES[bonus.type] || bonus.type;
-        const isPercent = ['damagePercent', 'critChance', 'critDamage', 'lootChance', 'lootQuantity'].includes(bonus.type);
-        return `${sign}${bonus.value}${isPercent ? '%' : ''} ${name}`;
-    }
-
-    equip(itemId: string): void {
-        this.gameState.equipItem(itemId);
-    }
-
-    unequip(slot: EquipmentSlot): void {
-        this.gameState.unequipItem(slot);
-    }
-
-    onClose(): void {
-        this.closed.emit();
-    }
+  onClose(): void {
+    this.closed.emit();
+  }
 }

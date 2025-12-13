@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -6,10 +6,11 @@ import { ENEMIES } from '../../core/models/game.data';
 import { Enemy } from '../../core/models/game.interfaces';
 
 @Component({
-    selector: 'app-bestiary',
-    standalone: true,
-    imports: [CommonModule, WindowComponent],
-    template: `
+  selector: 'app-bestiary',
+  standalone: true,
+  imports: [CommonModule, WindowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
     <app-window 
       title="Bestiary" 
       windowId="bestiary"
@@ -61,7 +62,7 @@ import { Enemy } from '../../core/models/game.interfaces';
       </div>
     </app-window>
   `,
-    styles: [`
+  styles: [`
     .bestiary-content {
       display: flex;
       flex-direction: column;
@@ -112,18 +113,18 @@ import { Enemy } from '../../core/models/game.interfaces';
   `]
 })
 export class BestiaryComponent {
-    @Output() closed = new EventEmitter<void>();
-    private gameState = inject(GameStateService);
-    readonly combat = this.gameState.combat;
-    readonly enemies = ENEMIES;
+  @Output() closed = new EventEmitter<void>();
+  private gameState = inject(GameStateService);
+  readonly combat = this.gameState.combat;
+  readonly enemies = ENEMIES;
 
-    isKnown(id: string): boolean {
-        return (this.combat().enemyDefeats[id] || 0) > 0;
-    }
+  isKnown(id: string): boolean {
+    return (this.combat().enemyDefeats[id] || 0) > 0;
+  }
 
-    getDefeats(id: string): number {
-        return this.combat().enemyDefeats[id] || 0;
-    }
+  getDefeats(id: string): number {
+    return this.combat().enemyDefeats[id] || 0;
+  }
 
-    onClose(): void { this.closed.emit(); }
+  onClose(): void { this.closed.emit(); }
 }

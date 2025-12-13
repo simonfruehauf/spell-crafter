@@ -1,14 +1,15 @@
-import { Component, Input, ElementRef, AfterViewChecked, ViewChild } from '@angular/core';
+import { Component, Input, ElementRef, AfterViewChecked, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CombatLogEntry } from '../../../core/models/game.interfaces';
 import { listItem } from '../../../shared/animations/animations';
 
 @Component({
-    selector: 'app-combat-log',
-    standalone: true,
-    imports: [CommonModule],
-    animations: [listItem],
-    template: `
+  selector: 'app-combat-log',
+  standalone: true,
+  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [listItem],
+  template: `
     <div class="combat-log-container">
       <div class="log-header">Combat Log</div>
       <div class="log-area" #logContainer>
@@ -23,7 +24,7 @@ import { listItem } from '../../../shared/animations/animations';
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .combat-log-container {
       border: 2px solid;
       border-color: #808080 #ffffff #ffffff #808080;
@@ -69,23 +70,23 @@ import { listItem } from '../../../shared/animations/animations';
   `]
 })
 export class CombatLogComponent implements AfterViewChecked {
-    @Input() log: CombatLogEntry[] = [];
-    @ViewChild('logContainer') private logContainer!: ElementRef<HTMLDivElement>;
+  @Input() log: CombatLogEntry[] = [];
+  @ViewChild('logContainer') private logContainer!: ElementRef<HTMLDivElement>;
 
-    private previousLogLength = 0;
+  private previousLogLength = 0;
 
-    ngAfterViewChecked(): void {
-        // Auto-scroll to bottom when new entries are added
-        if (this.log.length !== this.previousLogLength) {
-            this.previousLogLength = this.log.length;
-            this.scrollToBottom();
-        }
+  ngAfterViewChecked(): void {
+    // Auto-scroll to bottom when new entries are added
+    if (this.log.length !== this.previousLogLength) {
+      this.previousLogLength = this.log.length;
+      this.scrollToBottom();
     }
+  }
 
-    private scrollToBottom(): void {
-        if (this.logContainer) {
-            const container = this.logContainer.nativeElement;
-            container.scrollTop = container.scrollHeight;
-        }
+  private scrollToBottom(): void {
+    if (this.logContainer) {
+      const container = this.logContainer.nativeElement;
+      container.scrollTop = container.scrollHeight;
     }
+  }
 }
