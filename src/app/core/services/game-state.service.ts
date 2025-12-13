@@ -516,9 +516,9 @@ export class GameStateService implements OnDestroy {
         return {
             altar: { unlocked: true, visible: true },
             research: { unlocked: true, visible: true },
-            scriptorium: { unlocked: false, visible: false },
-            combat: { unlocked: false, visible: false },
-            inventory: { unlocked: false, visible: false },
+            scriptorium: { unlocked: false, visible: false, x: 30, y: 320 },
+            laboratory: { unlocked: false, visible: false, x: 400, y: 300 },
+            combat: { unlocked: false, visible: false, x: 500, y: 40 }, inventory: { unlocked: false, visible: false },
             workshop: { unlocked: false, visible: false },
             runebook: { unlocked: false, visible: false },
             grimoire: { unlocked: false, visible: false },

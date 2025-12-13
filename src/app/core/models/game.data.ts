@@ -949,7 +949,7 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
     },
     {
         id: 'mana-capacity-3', name: 'Expanded Mind III', description: 'Increase max mana to 100.',
-        manaCost: 60, unlocked: false, researched: false,
+        manaCost: 60, resourceCost: [{ resourceId: 'knowledge', amount: 5 }], unlocked: false, researched: false,
         unlockEffect: { type: 'maxMana', value: 25 }, prerequisites: ['mana-capacity-2']
     },
     {
@@ -1001,8 +1001,14 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
 
     {
         id: 'meditate-header', name: 'Focus Crystal', description: 'Install a meditation focus on the Altar window.',
-        manaCost: 150, unlocked: false, researched: false,
+        manaCost: 150, resourceCost: [{ resourceId: 'insight', amount: 1 }], unlocked: false, researched: false,
         unlockEffect: { type: 'misc', value: 'headerMeditate' }, prerequisites: ['basic-meditation']
+    },
+
+    {
+        id: 'unlock-laboratory', name: 'Arcane Deconstruction', description: 'Unlock the Laboratory to deconstruct resources.',
+        manaCost: 50, unlocked: false, researched: false,
+        unlockEffect: { type: 'window', windowId: 'laboratory' }, prerequisites: ['unlock-combat']
     },
 
     {
@@ -1012,51 +1018,51 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
     },
     {
         id: 'geomancy', name: 'Geomancy I', description: 'Unlock the Terra rune.',
-        manaCost: 50, unlocked: false, researched: false,
+        manaCost: 50, resourceCost: [{ resourceId: 'knowledge', amount: 5 }], unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'terra' }, prerequisites: ['unlock-combat']
     },
     {
         id: 'restoration', name: 'Restoration I', description: 'Unlock the Vita rune.',
-        manaCost: 45, unlocked: false, researched: false,
+        manaCost: 45, resourceCost: [{ resourceId: 'knowledge', amount: 5 }], unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'vita' }, prerequisites: ['unlock-combat']
     },
 
     {
         id: 'unlock-workshop', name: 'The Workshop', description: 'Craft powerful upgrades.',
-        manaCost: 60, unlocked: false, researched: false,
+        manaCost: 60, resourceCost: [{ resourceId: 'knowledge', amount: 10 }], unlocked: false, researched: false,
         unlockEffect: { type: 'window', windowId: 'workshop' }, prerequisites: ['unlock-combat']
     },
 
     {
         id: 'unlock-armory', name: 'The Armory', description: 'Craft magical equipment to empower yourself.',
-        manaCost: 70, unlocked: false, researched: false,
+        manaCost: 70, resourceCost: [{ resourceId: 'insight', amount: 5 }], unlocked: false, researched: false,
         unlockEffect: { type: 'window', windowId: 'armory' }, prerequisites: ['unlock-workshop']
     },
 
     {
         id: 'unlock-alchemy', name: 'The Alembic', description: 'Unlock the art of transmutation.',
-        manaCost: 65, unlocked: false, researched: false,
+        manaCost: 65, resourceCost: [{ resourceId: 'insight', amount: 5 }], unlocked: false, researched: false,
         unlockEffect: { type: 'window', windowId: 'alchemy' }, prerequisites: ['unlock-workshop']
     },
 
     {
         id: 'swift-casting', name: 'Swift Incantations', description: 'Unlock the Velox rune.',
-        manaCost: 40, unlocked: false, researched: false,
+        manaCost: 40, resourceCost: [{ resourceId: 'knowledge', amount: 8 }], unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'velox' }, prerequisites: ['unlock-combat']
     },
     {
         id: 'fortification', name: 'Fortification', description: 'Unlock the Fortis rune.',
-        manaCost: 55, unlocked: false, researched: false,
+        manaCost: 55, resourceCost: [{ resourceId: 'knowledge', amount: 8 }], unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'fortis' }, prerequisites: ['restoration']
     },
     {
         id: 'necromancy', name: 'Dark Studies', description: 'Unlock the Mortem rune.',
-        manaCost: 60, unlocked: false, researched: false,
+        manaCost: 60, resourceCost: [{ resourceId: 'knowledge', amount: 8 }], unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'mortem' }, prerequisites: ['restoration']
     },
     {
         id: 'holy-magic', name: 'Holy Magic', description: 'Unlock the Lux rune.',
-        manaCost: 55, unlocked: false, researched: false,
+        manaCost: 55, resourceCost: [{ resourceId: 'knowledge', amount: 8 }], unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'lux' }, prerequisites: ['restoration']
     },
 
@@ -1090,7 +1096,7 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
     // Auto-meditate removed - consolidated into Mana Attunement
     {
         id: 'auto-combat', name: 'Battle Instinct', description: 'Unlock automatic combat.',
-        manaCost: 60, unlocked: false, researched: false,
+        manaCost: 60, resourceCost: [{ resourceId: 'insight', amount: 1 }], unlocked: false, researched: false,
         unlockEffect: { type: 'idle', idleId: 'autoCombat' }, prerequisites: ['unlock-combat']
     },
 
@@ -1104,56 +1110,56 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
     // Advanced stats research
     {
         id: 'wisdom-2', name: 'Enlightenment', description: 'Deep study of the arcane.',
-        manaCost: 100, unlocked: false, researched: false,
+        manaCost: 100, resourceCost: [{ resourceId: 'knowledge', amount: 15 }], unlocked: false, researched: false,
         unlockEffect: { type: 'stat', stat: 'WIS', value: 1 }, prerequisites: ['basic-meditation']
     },
     {
         id: 'arcane-focus', name: 'Arcane Focus', description: 'Sharpen your magical precision.',
-        manaCost: 70, unlocked: false, researched: false,
+        manaCost: 70, resourceCost: [{ resourceId: 'knowledge', amount: 15 }], unlocked: false, researched: false,
         unlockEffect: { type: 'stat', stat: 'ARC', value: 1 }, prerequisites: ['unlock-combat']
     },
     {
         id: 'iron-will', name: 'Iron Will', description: 'Strengthen your mental barriers.',
-        manaCost: 65, unlocked: false, researched: false,
+        manaCost: 65, resourceCost: [{ resourceId: 'knowledge', amount: 15 }], unlocked: false, researched: false,
         unlockEffect: { type: 'stat', stat: 'BAR', value: 1 }, prerequisites: ['fortification']
     },
     {
         id: 'vitality-training', name: 'Vitality Training', description: 'Train your body to heal.',
-        manaCost: 55, unlocked: false, researched: false,
+        manaCost: 55, resourceCost: [{ resourceId: 'knowledge', amount: 15 }], unlocked: false, researched: false,
         unlockEffect: { type: 'stat', stat: 'VIT', value: 1 }, prerequisites: ['restoration']
     },
 
     // Advanced mana capacity
     {
         id: 'mana-capacity-4', name: 'Expanded Mind IV', description: 'Increase max mana to 125.',
-        manaCost: 80, unlocked: false, researched: false,
+        manaCost: 80, resourceCost: [{ resourceId: 'knowledge', amount: 20 }], unlocked: false, researched: false,
         unlockEffect: { type: 'maxMana', value: 25 }, prerequisites: ['mana-capacity-3']
     },
     {
         id: 'mana-capacity-5', name: 'Expanded Mind V', description: 'Increase max mana to 150.',
-        manaCost: 100, unlocked: false, researched: false,
+        manaCost: 100, resourceCost: [{ resourceId: 'knowledge', amount: 30 }], unlocked: false, researched: false,
         unlockEffect: { type: 'maxMana', value: 25 }, prerequisites: ['mana-capacity-4']
     },
 
     // More rune unlocks
     {
         id: 'pyromancy-2', name: 'Pyromancy II', description: 'Unlock the Inferno rune.',
-        manaCost: 70, unlocked: false, researched: false,
+        manaCost: 70, resourceCost: [{ resourceId: 'knowledge', amount: 20 }], unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'inferno' }, prerequisites: ['pyromancy']
     },
     {
         id: 'cryomancy-2', name: 'Cryomancy II', description: 'Unlock the Frigus rune.',
-        manaCost: 70, unlocked: false, researched: false,
+        manaCost: 70, resourceCost: [{ resourceId: 'knowledge', amount: 20 }], unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'frigus' }, prerequisites: ['cryomancy']
     },
     {
         id: 'electromancy-2', name: 'Electromancy II', description: 'Unlock the Catena rune.',
-        manaCost: 90, unlocked: false, researched: false,
+        manaCost: 90, resourceCost: [{ resourceId: 'insight', amount: 10 }], unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'catena' }, prerequisites: ['electromancy']
     },
     {
         id: 'geomancy-2', name: 'Geomancy II', description: 'Unlock the Murus rune.',
-        manaCost: 90, unlocked: false, researched: false,
+        manaCost: 90, resourceCost: [{ resourceId: 'insight', amount: 10 }], unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'murus' }, prerequisites: ['geomancy']
     },
     {
@@ -1188,12 +1194,12 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
     },
     {
         id: 'execution-magic', name: 'Execution Magic', description: 'Unlock the Occidere rune.',
-        manaCost: 120, unlocked: false, researched: false,
+        manaCost: 120, resourceCost: [{ resourceId: 'percipience', amount: 5 }], unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'occidere' }, prerequisites: ['blood-magic']
     },
     {
         id: 'temporal-arts', name: 'Temporal Arts', description: 'Unlock the Stupor rune.',
-        manaCost: 130, unlocked: false, researched: false,
+        manaCost: 130, resourceCost: [{ resourceId: 'percipience', amount: 5 }], unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'stupor' }, prerequisites: ['fortune-magic']
     },
 ];

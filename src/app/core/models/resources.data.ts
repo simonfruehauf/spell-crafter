@@ -149,6 +149,13 @@ export const ALL_RESOURCES: ResourceDef[] = [
     { id: 'arcane_token', name: 'Arcane Token', category: 'currency', description: 'Magical currency.', rarity: 'uncommon' },
     { id: 'soul_coin', name: 'Soul Coin', category: 'currency', description: 'Worth a soul.', rarity: 'rare' },
     { id: 'divine_mark', name: 'Divine Mark', category: 'currency', description: 'Gods currency.', rarity: 'legendary' },
+
+    // =========================================================================
+    // ABSTRACT (3) - Research resources
+    // =========================================================================
+    { id: 'knowledge', name: 'Knowledge', category: 'currency', description: 'Basic understanding of the world.', rarity: 'common' },
+    { id: 'insight', name: 'Insight', category: 'currency', description: 'Deep understanding of magic.', rarity: 'rare' },
+    { id: 'percipience', name: 'Percipience', category: 'currency', description: 'True seeing of reality.', rarity: 'legendary' },
 ];
 
 // Generate initial resources object (all zero)

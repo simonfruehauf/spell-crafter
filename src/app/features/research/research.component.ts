@@ -108,6 +108,13 @@ import { ResearchNode } from '../../core/models/game.interfaces';
                      [class.text-[#008000]]="canAfford(node)"
                      [class.text-[#800000]]="!canAfford(node)">
                   Cost: {{ node.manaCost }} mana
+                  @if (node.resourceCost && node.resourceCost.length > 0) {
+                    <span>
+                      @for (cost of node.resourceCost; track cost.resourceId) {
+                        + {{ cost.amount }} {{ getResourceName(cost.resourceId) }}
+                      }
+                    </span>
+                  }
                 </div>
               }
             </div>
@@ -149,7 +156,14 @@ export class ResearchComponent {
   );
 
   canAfford(node: ResearchNode): boolean {
-    return this.resources().mana >= node.manaCost;
+    const hasMana = this.resources().mana >= node.manaCost;
+    const hasResources = node.resourceCost ? this.gameState.canAffordResources(node.resourceCost) : true;
+    return hasMana && hasResources;
+  }
+
+  getResourceName(id: string): string {
+    // Basic formatting if maps aren't imported, or import RESOURCE_NAMES
+    return id.charAt(0).toUpperCase() + id.slice(1).replace('_', ' ');
   }
 
   attemptResearch(node: ResearchNode): void {
@@ -170,6 +184,11 @@ export class ResearchComponent {
   }
 
   getUnlockTag(node: ResearchNode): string {
+    // Special case for Focus Crystal to show as Idle
+    if (node.unlockEffect.type === 'misc' && node.unlockEffect.value === 'headerMeditate') {
+      return 'Idle';
+    }
+
     switch (node.unlockEffect.type) {
       case 'window': return 'Feature';
       case 'rune': return 'Rune';
@@ -182,6 +201,11 @@ export class ResearchComponent {
   }
 
   getUnlockTagClass(node: ResearchNode): string {
+    // Special case for Focus Crystal
+    if (node.unlockEffect.type === 'misc' && node.unlockEffect.value === 'headerMeditate') {
+      return 'bg-[#ffffcc] border-[#cccc80] text-[#aaaa40]';
+    }
+
     // Tailwind classes for tags
     switch (node.unlockEffect.type) {
       case 'window': return 'bg-[#ccccff] border-[#8080cc] text-[#4040aa]';

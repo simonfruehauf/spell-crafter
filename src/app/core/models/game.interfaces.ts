@@ -173,6 +173,7 @@ export interface WindowStates {
   altar: WindowState;
   research: WindowState;
   scriptorium: WindowState;
+  laboratory: WindowState;
   combat: WindowState;
   inventory: WindowState;
   workshop: WindowState;
@@ -294,6 +295,7 @@ export interface ResearchNode {
   name: string;
   description: string;
   manaCost: number;
+  resourceCost?: ResourceCost[];
   unlocked: boolean;
   researched: boolean;
   unlockEffect: ResearchUnlockEffect;

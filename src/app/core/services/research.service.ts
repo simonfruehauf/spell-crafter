@@ -44,10 +44,14 @@ export class ResearchService {
 
     // Research methods
     canResearch(id: string, currentMana: number): boolean {
-        if (!this.signals) return false;
+        if (!this.signals || !this.callbacks) return false;
         const node = this.signals.researchTree().find(x => x.id === id);
         if (!node || node.researched || !node.unlocked) return false;
-        return currentMana >= node.manaCost;
+
+        const hasMana = currentMana >= node.manaCost;
+        const hasResources = node.resourceCost ? this.callbacks.canAffordResources(node.resourceCost) : true;
+
+        return hasMana && hasResources;
     }
 
     research(id: string, currentMana: number): boolean {
@@ -61,6 +65,9 @@ export class ResearchService {
         if (!this.canResearch(id, currentMana)) return false;
 
         this.callbacks.spendMana(node.manaCost);
+        if (node.resourceCost) {
+            this.callbacks.spendCraftingResources(node.resourceCost);
+        }
 
         this.signals.researchTree.update(t => {
             const updated = [...t];
