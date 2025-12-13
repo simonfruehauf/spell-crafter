@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Output, EventEmitter, ChangeDetectionStrategy, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -7,6 +7,7 @@ import { GameStateService } from '../../core/services/game-state.service';
   selector: 'app-altar',
   standalone: true,
   imports: [CommonModule, WindowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-window 
       title="The Altar" 
@@ -29,7 +30,7 @@ import { GameStateService } from '../../core/services/game-state.service';
 / :: \\
 |______|
 @if (idle().passiveManaRegenUnlocked) {
-{{ manaRegenPerSecond | number:'1.2-2' }}/s}</pre>
+{{ manaRegenPerSecond() | number:'1.2-2' }}/s}</pre>
         </div>
         <div class="mana-display">
           <div class="bar-container">
@@ -47,7 +48,7 @@ import { GameStateService } from '../../core/services/game-state.service';
 
         <div class="meditation-section mt-2">
           <button class="btn" (click)="meditate()">
-            [~] Meditate (+{{ manaPerClick }} mana)
+            [~] Meditate (+{{ manaPerClick() }} mana)
           </button>
         </div>
 
@@ -121,18 +122,24 @@ export class AltarComponent {
   readonly resources = this.gameState.resources;
   readonly player = this.gameState.player;
   readonly idle = this.gameState.idle;
+  // Track upgrades to ensure reactivity for regeneration bonuses
+  readonly upgrades = this.gameState.upgrades;
 
-  get manaPerClick(): number {
+  readonly manaPerClick = computed(() => {
     return 1 + Math.floor(this.player().WIS * 0.5);
-  }
+  });
 
-  get manaRegenPerSecond(): number {
+  readonly manaRegenPerSecond = computed(() => {
     if (!this.idle().passiveManaRegenUnlocked) return 0;
+
+    // Create dependency on upgrades so this re-computes when they change
+    this.upgrades();
+
     const bonus = this.gameState.getUpgradeBonus('manaRegen');
     const multiplier = 1 + bonus / 100;
     // 0.025 per tick * 10 ticks/second
     return this.player().WIS * 0.025 * multiplier * 10;
-  }
+  });
 
   meditate(): void {
     this.gameState.meditate();
