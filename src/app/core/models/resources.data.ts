@@ -163,7 +163,14 @@ ALL_RESOURCES.forEach(r => { RESOURCE_NAMES[r.id] = r.name; });
 export const RESOURCE_DEFS: Record<string, ResourceDef> = {};
 ALL_RESOURCES.forEach(r => { RESOURCE_DEFS[r.id] = r; });
 
-// Get resources by category
+// Get resources by category (memoized to avoid repeated filtering)
+const resourcesByCategoryCache = new Map<ResourceCategory, ResourceDef[]>();
+
 export function getResourcesByCategory(category: ResourceCategory): ResourceDef[] {
-    return ALL_RESOURCES.filter(r => r.category === category);
+    let cached = resourcesByCategoryCache.get(category);
+    if (!cached) {
+        cached = ALL_RESOURCES.filter(r => r.category === category);
+        resourcesByCategoryCache.set(category, cached);
+    }
+    return cached;
 }
