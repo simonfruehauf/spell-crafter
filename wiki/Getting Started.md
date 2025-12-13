@@ -62,6 +62,23 @@ Combat is automatic and idle-based:
 
 ---
 
+## The Laboratory 🔬
+
+After unlocking **Arcane Deconstruction**, you can access **The Laboratory** to break down crafting resources into progression currencies:
+
+| Input Rarity | Output |
+| :--- | :--- |
+| Common/Uncommon | Knowledge |
+| Rare/Epic | Insight |
+| Legendary | Percipience |
+
+These currencies unlock advanced research nodes like:
+- **The Armory** (requires Insight)
+- **Tier II Runes** (require Knowledge)
+- **Master Runes** (require Percipience)
+
+---
+
 ## Early Progression Path
 
 ```
@@ -78,3 +95,4 @@ Mana Attunement → The Scriptorium → Pyromancy/Cryomancy → The Arena
 3. ✅ Win your first combat encounter
 4. ✅ Unlock the Workshop for upgrades
 5. ✅ Equip your first piece of gear from the Armory
+6. ✅ Deconstruct resources in the Laboratory for Knowledge

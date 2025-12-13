@@ -3,21 +3,25 @@
 Transmute simpler resources into powerful essences.
 
 ## Basic Essences
-| Name | Description | Effects | Tags |
+| Name | Description | Reagents | Yield |
 | :--- | :--- | :--- | :--- |
-| **Distill Minor Essence** | Extract a random basic essence from goblin teeth and healing moss. | `Input: 2 Goblin Tooth, 2 Healing Moss`<br>`Output: 1 Random Essence (25% each)`<br>`Time: 15s` | Alchemy, Basic |
-| **Distill Fire Essence** | Extract fire essence from imp horns and fireweed. | `Input: 3 Imp Horn, 2 Fireweed`<br>`Output: 3 Fire Essence`<br>`Time: 20s` | Alchemy, Fire |
-| **Distill Ice Essence** | Extract ice essence from wraith remains and frostleaf. | `Input: 3 Wraith Essence, 2 Frostleaf`<br>`Output: 3 Ice Essence`<br>`Time: 20s` | Alchemy, Ice |
-| **Distill Lightning Essence** | Extract lightning essence from elemental cores. | `Input: 2 Elemental Core, 2 Spirit Dust`<br>`Output: 3 Lightning Essence`<br>`Time: 25s` | Alchemy, Lightning |
-| **Distill Earth Essence** | Extract earth essence from bones and thornroot. | `Input: 5 Skeleton Bone, 2 Thornroot`<br>`Output: 3 Earth Essence`<br>`Time: 20s` | Alchemy, Earth |
-| **Distill Water Essence** | Extract water essence from spider silk and frostleaf. | `Input: 3 Spider Silk, 3 Frostleaf`<br>`Output: 3 Water Essence`<br>`Time: 20s` | Alchemy, Water |
-| **Distill Wind Essence** | Extract wind essence from pelts and moss. | `Input: 3 Wolf Pelt, 3 Healing Moss`<br>`Output: 3 Wind Essence`<br>`Time: 20s` | Alchemy, Wind |
+| **Distill Minor Essence** | Extract a random basic essence from goblin teeth and healing moss.<br>_Time: 15s_ | 2x Goblin Tooth<br>2x Healing Moss | Random Basic Essence (1x) |
+| **Distill Fire Essence** | Extract fire essence from imp horns and fireweed.<br>_Time: 20s_ | 3x Imp Horn<br>2x Fireweed | 3x Fire Essence |
+| **Distill Ice Essence** | Extract ice essence from wraith remains and frostleaf.<br>_Time: 20s_ | 3x Wraith Essence<br>2x Frostleaf | 3x Ice Essence |
+| **Distill Lightning Essence** | Extract lightning essence from elemental cores.<br>_Time: 25s_ | 2x Elemental Core<br>2x Spirit Dust | 3x Lightning Essence |
+| **Distill Earth Essence** | Extract earth essence from bones and thornroot.<br>_Time: 20s_ | 5x Skeleton Bone<br>2x Thornroot | 3x Earth Essence |
+| **Distill Water Essence** | Extract water essence from spider silk and frostleaf.<br>_Time: 20s_ | 3x Spider Silk<br>3x Frostleaf | 3x Water Essence |
+| **Distill Wind Essence** | Extract wind essence from pelts and moss.<br>_Time: 20s_ | 3x Wolf Leather<br>3x Healing Moss | 3x Wind Essence |
 
-## Advanced Essences
-| Name | Description | Effects | Tags |
+## Uncommon Essences
+| Name | Description | Reagents | Yield |
 | :--- | :--- | :--- | :--- |
-| **Distill Dark Essence** | Extract dark essence from shadow materials. | `Input: 4 Shadow Thread, 2 Shadowcap`<br>`Output: 2 Dark Essence`<br>`Time: 30s` | Alchemy, Dark |
-| **Distill Holy Essence** | Extract holy essence from angelic remnants. | `Input: 2 Angel Feather, 3 Sunpetal`<br>`Output: 2 Holy Essence`<br>`Time: 30s` | Alchemy, Holy |
-| **Distill Life Essence** | Extract life essence from healing materials. | `Input: 5 Healing Moss, 3 Mana Blossom`<br>`Output: 2 Life Essence`<br>`Time: 25s` | Alchemy, Life |
-| **Distill Arcane Essence** | Extract pure arcane essence from magical reagents. | `Input: 5 Mana Crystal, 3 Arcane Ash`<br>`Output: 2 Arcane Essence`<br>`Time: 30s` | Alchemy, Arcane |
-| **Distill Void Essence** | Transmute dark essence into void essence. | `Input: 3 Dark Essence, 1 Soul Shard`<br>`Output: 1 Void Essence`<br>`Time: 40s` | Alchemy, Void |
+| **Distill Dark Essence** | Extract dark essence from shadow materials.<br>_Time: 30s_ | 4x Shadow Thread<br>2x Shadowcap | 2x Dark Essence |
+| **Distill Holy Essence** | Extract holy essence from angelic remnants.<br>_Time: 30s_ | 2x Angel Feather<br>3x Sunpetal | 2x Holy Essence |
+| **Distill Life Essence** | Extract life essence from healing materials.<br>_Time: 25s_ | 5x Healing Moss<br>3x Mana Blossom | 2x Life Essence |
+
+## Rare Essences
+| Name | Description | Reagents | Yield |
+| :--- | :--- | :--- | :--- |
+| **Distill Arcane Essence** | Extract pure arcane essence from magical reagents.<br>_Time: 30s_ | 5x Mana Crystal<br>3x Arcane Ash | 2x Arcane Essence |
+| **Distill Void Essence** | Transmute dark essence into void essence.<br>_Time: 40s_ | 3x Dark Essence<br>1x Soul Shard | 1x Void Essence |

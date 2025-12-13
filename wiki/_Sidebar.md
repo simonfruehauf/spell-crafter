@@ -5,11 +5,13 @@
 ### 🗃️ Database
 * 💎 [[Resources]]
 * 🔧 [[Upgrades]]
+* 🧪 [[Alchemy]]
+* 🍷 [[Potions]]
 
 ### ⚙️ Mechanics
 * 📔 [[Runes]]
 * ⚔️ [[Combat]]
-* 🧪 [[Alchemy]]
+* 🔬 [[Laboratory]]
 * 📜 [[Research]]
 
 ### 📚 Guides

@@ -1,121 +1,46 @@
 # 📜 Research
 
 The research tree in **The Study** unlocks new windows, runes, stats, and idle abilities.
+Research requires mana and, other resources.
 
-## Progression Currencies
 
-Research requires mana and, for advanced nodes, special currencies obtained from **The Laboratory**.
+## Tier 1: Fundamentals
+| Name | Description | Cost | Unlock |
+| :--- | :--- | :--- | :--- |
+| **Expanded Mind I** | Increase max mana to 50. | `Mana: 20` | Max Mana +25 |
+| **Deep Meditation** | Draw more mana from the aether. | `Mana: 50` | WIS +1 |
+| **Mana Attunement** | Passively regenerate mana. | `Mana: 10` | Passive Mana Regen |
+| **The Scriptorium** | Discover the art of spell-crafting. | `Mana: 35` | Scriptorium Window |
+| **The Vault** | Store your collected resources. | `Mana: 15` | Inventory Window |
 
-| Currency | Description | Source |
-| :--- | :--- | :--- |
-| **Knowledge** | Basic understanding of the world. | `Rarity: Common` — Deconstruct common/uncommon items |
-| **Insight** | Deep understanding of magic. | `Rarity: Rare` — Deconstruct rare items |
-| **Percipience** | True seeing of reality. | `Rarity: Legendary` — Deconstruct epic/legendary items |
+## Tier 2: The Arcane Arts
+| Name | Description | Cost | Unlock |
+| :--- | :--- | :--- | :--- |
+| **The Runebook** | A tome of arcane rune knowledge. | `Mana: 55`<br>`Iron Ore: 1` | Runebook Window |
+| **The Grimoire** | Track your bound spells and mastery. | `Mana: 15`<br>`Wolf Leather: 1` | Grimoire Window |
+| **Pyromancy I** | Unlock the Ignis rune. | `Mana: 30` | Ignis Rune |
+| **Cryomancy I** | Unlock the Glacies rune. | `Mana: 30` | Glacies Rune |
+| **The Arena** | Open the combat arena. | `Mana: 40` | Combat Window |
+| **Arcane Deconstruction** | Unlock the Laboratory to deconstruct resources. | `Mana: 50` | Laboratory Window |
 
----
+## Tier 3: Advanced Studies
+| Name | Description | Cost | Unlock |
+| :--- | :--- | :--- | :--- |
+| **Expanded Mind II** | Increase max mana to 75. | `Mana: 40` | Max Mana +25 |
+| **Electromancy I** | Unlock the Fulgur rune. | `Mana: 50` | Fulgur Rune |
+| **Geomancy I** | Unlock the Terra rune. | `Mana: 50`<br>`Knowledge: 5` | Terra Rune |
+| **Restoration I** | Unlock the Vita rune. | `Mana: 45`<br>`Knowledge: 5` | Vita Rune |
+| **The Workshop** | Craft powerful upgrades. | `Mana: 60`<br>`Iron Ore: 5`<br>`Copper Ore: 5` | Workshop Window |
+| **Swift Incantations** | Unlock the Velox rune. | `Mana: 40`<br>`Knowledge: 8` | Velox Rune |
 
-## Window Unlocks
-
-| Research | Effect | Prerequisites |
-| :--- | :--- | :--- |
-| **The Scriptorium** | Spell crafting window | — |
-| **The Vault** | Inventory window | — |
-| **The Runebook** | Rune reference window | — |
-| **Arcane Archives** | Discoveries tracking | — |
-| **The Arena** | Combat window | The Scriptorium |
-| **The Grimoire** | Bound spells & mastery | The Scriptorium |
-| **The Bestiary** | Enemy encyclopedia | The Arena |
-| **Battle Chronicle** | Combat log | The Arena |
-| **Arcane Deconstruction** | The Laboratory | The Arena |
-| **The Workshop** | Upgrade crafting | The Arena + `10 Knowledge` |
-| **The Armory** | Equipment crafting | The Workshop + `5 Insight` |
-| **The Alembic** | Alchemy window | The Workshop + `5 Insight` |
-
----
-
-## Rune Unlock Paths
-
-### Fire Path
-| Research | Rune | Prerequisites |
-| :--- | :--- | :--- |
-| **Pyromancy I** | Ignis | The Scriptorium |
-| **Pyromancy II** | Inferno | Pyromancy I + `20 Knowledge` |
-
-### Ice Path
-| Research | Rune | Prerequisites |
-| :--- | :--- | :--- |
-| **Cryomancy I** | Glacies | The Scriptorium |
-| **Cryomancy II** | Frigus | Cryomancy I + `20 Knowledge` |
-
-### Lightning Path
-| Research | Rune | Prerequisites |
-| :--- | :--- | :--- |
-| **Electromancy I** | Fulgur | The Arena |
-| **Electromancy II** | Catena | Electromancy I + `10 Insight` |
-
-### Earth Path
-| Research | Rune | Prerequisites |
-| :--- | :--- | :--- |
-| **Geomancy I** | Terra | The Arena + `5 Knowledge` |
-| **Geomancy II** | Murus | Geomancy I + `10 Insight` |
-
-### Holy Path
-| Research | Rune | Prerequisites |
-| :--- | :--- | :--- |
-| **Restoration I** | Vita | The Arena + `5 Knowledge` |
-| **Restoration II** | Sana | Restoration I |
-| **Holy Magic** | Lux | Restoration I + `8 Knowledge` |
-| **Fortification** | Fortis | Restoration I + `8 Knowledge` |
-| **Barrier Arts** | Scutum | Fortification |
-
-### Dark Path
-| Research | Rune | Prerequisites |
-| :--- | :--- | :--- |
-| **Dark Studies** | Mortem | Restoration I + `8 Knowledge` |
-| **Shadow Magic** | Umbra | Dark Studies |
-| **Blood Magic** | Sanguis | Dark Studies |
-| **Poison Arts** | Venenum | Dark Studies |
-| **Execution Magic** | Occidere | Blood Magic + `5 Percipience` |
-
-### Arcane Path
-| Research | Rune | Prerequisites |
-| :--- | :--- | :--- |
-| **Swift Incantations** | Velox | The Arena + `8 Knowledge` |
-| **Arcane Power** | Potens | Swift Incantations |
-| **Fortune Magic** | Fortuna | Arcane Power |
-| **Temporal Arts** | Stupor | Fortune Magic + `5 Percipience` |
-| **Mana Mastery** | Sorbere | Swift Incantations |
-| **Piercing Arts** | Perforare | Arcane Focus |
-
----
-
-## Mana Capacity
-
-| Research | Max Mana | Cost |
-| :--- | :--- | :--- |
-| **Expanded Mind I** | 50 | `20 Mana` |
-| **Expanded Mind II** | 75 | `40 Mana` |
-| **Expanded Mind III** | 100 | `60 Mana` + `5 Knowledge` |
-| **Expanded Mind IV** | 125 | `80 Mana` + `20 Knowledge` |
-| **Expanded Mind V** | 150 | `100 Mana` + `30 Knowledge` |
-
----
-
-## Idle Abilities
-
-| Research | Effect | Prerequisites |
-| :--- | :--- | :--- |
-| **Mana Attunement** | Passive mana regeneration | — |
-| **Battle Instinct** | Automatic combat | The Arena + `1 Insight` |
-
----
-
-## Stat Boosts
-
-| Research | Effect | Prerequisites |
-| :--- | :--- | :--- |
-| **Deep Meditation** | +1 WIS | — |
-| **Enlightenment** | +1 WIS | Deep Meditation + `15 Knowledge` |
-| **Arcane Focus** | +1 ARC | The Arena + `15 Knowledge` |
-| **Iron Will** | +1 BAR | Fortification + `15 Knowledge` |
-| **Vitality Training** | +1 VIT | Restoration I + `15 Knowledge` |
+## Tier 4: Mastery
+| Name | Description | Cost | Unlock |
+| :--- | :--- | :--- | :--- |
+| **The Armory** | Craft magical equipment. | `Mana: 70`<br>`Insight: 5` | Armory Window |
+| **The Alembic** | Unlock the art of transmutation. | `Mana: 65`<br>`Insight: 3` | Alchemy Window |
+| **Fortification** | Unlock the Fortis rune. | `Mana: 55`<br>`Knowledge: 8` | Fortis Rune |
+| **Dark Studies** | Unlock the Mortem rune. | `Mana: 60`<br>`Knowledge: 8` | Mortem Rune |
+| **Holy Magic** | Unlock the Lux rune. | `Mana: 55`<br>`Knowledge: 8` | Lux Rune |
+| **Battle Instinct** | Unlock automatic combat. | `Mana: 60`<br>`Insight: 1` | Auto Combat |
+| **The Bestiary** | Record knowledge of defeated foes. | `Mana: 35` | Bestiary Window |
+| **Battle Chronicle** | A detailed log of combat. | `Mana: 30` | Chronicle Window |
