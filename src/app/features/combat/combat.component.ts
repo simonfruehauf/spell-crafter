@@ -22,7 +22,11 @@ import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
             <div class="p-2 border border-win95-dark-gray bg-[#ffffcc] mb-2 italic text-win95-black">
                 <p>The arena awaits. Choose your foe and test your arcane might.</p>
             </div>
-
+            @if (combat().victoryFlash) {
+            <div class="text-center p-3 bg-[#ccffcc] border-2 border-[#008800] text-[#006600] font-bold mt-2" @pulse>
+                <div class="text-[16px]">[!] VICTORY! [!]</div>
+            </div>
+            }
             <div class="text-center p-1">
                 <div class="relative h-[18px] p-[2px] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] bg-win95-dark-gray">
                     <div class="h-full bg-[#00aa00] transition-[width] duration-200 ease-linear" [style.width.%]="(player().currentHP / player().maxHP) * 100">
@@ -70,6 +74,7 @@ import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
                 </div>
             </fieldset>
             }
+
 
             @if (isLockedOut()) {
             <div class="text-center p-2 bg-[#ffcccc] border-2 border-[#cc0000] text-[#800000] font-bold mt-2" @pulse>
@@ -123,6 +128,15 @@ __/____\\__
   |O  O|
    \\__/
           </pre>
+                    @if (totalShield() > 0) {
+                    <div class="relative h-[18px] p-[2px] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] bg-win95-dark-gray mb-1">
+                        <div class="h-full bg-[#00b8b8] transition-[width] duration-200 ease-linear" [style.width.%]="shieldPercent()">
+                        </div>
+                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] text-white drop-shadow-[1px_1px_0_black]">
+                            Shield: {{ totalShield() | number:'1.0-0' }}
+                        </div>
+                    </div>
+                    }
                     <div class="relative h-[18px] p-[2px] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] bg-win95-dark-gray mb-1">
                         <div class="h-full bg-[#00aa00] transition-[width] duration-200 ease-linear" [style.width.%]="(player().currentHP / player().maxHP) * 100">
                         </div>
@@ -137,9 +151,9 @@ __/____\\__
                             MP: {{ resources().mana | number:'1.0-0' }} / {{ resources().maxMana }}
                         </div>
                     </div>
-                    @if (combat().playerEffects.length > 0) {
+                    @if (nonShieldEffects().length > 0) {
                     <div class="flex flex-wrap gap-1 justify-center mt-1">
-                        @for (effect of combat().playerEffects; track effect.name) {
+                        @for (effect of nonShieldEffects(); track effect.name) {
                         <span class="text-[9px] px-[4px] py-[1px] font-mono bg-[#ccffcc] text-[#006600]">[{{ effect.name }}: {{ effect.remainingTurns }}]</span>
                         }
                     </div>
@@ -224,6 +238,30 @@ export class CombatComponent {
   readonly selectedSpell = signal<Spell | null>(null);
   readonly selectedPotion = signal<Potion | null>(null);
   readonly potionInventory = this.gameState.potions;
+
+  // Shield bar computed signals
+  readonly totalShield = computed(() => {
+    return this.combat().playerEffects
+      .filter(e => e.type === 'shield')
+      .reduce((sum, e) => sum + e.value, 0);
+  });
+
+  readonly maxShield = computed(() => {
+    // Max shield is the player's maxHP for visual consistency
+    return this.player().maxHP;
+  });
+
+  readonly shieldPercent = computed(() => {
+    const shield = this.totalShield();
+    const max = this.maxShield();
+    if (max <= 0) return 0;
+    return Math.min(100, (shield / max) * 100);
+  });
+
+  // Filter out shield effects from the text badge display
+  readonly nonShieldEffects = computed(() => {
+    return this.combat().playerEffects.filter(e => e.type !== 'shield');
+  });
 
   readonly availablePotions = computed(() => {
     const inv = this.potionInventory();

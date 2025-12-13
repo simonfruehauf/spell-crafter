@@ -453,6 +453,7 @@ export interface CombatState {
   enemiesDefeated: number;
   enemyDefeats: Record<string, number>;
   deathLockoutUntil: number;  // Timestamp when lockout ends
+  victoryFlash: boolean;      // Show victory message briefly
 }
 
 /**

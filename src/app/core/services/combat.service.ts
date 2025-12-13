@@ -47,7 +47,8 @@ export class CombatService {
             enemyEffects: [],
             enemiesDefeated: 0,
             enemyDefeats: {},
-            deathLockoutUntil: 0
+            deathLockoutUntil: 0,
+            victoryFlash: false
         };
     }
 
@@ -506,7 +507,10 @@ export class CombatService {
                 }));
                 this.addCombatLog(`  ${e.name} heals ${e.value}!`, 'heal');
             }
-            if (e.remainingTurns > 1) {
+            // Shields persist until depleted - don't decrement their turns
+            if (e.type === 'shield') {
+                remaining.push(e);
+            } else if (e.remainingTurns > 1) {
                 remaining.push({ ...e, remainingTurns: e.remainingTurns - 1 });
             }
         }
@@ -562,6 +566,7 @@ export class CombatService {
 
         const combat = this.signals.combat();
         const enemy = combat.currentEnemy;
+        const isAutoCombat = this.signals.idle().autoCombat;
 
         if (victory && enemy) {
             this.callbacks.addGold(enemy.goldReward);
@@ -578,13 +583,20 @@ export class CombatService {
                 enemyDefeats: {
                     ...x.enemyDefeats,
                     [enemy.id]: (x.enemyDefeats[enemy.id] || 0) + 1
-                }
+                },
+                // Show victory flash only in manual combat
+                victoryFlash: !isAutoCombat
             }));
 
-            if (this.signals.idle().autoCombat) {
+            // Clear victory flash after a delay
+            if (!isAutoCombat) {
                 setTimeout(() => {
-                    // Check if auto-combat is still on AND we are not already in combat (prevent double triggers)
-                    // and player is alive
+                    this.signals?.combat.update(x => ({ ...x, victoryFlash: false }));
+                }, 1500);
+            }
+
+            if (isAutoCombat) {
+                setTimeout(() => {
                     if (this.signals?.idle().autoCombat &&
                         this.signals.player().currentHP > 0 &&
                         !this.signals.combat().inCombat) {
@@ -604,6 +616,7 @@ export class CombatService {
             }));
         }
 
+        // Exit combat immediately
         this.signals.combat.update(x => ({
             ...x,
             inCombat: false,
