@@ -17,229 +17,107 @@ import { ResearchNode } from '../../core/models/game.interfaces';
       [initialY]="40" 
       [width]="340"
       (closed)="onClose()">
-      <div class="research-content">
-        <div class="research-description">
+      <div class="flex flex-col max-h-[450px]">
+        <div class="p-2 border border-win95-dark-gray bg-[#ffffcc] mb-2 italic text-win95-black">
           <p>Ancient tomes and scrolls line the walls. 
              Spend mana to uncover new arcane knowledge.</p>
         </div>
 
-        <div class="mana-available">
-          <span class="label">Available Mana:</span>
-          <span class="value">{{ resources().mana | number:'1.0-0' }}</span>
+        <div class="flex justify-between px-2 py-1 bg-win95-blue text-white mb-2 font-mono">
+          <span class="font-bold">Available Mana:</span>
+          <span class="font-bold">{{ resources().mana | number:'1.0-0' }}</span>
         </div>
 
         @if (completedCount() > 0) {
-          <button class="btn discoveries-btn mb-1" (click)="openDiscoveries()">
+          <button class="w-full p-[6px] font-mono bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray cursor-pointer hover:bg-[#d0d0d0] active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white mb-2" 
+                  (click)="openDiscoveries()">
             [*] View Discoveries ({{ completedCount() }})
           </button>
         }
 
-        <div class="filter-buttons mb-1">
-          <button class="filter-btn" [class.active]="activeFilter() === null" (click)="setFilter(null)">All</button>
-          <button class="filter-btn tag-feature" [class.active]="activeFilter() === 'window'" (click)="setFilter('window')">Feature</button>
-          <button class="filter-btn tag-rune" [class.active]="activeFilter() === 'rune'" (click)="setFilter('rune')">Rune</button>
-          <button class="filter-btn tag-stat" [class.active]="activeFilter() === 'stat'" (click)="setFilter('stat')">Stat</button>
-          <button class="filter-btn tag-mana" [class.active]="activeFilter() === 'maxMana'" (click)="setFilter('maxMana')">Mana</button>
-          <button class="filter-btn tag-idle" [class.active]="activeFilter() === 'idle'" (click)="setFilter('idle')">Idle</button>
+        <div class="flex flex-wrap gap-1 mb-2">
+          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-win95-dark-gray bg-[#e0e0e0] cursor-pointer hover:bg-[#d0d0d0]" 
+                  [class.font-bold]="activeFilter() === null" 
+                  [class.border-2]="activeFilter() === null"
+                  [class.border-inset]="activeFilter() === null"
+                  (click)="setFilter(null)">All</button>
+          
+          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#8080cc] bg-[#ccccff] cursor-pointer hover:bg-[#d0d0d0]" 
+                  [class.font-bold]="activeFilter() === 'window'"
+                  [class.border-2]="activeFilter() === 'window'"
+                  [class.border-inset]="activeFilter() === 'window'"
+                  (click)="setFilter('window')">Feature</button>
+                  
+          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#cc80cc] bg-[#ffccff] cursor-pointer hover:bg-[#d0d0d0]" 
+                  [class.font-bold]="activeFilter() === 'rune'"
+                  [class.border-2]="activeFilter() === 'rune'"
+                  [class.border-inset]="activeFilter() === 'rune'"
+                  (click)="setFilter('rune')">Rune</button>
+                  
+          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#80cc80] bg-[#ccffcc] cursor-pointer hover:bg-[#d0d0d0]" 
+                  [class.font-bold]="activeFilter() === 'stat'"
+                  [class.border-2]="activeFilter() === 'stat'"
+                  [class.border-inset]="activeFilter() === 'stat'"
+                  (click)="setFilter('stat')">Stat</button>
+                  
+          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#80cccc] bg-[#ccffff] cursor-pointer hover:bg-[#d0d0d0]" 
+                  [class.font-bold]="activeFilter() === 'maxMana'"
+                  [class.border-2]="activeFilter() === 'maxMana'"
+                  [class.border-inset]="activeFilter() === 'maxMana'"
+                  (click)="setFilter('maxMana')">Mana</button>
+                  
+          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#cccc80] bg-[#ffffcc] cursor-pointer hover:bg-[#d0d0d0]" 
+                  [class.font-bold]="activeFilter() === 'idle'"
+                  [class.border-2]="activeFilter() === 'idle'"
+                  [class.border-inset]="activeFilter() === 'idle'"
+                  (click)="setFilter('idle')">Idle</button>
         </div>
 
-        <div class="research-tree">
+        <div class="flex flex-col gap-1 overflow-y-auto max-h-[350px] pr-1">
           @for (node of availableResearch(); track node.id) {
             <div 
-              class="research-node"
-              [class.unlocked]="node.unlocked"
-              [class.locked]="!node.unlocked"
+              class="p-2 border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray bg-win95-gray cursor-pointer transition-colors duration-100"
+              [class.opacity-50]="!node.unlocked"
+              [class.cursor-not-allowed]="!node.unlocked"
+              [class.bg-[#90ee90]]="node.researched"
+              [class.cursor-default]="node.researched"
+              [class.hover:bg-[#d0d0d0]]="node.unlocked && !node.researched"
+              [class.active:border-t-win95-dark-gray]="node.unlocked && !node.researched"
+              [class.active:border-l-win95-dark-gray]="node.unlocked && !node.researched"
+              [class.active:border-r-win95-white]="node.unlocked && !node.researched"
+              [class.active:border-b-win95-white]="node.unlocked && !node.researched"
               (click)="attemptResearch(node)">
               
-              <div class="node-header">
-                <span class="node-name">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-win95-black">
                   {{ node.name }}
-                  <span class="unlock-tag" [class]="getUnlockTagClass(node)">{{ getUnlockTag(node) }}</span>
+                  <span class="text-[9px] font-normal px-[4px] py-[1px] ml-[6px] border" 
+                        [class]="getUnlockTagClass(node)">{{ getUnlockTag(node) }}</span>
                 </span>
                 @if (!node.unlocked) {
-                  <span class="node-status">[--]</span>
+                  <span class="text-[11px] font-mono text-win95-black">[--]</span>
                 } @else {
-                  <span class="node-cost-header">{{ node.manaCost }}mp</span>
+                  <span class="text-[10px] font-mono text-[#606060]">{{ node.manaCost }}mp</span>
                 }
               </div>
               
-              <div class="node-description">{{ node.description }}</div>
+              <div class="text-[11px] text-[#404040] mb-1">{{ node.description }}</div>
               
               @if (node.unlocked) {
-                <div class="node-cost" [class.affordable]="canAfford(node)">
+                <div class="text-[11px] font-bold" 
+                     [class.text-[#008000]]="canAfford(node)"
+                     [class.text-[#800000]]="!canAfford(node)">
                   Cost: {{ node.manaCost }} mana
                 </div>
               }
             </div>
           } @empty {
-            <div class="empty-message">All research complete!</div>
+            <div class="text-win95-dark-gray italic text-center p-5">All research complete!</div>
           }
         </div>
       </div>
     </app-window>
-  `,
-  styles: [`
-    .research-content {
-      display: flex;
-      flex-direction: column;
-      max-height: 450px;
-    }
-
-    .research-description {
-      padding: 8px;
-      border: 1px solid #808080;
-      background-color: #ffffcc;
-      margin-bottom: 8px;
-      font-style: italic;
-    }
-
-    .mana-available {
-      display: flex;
-      justify-content: space-between;
-      padding: 4px 8px;
-      background-color: #000080;
-      color: white;
-      margin-bottom: 8px;
-      font-family: 'Courier New', monospace;
-
-      .value {
-        font-weight: bold;
-      }
-    }
-
-    .research-tree {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      overflow-y: auto;
-      max-height: 350px;
-      padding-right: 4px;
-    }
-
-    .research-node {
-      padding: 8px;
-      border: 2px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
-      background-color: #c0c0c0;
-      cursor: pointer;
-      transition: background-color 0.1s;
-
-      &.locked {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      &.researched {
-        background-color: #90ee90;
-        cursor: default;
-      }
-
-      &.unlocked:hover:not(.researched) {
-        background-color: #d0d0d0;
-      }
-
-      &.unlocked:active:not(.researched) {
-        border-color: #808080 #ffffff #ffffff #808080;
-      }
-    }
-
-    .node-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-
-    .node-name {
-      font-weight: bold;
-    }
-
-    .unlock-tag {
-      font-size: 9px;
-      font-weight: normal;
-      padding: 1px 4px;
-      margin-left: 6px;
-      border: 1px solid;
-      &.tag-feature { background-color: #ccccff; border-color: #8080cc; color: #4040aa; }
-      &.tag-rune { background-color: #ffccff; border-color: #cc80cc; color: #aa40aa; }
-      &.tag-stat { background-color: #ccffcc; border-color: #80cc80; color: #40aa40; }
-      &.tag-mana { background-color: #ccffff; border-color: #80cccc; color: #40aaaa; }
-      &.tag-idle { background-color: #ffffcc; border-color: #cccc80; color: #aaaa40; }
-    }
-
-    .node-status {
-      font-size: 11px;
-      font-family: 'Courier New', monospace;
-    }
-
-    .node-cost-header {
-      font-size: 10px;
-      font-family: 'Courier New', monospace;
-      color: #606060;
-    }
-
-    .node-description {
-      font-size: 11px;
-      color: #404040;
-      margin-bottom: 4px;
-    }
-
-    .node-cost {
-      font-size: 11px;
-      color: #800000;
-
-      &.affordable {
-        color: #008000;
-        font-weight: bold;
-      }
-    }
-
-    .discoveries-btn {
-      width: 100%;
-      padding: 6px;
-      font-family: 'Courier New', monospace;
-      background-color: #c0c0c0;
-      border: 2px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
-      cursor: pointer;
-      &:hover { background-color: #d0d0d0; }
-      &:active { border-color: #808080 #ffffff #ffffff #808080; }
-    }
-
-    .empty-message {
-      color: #808080;
-      font-style: italic;
-      text-align: center;
-      padding: 20px;
-    }
-
-    .mb-1 { margin-bottom: 8px; }
-
-    .filter-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-    .filter-btn {
-      padding: 2px 6px;
-      font-size: 10px;
-      font-family: 'Courier New', monospace;
-      border: 1px solid #808080;
-      background-color: #e0e0e0;
-      cursor: pointer;
-      &:hover { background-color: #d0d0d0; }
-      &.active { 
-        font-weight: bold; 
-        border-width: 2px;
-        border-style: inset;
-      }
-      &.tag-feature { background-color: #ccccff; border-color: #8080cc; }
-      &.tag-rune { background-color: #ffccff; border-color: #cc80cc; }
-      &.tag-stat { background-color: #ccffcc; border-color: #80cc80; }
-      &.tag-mana { background-color: #ccffff; border-color: #80cccc; }
-      &.tag-idle { background-color: #ffffcc; border-color: #cccc80; }
-    }
-  `]
+  `
 })
 export class ResearchComponent {
   closed = output<void>();
@@ -304,14 +182,16 @@ export class ResearchComponent {
   }
 
   getUnlockTagClass(node: ResearchNode): string {
+    // Tailwind classes for tags
     switch (node.unlockEffect.type) {
-      case 'window': return 'tag-feature';
-      case 'rune': return 'tag-rune';
-      case 'stat': return 'tag-stat';
-      case 'maxMana': return 'tag-mana';
-      case 'idle': return 'tag-idle';
+      case 'window': return 'bg-[#ccccff] border-[#8080cc] text-[#4040aa]';
+      case 'rune': return 'bg-[#ffccff] border-[#cc80cc] text-[#aa40aa]';
+      case 'stat': return 'bg-[#ccffcc] border-[#80cc80] text-[#40aa40]';
+      case 'maxMana': return 'bg-[#ccffff] border-[#80cccc] text-[#40aaaa]';
+      case 'idle': return 'bg-[#ffffcc] border-[#cccc80] text-[#aaaa40]';
       default: return '';
     }
   }
 }
+
 

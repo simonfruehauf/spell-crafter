@@ -954,7 +954,7 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
     },
     {
         id: 'basic-meditation', name: 'Deep Meditation', description: 'Draw more mana from the aether.',
-        manaCost: 15, unlocked: true, researched: false,
+        manaCost: 50, unlocked: true, researched: false,
         unlockEffect: { type: 'stat', stat: 'WIS', value: 1 }, prerequisites: []
     },
     {
@@ -1098,7 +1098,7 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
     // Advanced stats research
     {
         id: 'wisdom-2', name: 'Enlightenment', description: 'Deep study of the arcane.',
-        manaCost: 80, unlocked: false, researched: false,
+        manaCost: 100, unlocked: false, researched: false,
         unlockEffect: { type: 'stat', stat: 'WIS', value: 2 }, prerequisites: ['basic-meditation']
     },
     {

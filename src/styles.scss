@@ -1,5 +1,14 @@
 @use 'win95-mixins' as *;
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// Ensure tailwind doesn't override base font for retro feel
+:root {
+    font-family: 'Tahoma', 'MS Sans Serif', 'Segoe UI', sans-serif;
+}
+
 // =============================================================================
 // GLOBAL STYLES - Spell-Crafting Unfolding Game
 // =============================================================================
@@ -26,6 +35,12 @@ body {
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
 }
+
+// Ensure tailwind doesn't override base font for retro feel
+:root {
+    font-family: 'Tahoma', 'MS Sans Serif', 'Segoe UI', sans-serif;
+}
+
 
 // Win95 styled scrollbars
 ::-webkit-scrollbar {

@@ -11,10 +11,176 @@ import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
   selector: 'app-combat',
   standalone: true,
   imports: [CommonModule, FormsModule, WindowComponent],
-  templateUrl: './combat.component.html',
-  styleUrl: './combat.component.scss',
   animations: [fadeSlide, pulse, shake],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <app-window title="The Arena" windowId="combat" [initialX]="480" [initialY]="40" [width]="380" (closed)="onClose()">
+        <div class="flex flex-col" @fadeSlide>
+            @if (!combat().inCombat) {
+            <!-- Enemy Selection -->
+            <div class="p-2 border border-win95-dark-gray bg-[#ffffcc] mb-2 italic text-win95-black">
+                <p>The arena awaits. Choose your foe and test your arcane might.</p>
+            </div>
+
+            <div class="text-center p-1">
+                <div class="relative h-[18px] p-[2px] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] bg-win95-dark-gray">
+                    <div class="h-full bg-[#00aa00] transition-[width] duration-200 ease-linear" [style.width.%]="(player().currentHP / player().maxHP) * 100">
+                    </div>
+                    <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] text-white drop-shadow-[1px_1px_0_black]">
+                        HP: {{ player().currentHP | number:'1.0-0' }} / {{ player().maxHP }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-2 text-win95-black">
+                <div class="bg-win95-blue text-white py-[2px] px-[6px] font-bold mb-1 font-mono">Choose Your Opponent</div>
+                <div class="bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] overflow-y-auto p-[2px] h-[140px]">
+                    @for (enemy of enemies; track enemy.id) {
+                    <div class="flex gap-[6px] font-mono cursor-pointer p-[2px_4px] hover:bg-win95-blue hover:text-white" 
+                         [class.bg-win95-blue]="selectedEnemy()?.id === enemy.id"
+                         [class.text-white]="selectedEnemy()?.id === enemy.id"
+                         (click)="selectEnemy(enemy)">
+                        <span class="text-[10px]" [class.text-win95-dark-gray]="selectedEnemy()?.id !== enemy.id" [class.text-white]="selectedEnemy()?.id === enemy.id">[Lv{{ enemy.level }}]</span>
+                        <span>{{ enemy.name }}</span>
+                        <span class="ml-auto text-[10px]" [class.text-[#008800]]="selectedEnemy()?.id !== enemy.id" [class.text-white]="selectedEnemy()?.id === enemy.id">HP:{{ enemy.maxHP }}</span>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Idle Options -->
+            @if (idle().autoCombatUnlocked) {
+            <fieldset class="border border-win95-dark-gray border-t-white border-l-white my-2 p-[12px_8px_8px] relative">
+                <legend class="bg-win95-gray px-1 font-system text-xs text-win95-black">Idle Combat</legend>
+                <label class="flex items-center gap-[6px] cursor-pointer text-win95-black">
+                    <input type="checkbox" [checked]="idle().autoCombat" (change)="toggleAutoCombat()" 
+                           class="appearance-none w-[13px] h-[13px] bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white relative checked:after:content-['✓'] checked:after:absolute checked:after:-top-[2px] checked:after:left-[1px] checked:after:text-xs checked:after:font-bold checked:after:text-black active:bg-win95-gray">
+                    Auto-Combat
+                </label>
+                <div class="flex items-center gap-2 text-[11px] mt-1 text-win95-black">
+                    <label>Speed:</label>
+                    <select [ngModel]="idle().combatTickMs" (ngModelChange)="setCombatSpeed($event)"
+                            class="bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] pad-[4px] font-system text-xs outline-none focus:outline-dotted focus:outline-1 focus:-outline-offset-2">
+                        <option [value]="2000">Slow</option>
+                        <option [value]="1000">Normal</option>
+                        <option [value]="500">Fast</option>
+                        <option [value]="250">Very Fast</option>
+                    </select>
+                </div>
+            </fieldset>
+            }
+
+            @if (isLockedOut()) {
+            <div class="text-center p-2 bg-[#ffcccc] border-2 border-[#cc0000] text-[#800000] font-bold mt-2" @pulse>
+                <div class="text-[16px]">[X]</div>
+                <div class="text-[11px]">Recovery in {{ getLockoutSeconds() }}s...</div>
+            </div>
+            }
+
+            <div class="mt-2 flex justify-center">
+                <button class="bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray px-3 py-1 text-xs cursor-pointer font-system active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[13px] active:py-[5px] active:pb-[3px] disabled:text-win95-dark-gray disabled:cursor-not-allowed disabled:shadow-[1px_1px_0_white]"
+                        [disabled]="!selectedEnemy() || player().currentHP <= 0 || isLockedOut()"
+                        (click)="beginCombat()">
+                    [>] Enter Battle
+                </button>
+            </div>
+
+            <div class="text-center text-[11px] text-[#606060] mt-2">
+                <span>Enemies Defeated: {{ combat().enemiesDefeated }}</span>
+            </div>
+            } @else {
+            <!-- Active Combat -->
+            <div class="overflow-hidden" @fadeSlide>
+                <!-- Enemy Display -->
+                <div class="text-center p-1" [@shake]="enemyShakeState()">
+                    <div class="font-bold text-xs font-mono text-win95-black">{{ combat().currentEnemy?.name }}</div>
+                    <pre class="font-mono text-[10px] m-0 leading-[1.1] text-black text-left inline-block whitespace-pre">{{ combat().currentEnemy?.ascii }}</pre>
+                    <div class="relative h-[18px] p-[2px] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] bg-win95-dark-gray">
+                        <div class="h-full bg-[#00aa00] transition-[width] duration-200 ease-linear" [style.width.%]="enemyHPPercent()">
+                        </div>
+                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] text-white drop-shadow-[1px_1px_0_black]">
+                            HP: {{ combat().currentEnemy?.currentHP | number:'1.0-0' }} / {{ combat().currentEnemy?.maxHP }}
+                        </div>
+                    </div>
+                    @if (combat().enemyEffects.length > 0) {
+                    <div class="flex flex-wrap gap-1 justify-center mt-1">
+                        @for (effect of combat().enemyEffects; track effect.name) {
+                        <span class="text-[9px] px-[4px] py-[1px] font-mono bg-[#ffcccc] text-[#660000]">[{{ effect.name }}: {{ effect.remainingTurns }}]</span>
+                        }
+                    </div>
+                    }
+                </div>
+
+                <div class="text-center font-bold text-xs p-[2px] text-[#800000] font-mono">---VS---</div>
+
+                <!-- Player Display -->
+                <div class="text-center p-1" [@shake]="playerShakeState()">
+                    <pre class="font-mono text-[10px] m-0 leading-[1.1] text-black text-left inline-block whitespace-pre">
+    /\\
+   /  \\
+__/____\\__
+  |O  O|
+   \\__/
+          </pre>
+                    <div class="relative h-[18px] p-[2px] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] bg-win95-dark-gray mb-1">
+                        <div class="h-full bg-[#00aa00] transition-[width] duration-200 ease-linear" [style.width.%]="(player().currentHP / player().maxHP) * 100">
+                        </div>
+                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] text-white drop-shadow-[1px_1px_0_black]">
+                            HP: {{ player().currentHP | number:'1.0-0' }} / {{ player().maxHP }}
+                        </div>
+                    </div>
+                    <div class="relative h-[18px] p-[2px] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] bg-win95-dark-gray">
+                        <div class="h-full bg-[#0066cc] transition-[width] duration-200 ease-linear" [style.width.%]="(resources().mana / resources().maxMana) * 100">
+                        </div>
+                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] text-white drop-shadow-[1px_1px_0_black]">
+                            MP: {{ resources().mana | number:'1.0-0' }} / {{ resources().maxMana }}
+                        </div>
+                    </div>
+                    @if (combat().playerEffects.length > 0) {
+                    <div class="flex flex-wrap gap-1 justify-center mt-1">
+                        @for (effect of combat().playerEffects; track effect.name) {
+                        <span class="text-[9px] px-[4px] py-[1px] font-mono bg-[#ccffcc] text-[#006600]">[{{ effect.name }}: {{ effect.remainingTurns }}]</span>
+                        }
+                    </div>
+                    }
+                </div>
+
+                <!-- Spell Selection -->
+                <div class="mt-2 text-win95-black">
+                    <div class="bg-win95-blue text-white py-[2px] px-[6px] font-bold mb-1 font-mono">Select Spell</div>
+                    <div class="bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] overflow-y-auto p-[2px] h-[80px]">
+                        @for (spell of craftedSpells(); track spell.id) {
+                        <div class="flex gap-[6px] font-mono cursor-pointer p-[2px_4px] hover:bg-win95-blue hover:text-white" 
+                             [class.bg-win95-blue]="selectedSpell()?.id === spell.id"
+                             [class.text-white]="selectedSpell()?.id === spell.id"
+                             [class.text-win95-dark-gray]="resources().mana < spell.totalManaCost && selectedSpell()?.id !== spell.id"
+                             [class.hover:text-white]="resources().mana < spell.totalManaCost"
+                             (click)="selectSpell(spell)">
+                            <span class="text-win95-blue" [class.text-white]="selectedSpell()?.id === spell.id">{{ spell.symbol }}</span>
+                            <span>{{ spell.name }}</span>
+                            <span class="ml-auto text-[10px] text-[#0066cc]" [class.text-white]="selectedSpell()?.id === spell.id">({{ spell.totalManaCost }}mp)</span>
+                        </div>
+                        } @empty {
+                        <div class="text-win95-dark-gray italic p-2 text-center">No spells available!</div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Combat Actions -->
+                <div class="mt-2 flex gap-2 justify-between">
+                    <button class="bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray px-3 py-1 text-xs cursor-pointer font-system active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[13px] active:py-[5px] active:pb-[3px] text-[#800000]" 
+                            (click)="flee()">
+                        [<] Flee </button>
+                            <button class="bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray px-3 py-1 text-xs cursor-pointer font-system active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[13px] active:py-[5px] active:pb-[3px] disabled:text-win95-dark-gray disabled:cursor-not-allowed disabled:shadow-[1px_1px_0_white]"
+                                    [disabled]="!canCastSpell()" (click)="castSelectedSpell()">
+                                [*] Cast!
+                            </button>
+                </div>
+            </div>
+            }
+        </div>
+    </app-window>
+  `
 })
 export class CombatComponent {
   closed = output<void>();

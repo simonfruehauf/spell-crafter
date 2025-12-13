@@ -33,29 +33,29 @@ import { WindowStates } from './core/models/game.interfaces';
     DevConsoleComponent,
   ],
   template: `
-    <div class="desktop">
+    <div class="w-full h-screen relative overflow-hidden bg-win95-teal">
       <!-- Header -->
-      <div class="game-header">
-        <span class="game-title" (click)="onTitleClick()">-=[ Spell-Crafter: Chronicles of the Arcane ]=-</span>
-        <div class="header-resources">
-          <span class="resource">&lt;&gt; {{ resources().mana | number:'1.0-0' }}/{{ resources().maxMana }}</span>
-          <span class="resource">(o) {{ resources().gold }}</span>
-          <button class="header-btn" (click)="openWindow('settings')">[=]</button>
+      <div class="fixed top-0 left-0 right-0 h-[28px] bg-gradient-to-b from-[#c0c0c0] to-[#a0a0a0] border-b-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray flex items-center justify-between px-2 z-[10000] font-mono">
+        <span class="font-bold text-xs cursor-pointer select-none" (click)="onTitleClick()">-=[ Spell-Crafter: Chronicles of the Arcane ]=-</span>
+        <div class="flex gap-4 items-center">
+          <span class="text-[11px] font-mono">&lt;&gt; {{ resources().mana | number:'1.0-0' }}/{{ resources().maxMana }}</span>
+          <span class="text-[11px] font-mono">(o) {{ resources().gold }}</span>
+          <button class="px-[6px] py-[2px] font-mono text-[10px] bg-win95-gray border border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray cursor-pointer active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white" (click)="openWindow('settings')">[=]</button>
         </div>
       </div>
 
       <!-- Desktop Icons -->
-      <div class="desktop-icons">
+      <div class="absolute top-[40px] right-[16px] flex flex-col gap-[12px] z-[1] max-h-[calc(100vh-60px)] overflow-y-auto">
         @for (windowId of closedWindows(); track windowId) {
-          <div class="desktop-icon" (dblclick)="openWindow(windowId)">
-            <div class="icon-graphic">{{ getWindowIcon(windowId) }}</div>
-            <div class="icon-label">{{ getWindowLabel(windowId) }}</div>
+          <div class="flex flex-col items-center cursor-pointer p-1 w-[64px] hover:bg-[#000080]/30 active:bg-[#000080]/50" (dblclick)="openWindow(windowId)">
+            <div class="font-mono text-[16px] font-bold text-white drop-shadow-[1px_1px_0_#000] bg-win95-blue p-[3px_6px] border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray">{{ getWindowIcon(windowId) }}</div>
+            <div class="text-[9px] text-white drop-shadow-[1px_1px_0_#000] text-center mt-[2px]">{{ getWindowLabel(windowId) }}</div>
           </div>
         }
       </div>
 
       <!-- Windows -->
-      <div class="windows-container">
+      <div class="pt-[36px] w-full h-full">
         @if (windows().altar.unlocked && windows().altar.visible) {
           <app-altar (closed)="closeWindow('altar')"></app-altar>
         }
@@ -109,86 +109,9 @@ import { WindowStates } from './core/models/game.interfaces';
         }
       </div>
     </div>
-  `,
-  styles: [`
-    .desktop {
-      width: 100%;
-      height: 100vh;
-      position: relative;
-      overflow: hidden;
-    }
-    .game-header {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 28px;
-      background: linear-gradient(180deg, #c0c0c0 0%, #a0a0a0 100%);
-      border-bottom: 2px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 8px;
-      z-index: 10000;
-      font-family: 'Courier New', monospace;
-    }
-    .game-title { font-weight: bold; font-size: 12px; }
-    .header-resources { display: flex; gap: 16px; align-items: center; }
-    .resource { font-size: 11px; font-family: 'Courier New', monospace; }
-    .header-btn {
-      padding: 2px 6px;
-      font-family: 'Courier New', monospace;
-      font-size: 10px;
-      background-color: #c0c0c0;
-      border: 1px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
-      cursor: pointer;
-      &:active { border-color: #808080 #ffffff #ffffff #808080; }
-    }
-    .desktop-icons {
-      position: absolute;
-      top: 40px; right: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      z-index: 1;
-      max-height: calc(100vh - 60px);
-      overflow-y: auto;
-    }
-    .desktop-icon {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      padding: 4px;
-      width: 64px;
-      &:hover { background-color: rgba(0, 0, 128, 0.3); }
-      &:active { background-color: rgba(0, 0, 128, 0.5); }
-    }
-    .icon-graphic {
-      font-family: 'Courier New', monospace;
-      font-size: 16px;
-      font-weight: bold;
-      color: #ffffff;
-      text-shadow: 1px 1px 0 #000;
-      background-color: #000080;
-      padding: 3px 6px;
-      border: 2px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
-    }
-    .icon-label {
-      font-size: 9px;
-      color: #ffffff;
-      text-shadow: 1px 1px 0 #000;
-      text-align: center;
-      margin-top: 2px;
-    }
-    .windows-container {
-      padding-top: 36px;
-      width: 100%;
-      height: 100%;
-    }
-  `]
+  `
 })
+
 export class App {
   private gameState = inject(GameStateService);
 
