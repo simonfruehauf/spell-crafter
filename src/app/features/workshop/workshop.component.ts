@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, output, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -98,7 +98,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
   `]
 })
 export class WorkshopComponent {
-  @Output() closed = new EventEmitter<void>();
+  closed = output<void>();
   private gameState = inject(GameStateService);
   readonly upgrades = this.gameState.upgrades;
   readonly resources = this.gameState.resources;

@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, ElementRef, ViewChild, effect, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, output, ElementRef, ViewChild, effect, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -69,7 +69,7 @@ import { GameStateService } from '../../core/services/game-state.service';
   `]
 })
 export class ChronicleComponent {
-  @Output() closed = new EventEmitter<void>();
+  closed = output<void>();
   @ViewChild('logContainer') logContainer!: ElementRef;
   private gameState = inject(GameStateService);
   readonly combat = this.gameState.combat;

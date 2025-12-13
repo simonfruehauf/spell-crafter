@@ -1,4 +1,4 @@
-import { Component, Input, ElementRef, AfterViewChecked, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, ElementRef, AfterViewChecked, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CombatLogEntry } from '../../../core/models/game.interfaces';
 import { listItem } from '../../../shared/animations/animations';
@@ -13,12 +13,12 @@ import { listItem } from '../../../shared/animations/animations';
     <div class="combat-log-container">
       <div class="log-header">Combat Log</div>
       <div class="log-area" #logContainer>
-        @for (entry of log; track entry.timestamp.getTime()) {
+        @for (entry of log(); track entry.timestamp.getTime()) {
           <div class="log-entry" [class]="entry.type" @listItem>
             {{ entry.message }}
           </div>
         }
-        @if (log.length === 0) {
+        @if (log().length === 0) {
           <div class="log-empty">No combat activity yet...</div>
         }
       </div>
@@ -70,15 +70,15 @@ import { listItem } from '../../../shared/animations/animations';
   `]
 })
 export class CombatLogComponent implements AfterViewChecked {
-  @Input() log: CombatLogEntry[] = [];
+  log = input<CombatLogEntry[]>([]);
   @ViewChild('logContainer') private logContainer!: ElementRef<HTMLDivElement>;
 
   private previousLogLength = 0;
 
   ngAfterViewChecked(): void {
     // Auto-scroll to bottom when new entries are added
-    if (this.log.length !== this.previousLogLength) {
-      this.previousLogLength = this.log.length;
+    if (this.log().length !== this.previousLogLength) {
+      this.previousLogLength = this.log().length;
       this.scrollToBottom();
     }
   }

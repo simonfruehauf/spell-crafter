@@ -1,4 +1,4 @@
-import { Component, inject, signal, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, output, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WindowComponent } from '../../shared/components/window/window.component';
@@ -156,7 +156,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
   `]
 })
 export class SpellCraftingComponent {
-  @Output() closed = new EventEmitter<void>();
+  closed = output<void>();
   private gameState = inject(GameStateService);
 
   readonly knownRunes = this.gameState.knownRunes;

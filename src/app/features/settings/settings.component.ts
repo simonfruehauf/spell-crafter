@@ -1,4 +1,4 @@
-import { Component, inject, signal, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, output, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WindowComponent } from '../../shared/components/window/window.component';
@@ -145,7 +145,7 @@ import { GameStateService } from '../../core/services/game-state.service';
   `]
 })
 export class SettingsComponent {
-  @Output() closed = new EventEmitter<void>();
+  closed = output<void>();
   private gameState = inject(GameStateService);
 
   readonly combat = this.gameState.combat;

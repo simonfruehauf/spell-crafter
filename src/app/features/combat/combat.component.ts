@@ -1,4 +1,4 @@
-import { Component, inject, signal, Output, EventEmitter, ChangeDetectionStrategy, effect } from '@angular/core';
+import { Component, inject, signal, output, ChangeDetectionStrategy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WindowComponent } from '../../shared/components/window/window.component';
@@ -17,7 +17,7 @@ import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CombatComponent {
-  @Output() closed = new EventEmitter<void>();
+  closed = output<void>();
 
   private gameState = inject(GameStateService);
 

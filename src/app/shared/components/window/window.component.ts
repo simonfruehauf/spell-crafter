@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ElementRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, ElementRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { windowAnimation } from '../../animations/animations';
 import { GameStateService } from '../../../core/services/game-state.service';
@@ -14,16 +14,16 @@ import { WindowStates } from '../../../core/models/game.interfaces';
     animations: [windowAnimation]
 })
 export class WindowComponent implements OnInit {
-    @Input() title = 'Window';
-    @Input() windowId = '';
-    @Input() showMinimize = true;
-    @Input() showClose = true;
-    @Input() initialX = 50;
-    @Input() initialY = 50;
-    @Input() width = 300;
-    @Input() height: number | 'auto' = 'auto';
+    title = input('Window');
+    windowId = input('');
+    showMinimize = input(true);
+    showClose = input(true);
+    initialX = input(50);
+    initialY = input(50);
+    width = input(300);
+    height = input<number | 'auto'>('auto');
 
-    @Output() closed = new EventEmitter<void>();
+    closed = output<void>();
 
     private el = inject(ElementRef);
     private gameState = inject(GameStateService);
@@ -44,13 +44,13 @@ export class WindowComponent implements OnInit {
 
     ngOnInit(): void {
         // Try to load saved position, fall back to initial values
-        if (this.windowId) {
-            const savedPos = this.gameState.getWindowPosition(this.windowId as keyof WindowStates);
-            this.posX.set(savedPos.x ?? this.initialX);
-            this.posY.set(savedPos.y ?? this.initialY);
+        if (this.windowId()) {
+            const savedPos = this.gameState.getWindowPosition(this.windowId() as keyof WindowStates);
+            this.posX.set(savedPos.x ?? this.initialX());
+            this.posY.set(savedPos.y ?? this.initialY());
         } else {
-            this.posX.set(this.initialX);
-            this.posY.set(this.initialY);
+            this.posX.set(this.initialX());
+            this.posY.set(this.initialY());
         }
     }
 
@@ -87,9 +87,9 @@ export class WindowComponent implements OnInit {
         document.removeEventListener('mouseup', this.onMouseUp);
 
         // Save position when drag ends
-        if (this.windowId) {
+        if (this.windowId()) {
             this.gameState.updateWindowPosition(
-                this.windowId as keyof WindowStates,
+                this.windowId() as keyof WindowStates,
                 this.posX(),
                 this.posY()
             );

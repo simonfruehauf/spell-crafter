@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, computed, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, output, computed, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -242,7 +242,7 @@ import { ResearchNode } from '../../core/models/game.interfaces';
   `]
 })
 export class ResearchComponent {
-  @Output() closed = new EventEmitter<void>();
+  closed = output<void>();
 
   private gameState = inject(GameStateService);
 

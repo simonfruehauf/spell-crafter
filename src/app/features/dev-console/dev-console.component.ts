@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WindowComponent } from '../../shared/components/window/window.component';
@@ -174,7 +174,7 @@ import { INITIAL_EQUIPMENT_RECIPES } from '../../core/models/equipment.data';
     `]
 })
 export class DevConsoleComponent {
-    @Output() closed = new EventEmitter<void>();
+    closed = output<void>();
 
     private gameState = inject(GameStateService);
 

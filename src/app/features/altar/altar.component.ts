@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, ChangeDetectionStrategy, computed, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, inject, output, ChangeDetectionStrategy, computed, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -122,7 +122,7 @@ import { GameStateService } from '../../core/services/game-state.service';
   `]
 })
 export class AltarComponent implements OnInit, OnDestroy {
-  @Output() closed = new EventEmitter<void>();
+  closed = output<void>();
 
   private gameState = inject(GameStateService);
 
