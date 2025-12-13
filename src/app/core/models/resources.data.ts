@@ -90,6 +90,7 @@ export const ALL_RESOURCES: ResourceDef[] = [
     // CREATURE PARTS (15) - Monster drops
     // =========================================================================
     { id: 'goblin_tooth', name: 'Goblin Tooth', category: 'creature', description: 'Sharp and dirty.', rarity: 'common' },
+    { id: 'goblin_skull', name: 'Goblin Skull', category: 'creature', description: 'How\'d you get that?', rarity: 'common' },
     { id: 'skeleton_bone', name: 'Skeleton Bone', category: 'creature', description: 'Animated remains.', rarity: 'common' },
     { id: 'imp_horn', name: 'Imp Horn', category: 'creature', description: 'Small demon horn.', rarity: 'common' },
     { id: 'wolf_leather', name: 'Wolf Leather', category: 'creature', description: 'Beast fur.', rarity: 'common' },

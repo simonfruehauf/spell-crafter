@@ -251,6 +251,7 @@ export const ENEMIES: Enemy[] = [
         ascii: ASCII_ART.goblin, weakness: 'fire',
         lootTable: [
             { resourceId: 'goblin_tooth', minAmount: 1, maxAmount: 2, chance: 0.6 },
+            { resourceId: 'goblin_skull', minAmount: 1, maxAmount: 1, chance: 0.02 },
             { resourceId: 'arcane_ash', minAmount: 1, maxAmount: 2, chance: 0.4 },
             { resourceId: 'iron_ore', minAmount: 1, maxAmount: 1, chance: 0.3 },
             { resourceId: 'copper_ore', minAmount: 1, maxAmount: 2, chance: 0.4 },
@@ -974,7 +975,7 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
     },
     {
         id: 'unlock-runebook', name: 'The Runebook', description: 'A tome of arcane rune knowledge.',
-        manaCost: 55, resourceCost: [{ resourceId: 'iron_ingot', amount: 1 }], unlocked: true, researched: false,
+        manaCost: 55, resourceCost: [{ resourceId: 'iron_ore', amount: 1 }], unlocked: true, researched: false,
         unlockEffect: { type: 'window', windowId: 'runebook' }, prerequisites: []
     },
     {
@@ -1201,5 +1202,23 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
         id: 'temporal-arts', name: 'Temporal Arts', description: 'Unlock the Stupor rune.',
         manaCost: 130, resourceCost: [{ resourceId: 'percipience', amount: 5 }], unlocked: false, researched: false,
         unlockEffect: { type: 'rune', runeId: 'stupor' }, prerequisites: ['fortune-magic']
+    },
+
+    // POTION SYSTEM
+    {
+        id: 'unlock-apothecary', name: 'The Apothecary',
+        description: 'Unlock the art of potion brewing.',
+        manaCost: 80,
+        unlocked: true, researched: false,
+        unlockEffect: { type: 'window', windowId: 'apothecary' },
+        prerequisites: ['']
+    },
+    {
+        id: 'combat-potions', name: 'Combat Alchemy',
+        description: 'Learn to use potions in the heat of battle.',
+        manaCost: 100, resourceCost: [{ resourceId: 'insight', amount: 8 }],
+        unlocked: false, researched: false,
+        unlockEffect: { type: 'idle', idleId: 'usePotionUnlocked' },
+        prerequisites: ['unlock-apothecary']
     },
 ];

@@ -64,12 +64,24 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
           <div class="stat-row">
             <span>Mana Cost:</span><span>{{ totalManaCost() }}</span>
           </div>
-          <div class="stat-row">
-            <span>Base Damage:</span><span>{{ calculatedDamage() }}</span>
-          </div>
+          @if (calculatedHealing() > 0) {
+            <div class="stat-row heal-stat">
+              <span>Healing:</span><span>{{ calculatedHealing() }}</span>
+            </div>
+          }
+          @if (calculatedDamage() > 0 || calculatedHealing() === 0) {
+            <div class="stat-row">
+              <span>Base Damage:</span><span>{{ calculatedDamage() }}</span>
+            </div>
+          }
           <div class="stat-row">
             <span>Damage Types:</span><span>{{ damageTypes().join(', ') || 'None' }}</span>
           </div>
+          @if (hasSpecialEffects()) {
+            <div class="stat-row">
+              <span>Effects:</span><span>{{ specialEffects().join(', ') }}</span>
+            </div>
+          }
         </fieldset>
 
         <!-- Material Cost -->
@@ -86,10 +98,12 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
           </fieldset>
         }
 
-        <!-- Name & Actions -->
+        <!-- Name & Symbol -->
         <div class="spell-name mt-1 d-flex gap-2 align-center">
           <label>Name:</label>
           <input type="text" [(ngModel)]="spellName" placeholder="Spell name..." style="flex: 1;">
+          <label>Symbol:</label>
+          <input type="text" [(ngModel)]="spellSymbol" placeholder="?" maxlength="1" style="width: 28px; text-align: center;">
         </div>
 
         <div class="actions mt-1 d-flex gap-2 justify-between">
@@ -136,6 +150,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     }
     .empty-msg { color: #808080; font-style: italic; padding: 8px; text-align: center; }
     .stat-row { display: flex; justify-content: space-between; font-size: 11px; }
+    .stat-row.heal-stat { color: #008000; }
     .cost-list { display: flex; flex-wrap: wrap; gap: 4px; font-size: 10px; }
     .cost-item {
       padding: 1px 4px; background-color: #ffcccc;
@@ -166,6 +181,7 @@ export class SpellCraftingComponent {
 
   readonly selectedRunes = signal<Rune[]>([]);
   spellName = '';
+  spellSymbol = '';
 
   totalManaCost(): number {
     return this.selectedRunes().reduce((s, r) => s + r.manaCost, 0);
@@ -180,6 +196,40 @@ export class SpellCraftingComponent {
 
   damageTypes(): string[] {
     return [...new Set(this.selectedRunes().map(r => r.damageType))];
+  }
+
+  calculatedHealing(): number {
+    const runes = this.selectedRunes();
+    if (!runes.length) return 0;
+    let healing = 0;
+    for (const rune of runes) {
+      if (rune.effect.type === 'heal' || rune.effect.type === 'hot' || rune.effect.type === 'lifesteal') {
+        healing += rune.effect.value;
+      }
+    }
+    // WIS bonus for healing
+    return Math.floor(healing * (1 + this.player().WIS * 0.1));
+  }
+
+  hasSpecialEffects(): boolean {
+    return this.selectedRunes().some(r =>
+      ['buff', 'debuff', 'shield', 'stun', 'dot', 'hot'].includes(r.effect.type)
+    );
+  }
+
+  specialEffects(): string[] {
+    const effects: string[] = [];
+    for (const rune of this.selectedRunes()) {
+      switch (rune.effect.type) {
+        case 'buff': effects.push(`+${rune.effect.value} ${rune.effect.targetStat || 'stat'}`); break;
+        case 'debuff': effects.push(`-${rune.effect.value} enemy stat`); break;
+        case 'shield': effects.push(`${rune.effect.value} shield`); break;
+        case 'stun': effects.push(`${rune.effect.duration || 1}t stun`); break;
+        case 'dot': effects.push(`${rune.effect.value}/t for ${rune.effect.duration || 3}t`); break;
+        case 'hot': effects.push(`+${rune.effect.value} HP/t for ${rune.effect.duration || 3}t`); break;
+      }
+    }
+    return effects;
   }
 
   aggregateMaterialCost(): ResourceCost[] {
@@ -220,6 +270,7 @@ export class SpellCraftingComponent {
   clear(): void {
     this.selectedRunes.set([]);
     this.spellName = '';
+    this.spellSymbol = '';
   }
 
   canCraft(): boolean {
@@ -229,7 +280,8 @@ export class SpellCraftingComponent {
 
   craftSpell(): void {
     if (!this.canCraft()) return;
-    this.gameState.craftSpell(this.spellName.trim(), this.selectedRunes(), this.aggregateMaterialCost());
+    const customSymbol = this.spellSymbol.trim() || undefined;
+    this.gameState.craftSpell(this.spellName.trim(), this.selectedRunes(), this.aggregateMaterialCost(), customSymbol);
     this.clear();
   }
 

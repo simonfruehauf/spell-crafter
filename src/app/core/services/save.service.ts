@@ -2,11 +2,13 @@ import { Injectable, signal } from '@angular/core';
 import {
     GameState, Player, Resources, WindowStates, Rune, Spell,
     ResearchNode, CombatState, IdleSettings, Upgrade,
-    EquipmentItem, EquipmentRecipe, EquippedItems, AlchemyState, AlchemyRecipe
+    EquipmentItem, EquipmentRecipe, EquippedItems, AlchemyState, AlchemyRecipe,
+    PotionInventory
 } from '../models/game.interfaces';
 import { RUNES, MAGIC_MISSILE, INITIAL_RESEARCH_TREE, INITIAL_UPGRADES, INITIAL_ALCHEMY_RECIPES } from '../models/game.data';
 import { INITIAL_CRAFTING_RESOURCES } from '../models/resources.data';
 import { INITIAL_EQUIPMENT_RECIPES } from '../models/equipment.data';
+import { INITIAL_POTION_INVENTORY } from '../models/potions.data';
 
 const SAVE_KEY = 'spellcrafter-save';
 const SAVE_VERSION = 3;
@@ -26,6 +28,7 @@ export interface GameSignals {
     equipmentRecipes: ReturnType<typeof signal<EquipmentRecipe[]>>;
     alchemyRecipes: ReturnType<typeof signal<AlchemyRecipe[]>>;
     alchemy: ReturnType<typeof signal<AlchemyState>>;
+    potions: ReturnType<typeof signal<PotionInventory>>;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -61,6 +64,7 @@ export class SaveService {
             equipmentRecipes: this.signals.equipmentRecipes(),
             alchemyRecipes: this.signals.alchemyRecipes(),
             alchemy: this.signals.alchemy(),
+            potions: this.signals.potions(),
         };
         localStorage.setItem(SAVE_KEY, JSON.stringify(state));
     }
@@ -121,6 +125,12 @@ export class SaveService {
                     craftStartTime: 0,
                     craftEndTime: 0,
                 });
+            }
+            // Load potion inventory
+            if (state.potions) {
+                this.signals.potions.set(state.potions);
+            } else {
+                this.signals.potions.set({ ...INITIAL_POTION_INVENTORY });
             }
             return true;
         } catch {

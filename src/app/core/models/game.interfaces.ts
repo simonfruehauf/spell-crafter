@@ -187,6 +187,7 @@ export interface WindowStates {
   armory: WindowState;
   equipment: WindowState;
   alchemy: WindowState;
+  apothecary: WindowState;
 }
 
 /**
@@ -273,6 +274,62 @@ export interface AlchemyState {
   craftStartTime: number;
   craftEndTime: number;
 }
+
+/**
+ * Active potion brewing state
+ */
+export interface BrewingState {
+  activePotionId: string | null;
+  brewStartTime: number;
+  brewEndTime: number;
+}
+
+/**
+ * Potion effect types
+ */
+export type PotionEffectType =
+  | 'healFlat'        // Heal flat HP (e.g., +5 HP)
+  | 'healPercent'     // Heal % of max HP (e.g., +10% HP)
+  | 'manaFlat'        // Restore flat mana
+  | 'manaPercent'     // Restore % of max mana
+  | 'buffStat'        // Temporary stat buff
+  | 'shield'          // Grant temporary shield
+  | 'damageBoost'     // Boost damage for X turns
+  | 'cleanse'         // Remove negative effects
+  | 'regen'           // Heal over time (per turn)
+  | 'critBoost'       // Increase crit chance
+  | 'speedBoost'      // Grant extra action(s)
+  | 'reflect'         // Reflect damage back to attacker
+  | 'lifesteal';      // Heal for % of damage dealt
+
+/**
+ * Individual potion effect
+ */
+export interface PotionEffect {
+  type: PotionEffectType;
+  value: number;
+  duration?: number;           // For buffs (turns)
+  stat?: keyof PlayerStats;    // For buffStat type
+}
+
+/**
+ * Potion definition
+ */
+export interface Potion {
+  id: string;
+  name: string;
+  description: string;
+  effects: PotionEffect[];
+  craftCost: ResourceCost[];
+  manaCost: number;            // Mana required to craft (can be 0 for % cost)
+  manaCostPercent?: number;    // Mana cost as % of max mana (alternative to flat)
+  symbol: string;              // Display symbol
+}
+
+/**
+ * Player potion inventory
+ */
+export type PotionInventory = Record<string, number>;
 
 /**
  * Player equipped items
@@ -408,6 +465,7 @@ export interface IdleSettings {
   autoLoot: boolean;
   combatTickMs: number;
   passiveManaRegenUnlocked: boolean;
+  usePotionUnlocked: boolean;
 }
 
 /**
@@ -428,4 +486,6 @@ export interface GameState {
   equippedItems: EquippedItems;
   craftedEquipment: EquipmentItem[];
   equipmentRecipes: EquipmentRecipe[];
+  // Potion system
+  potions: PotionInventory;
 }

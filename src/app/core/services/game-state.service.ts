@@ -6,11 +6,12 @@ import {
     ResearchNode, CombatState, CombatLogEntry, Enemy, IdleSettings,
     ActiveEffect, LootDrop, ResourceCost, Upgrade, DamageType,
     EquipmentItem, EquipmentRecipe, EquippedItems, EquipmentSlot, PlayerStats,
-    AlchemyRecipe, AlchemyState
+    AlchemyRecipe, AlchemyState, PotionInventory, Potion, BrewingState
 } from '../models/game.interfaces';
 import { INITIAL_RESEARCH_TREE, RUNES, MAGIC_MISSILE, ENEMIES, INITIAL_UPGRADES, INITIAL_ALCHEMY_RECIPES } from '../models/game.data';
 import { INITIAL_CRAFTING_RESOURCES, RESOURCE_NAMES } from '../models/resources.data';
 import { INITIAL_EQUIPMENT_RECIPES, INITIAL_EQUIPPED_ITEMS, EQUIPMENT_ITEMS } from '../models/equipment.data';
+import { POTIONS, POTIONS_MAP, INITIAL_POTION_INVENTORY } from '../models/potions.data';
 import { deepClone } from '../../shared/utils/clone.utils';
 
 // Import extracted services
@@ -43,6 +44,8 @@ export class GameStateService implements OnDestroy {
     private readonly _equipmentRecipes = signal<EquipmentRecipe[]>(deepClone(INITIAL_EQUIPMENT_RECIPES));
     private readonly _alchemyRecipes = signal<AlchemyRecipe[]>(deepClone(INITIAL_ALCHEMY_RECIPES));
     private readonly _alchemy = signal<AlchemyState>(this.createInitialAlchemyState());
+    private readonly _potions = signal<PotionInventory>(deepClone(INITIAL_POTION_INVENTORY));
+    private readonly _brewing = signal<BrewingState>(this.createInitialBrewingState());
 
     // Public readonly
     readonly player = this._player.asReadonly();
@@ -59,6 +62,8 @@ export class GameStateService implements OnDestroy {
     readonly equipmentRecipes = this._equipmentRecipes.asReadonly();
     readonly alchemyRecipes = this._alchemyRecipes.asReadonly();
     readonly alchemy = this._alchemy.asReadonly();
+    readonly potions = this._potions.asReadonly();
+    readonly brewing = this._brewing.asReadonly();
 
     // Computed
     readonly availableResearch = computed(() =>
@@ -104,6 +109,7 @@ export class GameStateService implements OnDestroy {
             equipmentRecipes: this._equipmentRecipes,
             alchemyRecipes: this._alchemyRecipes,
             alchemy: this._alchemy,
+            potions: this._potions,
         });
 
         // Register research service
@@ -118,6 +124,7 @@ export class GameStateService implements OnDestroy {
             spendMana: (amount) => this.spendMana(amount),
             unlockAutoCombat: () => this.unlockAutoCombat(),
             unlockPassiveManaRegen: () => this.unlockPassiveManaRegen(),
+            unlockUsePotions: () => this.unlockUsePotions(),
             increaseMaxMana: (amount) => this.resourceService.increaseMaxMana(amount),
             canAffordResources: (costs) => this.resourceService.canAffordResources(costs),
             spendCraftingResources: (costs) => this.resourceService.spendCraftingResources(costs),
@@ -187,6 +194,9 @@ export class GameStateService implements OnDestroy {
 
         // Check alchemy completion
         this.tickAlchemy();
+
+        // Check brewing completion
+        this.tickBrewing();
     }
 
     // UPGRADE BONUSES (delegated to research service)
@@ -221,6 +231,8 @@ export class GameStateService implements OnDestroy {
         this._equipmentRecipes.set(deepClone(INITIAL_EQUIPMENT_RECIPES));
         this._alchemyRecipes.set(deepClone(INITIAL_ALCHEMY_RECIPES));
         this._alchemy.set(this.createInitialAlchemyState());
+        this._potions.set(deepClone(INITIAL_POTION_INVENTORY));
+        this._brewing.set(this.createInitialBrewingState());
     }
 
     // WINDOW
@@ -294,7 +306,7 @@ export class GameStateService implements OnDestroy {
     }
 
     // SPELL CRAFTING
-    craftSpell(name: string, runes: Rune[], materialCost: ResourceCost[]): Spell | null {
+    craftSpell(name: string, runes: Rune[], materialCost: ResourceCost[], customSymbol?: string): Spell | null {
         if (runes.length === 0) return null;
         if (!this.spendCraftingResources(materialCost)) return null;
         const totalMana = runes.reduce((s, r) => s + r.manaCost, 0);
@@ -305,7 +317,7 @@ export class GameStateService implements OnDestroy {
             id: `spell-${Date.now()}`, name, runes: [...runes],
             totalManaCost: totalMana, calculatedDamage: Math.floor(baseDmg * dmgMult),
             description: `Woven from ${runes.map(r => r.name).join(', ')}.`,
-            symbol: runes[0]?.symbol || '[*]', damageTypes: dmgTypes, craftCost: materialCost,
+            symbol: customSymbol || runes[0]?.symbol || '[*]', damageTypes: dmgTypes, craftCost: materialCost,
             experience: 0, level: 1,
         };
         this._craftedSpells.update(s => [...s, spell]);
@@ -328,6 +340,265 @@ export class GameStateService implements OnDestroy {
 
     deleteSpell(id: string): void {
         this._craftedSpells.update(s => s.filter(x => x.id !== id && !x.isDefault));
+    }
+
+    // POTIONS
+    startBrewing(potionId: string): boolean {
+        const brewing = this._brewing();
+        if (brewing.activePotionId) return false; // Already brewing
+
+        const potion = POTIONS_MAP[potionId];
+        if (!potion) return false;
+
+        // Check material cost
+        if (!this.resourceService.canAffordResources(potion.craftCost)) return false;
+
+        // Check mana cost (flat or percentage)
+        const resources = this._resources();
+        let manaCost = potion.manaCost;
+        if (potion.manaCostPercent && potion.manaCostPercent > 0) {
+            manaCost = Math.floor(resources.maxMana * (potion.manaCostPercent / 100));
+        }
+        if (resources.mana < manaCost) return false;
+
+        // Spend resources
+        if (!this.resourceService.spendCraftingResources(potion.craftCost)) return false;
+        this.spendMana(manaCost);
+
+        // Start brewing timer (5 seconds)
+        const brewTimeMs = 5000;
+        const now = Date.now();
+        this._brewing.set({
+            activePotionId: potionId,
+            brewStartTime: now,
+            brewEndTime: now + brewTimeMs,
+        });
+
+        return true;
+    }
+
+    cancelBrewing(): void {
+        this._brewing.set(this.createInitialBrewingState());
+    }
+
+    // Legacy method for backward compatibility
+    brewPotion(potionId: string): boolean {
+        return this.startBrewing(potionId);
+    }
+
+    getPotionCount(potionId: string): number {
+        return this._potions()[potionId] || 0;
+    }
+
+    /**
+     * Drink a potion (works both in and out of combat)
+     * If in combat, counts as an action and ends your turn
+     */
+    drinkPotion(potionId: string): boolean {
+        const potions = this._potions();
+        if (!potions[potionId] || potions[potionId] <= 0) return false;
+
+        const potion = POTIONS_MAP[potionId];
+        if (!potion) return false;
+
+        const combat = this._combat();
+        const inCombat = combat.inCombat && combat.playerTurn;
+
+        // Remove potion from inventory
+        this._potions.update(inv => ({
+            ...inv,
+            [potionId]: inv[potionId] - 1
+        }));
+
+        if (inCombat) {
+            // In combat: apply full effects and end turn
+            this.combatService.addCombatLog(`You drink ${potion.name}!`, 'heal');
+            this.applyPotionEffects(potion);
+
+            // End player turn and trigger enemy turn
+            this._combat.update(c => ({ ...c, playerTurn: false }));
+            if (!this._idle().autoCombat) {
+                setTimeout(() => this.combatService.enemyTurn(), 500);
+            } else {
+                this.combatService.enemyTurn();
+            }
+        } else {
+            // Out of combat: only healing/mana effects work
+            this.applyPotionEffectsOutOfCombat(potion);
+        }
+
+        return true;
+    }
+
+    private applyPotionEffectsOutOfCombat(potion: Potion): void {
+        const player = this._player();
+        const resources = this._resources();
+
+        for (const effect of potion.effects) {
+            switch (effect.type) {
+                case 'healFlat': {
+                    const heal = effect.value;
+                    this._player.update(p => ({
+                        ...p,
+                        currentHP: Math.min(p.maxHP, p.currentHP + heal)
+                    }));
+                    break;
+                }
+                case 'healPercent': {
+                    const heal = Math.floor(player.maxHP * (effect.value / 100));
+                    this._player.update(p => ({
+                        ...p,
+                        currentHP: Math.min(p.maxHP, p.currentHP + heal)
+                    }));
+                    break;
+                }
+                case 'manaFlat': {
+                    this.addMana(effect.value);
+                    break;
+                }
+                case 'manaPercent': {
+                    const mana = Math.floor(resources.maxMana * (effect.value / 100));
+                    this.addMana(mana);
+                    break;
+                }
+                // Buff effects don't work outside combat
+                case 'buffStat':
+                case 'shield':
+                case 'damageBoost':
+                    // These only work in combat
+                    break;
+            }
+        }
+    }
+
+    usePotion(potionId: string): boolean {
+        const potions = this._potions();
+        if (!potions[potionId] || potions[potionId] <= 0) return false;
+        if (!this._idle().usePotionUnlocked) return false;
+
+        const combat = this._combat();
+        if (!combat.inCombat || !combat.playerTurn) return false;
+
+        const potion = POTIONS_MAP[potionId];
+        if (!potion) return false;
+
+        // Remove potion from inventory
+        this._potions.update(inv => ({
+            ...inv,
+            [potionId]: inv[potionId] - 1
+        }));
+
+        // Log to combat
+        this.combatService.addCombatLog(`You drink ${potion.name}!`, 'heal');
+
+        // Apply potion effects
+        this.applyPotionEffects(potion);
+
+        // End player turn and trigger enemy turn
+        this._combat.update(c => ({ ...c, playerTurn: false }));
+
+        // Trigger enemy turn after a short delay (like castSpell)
+        if (!this._idle().autoCombat) {
+            setTimeout(() => this.combatService.enemyTurn(), 500);
+        } else {
+            this.combatService.enemyTurn();
+        }
+
+        return true;
+    }
+
+    private applyPotionEffects(potion: Potion): void {
+        const player = this._player();
+        const resources = this._resources();
+
+        for (const effect of potion.effects) {
+            switch (effect.type) {
+                case 'healFlat': {
+                    const heal = effect.value;
+                    this._player.update(p => ({
+                        ...p,
+                        currentHP: Math.min(p.maxHP, p.currentHP + heal)
+                    }));
+                    this.combatService.addCombatLog(`  Restored ${heal} HP!`, 'heal');
+                    break;
+                }
+                case 'healPercent': {
+                    const heal = Math.floor(player.maxHP * (effect.value / 100));
+                    this._player.update(p => ({
+                        ...p,
+                        currentHP: Math.min(p.maxHP, p.currentHP + heal)
+                    }));
+                    this.combatService.addCombatLog(`  Restored ${heal} HP (${effect.value}%)!`, 'heal');
+                    break;
+                }
+                case 'manaFlat': {
+                    this.addMana(effect.value);
+                    this.combatService.addCombatLog(`  Restored ${effect.value} mana!`, 'heal');
+                    break;
+                }
+                case 'manaPercent': {
+                    const mana = Math.floor(resources.maxMana * (effect.value / 100));
+                    this.addMana(mana);
+                    this.combatService.addCombatLog(`  Restored ${mana} mana (${effect.value}%)!`, 'heal');
+                    break;
+                }
+                case 'buffStat': {
+                    const duration = effect.duration;
+                    const stat = effect.stat;
+                    if (stat && duration) {
+                        this._combat.update(c => ({
+                            ...c,
+                            playerEffects: [...c.playerEffects, {
+                                name: `${potion.name}`,
+                                type: 'buff' as const,
+                                value: effect.value,
+                                remainingTurns: duration,
+                                targetStat: stat
+                            }]
+                        }));
+                        this.combatService.addCombatLog(`  +${effect.value} ${stat} for ${duration} turns!`, 'effect');
+                    }
+                    break;
+                }
+                case 'shield': {
+                    const duration = effect.duration;
+                    if (duration) {
+                        this._combat.update(c => ({
+                            ...c,
+                            playerEffects: [...c.playerEffects, {
+                                name: `${potion.name}`,
+                                type: 'shield' as const,
+                                value: effect.value,
+                                remainingTurns: duration
+                            }]
+                        }));
+                        this.combatService.addCombatLog(`  Gained ${effect.value} shield for ${duration} turns!`, 'effect');
+                    }
+                    break;
+                }
+                case 'damageBoost': {
+                    const duration = effect.duration;
+                    if (duration) {
+                        this._combat.update(c => ({
+                            ...c,
+                            playerEffects: [...c.playerEffects, {
+                                name: `${potion.name}`,
+                                type: 'buff' as const,
+                                value: effect.value,
+                                remainingTurns: duration,
+                                targetStat: 'ARC' // Damage boost translates to ARC buff
+                            }]
+                        }));
+                        this.combatService.addCombatLog(`  +${effect.value}% damage for ${duration} turns!`, 'effect');
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    unlockUsePotions(): void {
+        this._idle.update(i => ({ ...i, usePotionUnlocked: true }));
     }
 
     // COMBAT (delegated to combat service)
@@ -502,6 +773,31 @@ export class GameStateService implements OnDestroy {
         };
     }
 
+    private createInitialBrewingState(): BrewingState {
+        return {
+            activePotionId: null,
+            brewStartTime: 0,
+            brewEndTime: 0,
+        };
+    }
+
+    private tickBrewing(): void {
+        const brewing = this._brewing();
+        if (!brewing.activePotionId) return;
+
+        if (Date.now() >= brewing.brewEndTime) {
+            const potion = POTIONS_MAP[brewing.activePotionId];
+            if (potion) {
+                // Add potion to inventory
+                this._potions.update(inv => ({
+                    ...inv,
+                    [potion.id]: (inv[potion.id] || 0) + 1
+                }));
+            }
+            this._brewing.set(this.createInitialBrewingState());
+        }
+    }
+
     // INITIAL STATE
     private createInitialPlayer(): Player {
         return {
@@ -530,6 +826,7 @@ export class GameStateService implements OnDestroy {
             armory: { unlocked: false, visible: false },
             equipment: { unlocked: false, visible: false },
             alchemy: { unlocked: false, visible: false },
+            apothecary: { unlocked: false, visible: false },
         };
     }
 
@@ -549,7 +846,8 @@ export class GameStateService implements OnDestroy {
         return {
             autoCombat: false, autoCombatUnlocked: false,
             autoLoot: true, combatTickMs: 1000,
-            passiveManaRegenUnlocked: false
+            passiveManaRegenUnlocked: false,
+            usePotionUnlocked: false,
         };
     }
 

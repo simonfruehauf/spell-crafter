@@ -17,6 +17,7 @@ import { ArmoryComponent } from './features/armory/armory.component';
 import { EquipmentComponent } from './features/equipment/equipment.component';
 import { AlchemyComponent } from './features/alchemy/alchemy.component';
 import { LaboratoryComponent } from './features/laboratory/laboratory.component';
+import { ApothecaryComponent } from './features/apothecary/apothecary.component';
 import { DevConsoleComponent } from './features/dev-console/dev-console.component';
 import { GameStateService } from './core/services/game-state.service';
 import { WindowStates } from './core/models/game.interfaces';
@@ -31,7 +32,7 @@ import { WindowStates } from './core/models/game.interfaces';
     RunebookComponent, GrimoireComponent, StatsComponent,
     BestiaryComponent, ChronicleComponent, SettingsComponent,
     DiscoveriesComponent, ArmoryComponent, EquipmentComponent, AlchemyComponent,
-    LaboratoryComponent,
+    LaboratoryComponent, ApothecaryComponent,
     DevConsoleComponent,
   ],
   template: `
@@ -109,6 +110,9 @@ import { WindowStates } from './core/models/game.interfaces';
         @if (windows().alchemy.unlocked && windows().alchemy.visible) {
           <app-alchemy (closed)="closeWindow('alchemy')"></app-alchemy>
         }
+        @if (windows().apothecary.unlocked && windows().apothecary.visible) {
+          <app-apothecary (closed)="closeWindow('apothecary')"></app-apothecary>
+        }
         @if (showDevConsole()) {
           <app-dev-console (closed)="showDevConsole.set(false)"></app-dev-console>
         }
@@ -162,7 +166,7 @@ export class App {
       inventory: '[I]', workshop: '[W]', runebook: '[B]', grimoire: '[G]',
       stats: '[#]', bestiary: '[M]', chronicle: '[L]', settings: '[=]',
       discoveries: '[*]', armory: '[E]', equipment: '[+]', alchemy: '[~]',
-      laboratory: '[%]',
+      laboratory: '[%]', apothecary: '[♥]',
     };
     return icons[id] || '[?]';
   }
@@ -173,7 +177,7 @@ export class App {
       inventory: 'Vault', workshop: 'Workshop', runebook: 'Runebook', grimoire: 'Grimoire',
       stats: 'Stats', bestiary: 'Bestiary', chronicle: 'Chronicle', settings: 'Settings',
       discoveries: 'Discoveries', armory: 'Armory', equipment: 'Equipment', alchemy: 'Alembic',
-      laboratory: 'Laboratory',
+      laboratory: 'Laboratory', apothecary: 'Potions',
     };
     return labels[id] || id;
   }

@@ -475,7 +475,7 @@ export class CombatService {
         this.signals.combat.update(x => ({ ...x, enemyEffects: remaining }));
     }
 
-    private enemyTurn(): void {
+    enemyTurn(): void {
         if (!this.signals) return;
 
         const combat = this.signals.combat();

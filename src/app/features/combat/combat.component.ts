@@ -1,10 +1,11 @@
-import { Component, inject, signal, output, ChangeDetectionStrategy, effect } from '@angular/core';
+import { Component, inject, signal, output, ChangeDetectionStrategy, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
-import { Spell, Enemy } from '../../core/models/game.interfaces';
+import { Spell, Enemy, Potion } from '../../core/models/game.interfaces';
 import { ENEMIES } from '../../core/models/game.data';
+import { POTIONS, POTIONS_MAP } from '../../core/models/potions.data';
 import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
 
 @Component({
@@ -166,15 +167,40 @@ __/____\\__
                     </div>
                 </div>
 
+                <!-- Potion Selection (if unlocked) -->
+                @if (idle().usePotionUnlocked && availablePotions().length > 0) {
+                <div class="mt-2 text-win95-black">
+                    <div class="bg-[#800080] text-white py-[2px] px-[6px] font-bold mb-1 font-mono">Use Potion</div>
+                    <div class="bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] overflow-y-auto p-[2px] max-h-[60px]">
+                        @for (potion of availablePotions(); track potion.id) {
+                        <div class="flex gap-[6px] font-mono cursor-pointer p-[2px_4px] hover:bg-[#800080] hover:text-white" 
+                             [class.bg-[#800080]]="selectedPotion()?.id === potion.id"
+                             [class.text-white]="selectedPotion()?.id === potion.id"
+                             (click)="selectPotion(potion)">
+                            <span class="text-[#800080]" [class.text-white]="selectedPotion()?.id === potion.id">{{ potion.symbol }}</span>
+                            <span>{{ potion.name }}</span>
+                            <span class="ml-auto text-[10px] text-[#008000]" [class.text-white]="selectedPotion()?.id === potion.id">x{{ getPotionCount(potion.id) }}</span>
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+
                 <!-- Combat Actions -->
                 <div class="mt-2 flex gap-2 justify-between">
                     <button class="bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray px-3 py-1 text-xs cursor-pointer font-system active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[13px] active:py-[5px] active:pb-[3px] text-[#800000]" 
                             (click)="flee()">
                         [<] Flee </button>
-                            <button class="bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray px-3 py-1 text-xs cursor-pointer font-system active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[13px] active:py-[5px] active:pb-[3px] disabled:text-win95-dark-gray disabled:cursor-not-allowed disabled:shadow-[1px_1px_0_white]"
-                                    [disabled]="!canCastSpell()" (click)="castSelectedSpell()">
-                                [*] Cast!
-                            </button>
+                    @if (selectedPotion() && idle().usePotionUnlocked) {
+                        <button class="bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray px-3 py-1 text-xs cursor-pointer font-system active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[13px] active:py-[5px] active:pb-[3px] disabled:text-win95-dark-gray disabled:cursor-not-allowed disabled:shadow-[1px_1px_0_white] text-[#800080]"
+                                [disabled]="!canUsePotion()" (click)="useSelectedPotion()">
+                            [♥] Drink!
+                        </button>
+                    }
+                        <button class="bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray px-3 py-1 text-xs cursor-pointer font-system active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[13px] active:py-[5px] active:pb-[3px] disabled:text-win95-dark-gray disabled:cursor-not-allowed disabled:shadow-[1px_1px_0_white]"
+                                [disabled]="!canCastSpell()" (click)="castSelectedSpell()">
+                            [*] Cast!
+                        </button>
                 </div>
             </div>
             }
@@ -196,6 +222,13 @@ export class CombatComponent {
   readonly enemies = ENEMIES;
   readonly selectedEnemy = signal<Enemy | null>(null);
   readonly selectedSpell = signal<Spell | null>(null);
+  readonly selectedPotion = signal<Potion | null>(null);
+  readonly potionInventory = this.gameState.potions;
+
+  readonly availablePotions = computed(() => {
+    const inv = this.potionInventory();
+    return POTIONS.filter(p => inv[p.id] > 0);
+  });
 
   // Shake animation state - changes to trigger animation
   readonly enemyShakeState = signal<'idle' | 'shake'>('idle');
@@ -302,6 +335,32 @@ export class CombatComponent {
 
   setCombatSpeed(speedMs: number): void {
     this.gameState.setCombatSpeed(Number(speedMs));
+  }
+
+  selectPotion(potion: Potion): void {
+    this.selectedPotion.set(potion);
+  }
+
+  getPotionCount(potionId: string): number {
+    return this.gameState.getPotionCount(potionId);
+  }
+
+  canUsePotion(): boolean {
+    const potion = this.selectedPotion();
+    const combat = this.combat();
+    if (!potion || !combat.playerTurn || !combat.inCombat) return false;
+    return this.gameState.getPotionCount(potion.id) > 0;
+  }
+
+  useSelectedPotion(): void {
+    const potion = this.selectedPotion();
+    if (potion) {
+      this.gameState.usePotion(potion.id);
+      // Clear potion selection if none left
+      if (this.gameState.getPotionCount(potion.id) <= 0) {
+        this.selectedPotion.set(null);
+      }
+    }
   }
 
   onClose(): void {
