@@ -105,11 +105,12 @@ export class CombatService {
         }
 
         for (const rune of spell.runes) {
-            this.applyRuneEffect(rune, player, enemy, dmgMultiplier);
+            this.applyRuneEffect(rune, player, enemy, dmgMultiplier, spell.level);
         }
 
         if (spell.isDefault) {
-            const d = Math.floor(spell.calculatedDamage * dmgMultiplier);
+            const spellLevelMult = 1 + (spell.level - 1) * 0.1; // +10% per level above 1
+            const d = Math.floor(spell.calculatedDamage * dmgMultiplier * spellLevelMult);
             const actual = Math.max(1, d - Math.floor(enemy.BAR * 0.5));
             this.signals.combat.update(c => ({
                 ...c,
@@ -171,11 +172,12 @@ export class CombatService {
         return Math.max(this.MIN_COMBAT_TICK_MS, baseCombatMs - upgradeReduction - spdReduction);
     }
 
-    private applyRuneEffect(rune: Rune, player: Player, enemy: Enemy, dmgMult: number): void {
+    private applyRuneEffect(rune: Rune, player: Player, enemy: Enemy, dmgMult: number, spellLevel: number = 1): void {
         if (!this.signals || !this.callbacks) return;
 
         const effect = rune.effect;
-        const arc = 1 + player.ARC * 0.1 + this.callbacks.getUpgradeBonus('damage') / 100;
+        const spellLevelMult = 1 + (spellLevel - 1) * 0.1; // +10% per level above 1
+        const arc = (1 + player.ARC * 0.1 + this.callbacks.getUpgradeBonus('damage') / 100) * spellLevelMult;
         const critChance = this.getEffectiveCritChance(player);
         const critDmg = 1.5 + this.callbacks.getUpgradeBonus('critDamage') / 100;
         const isCrit = Math.random() < critChance;
