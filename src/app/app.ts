@@ -22,6 +22,7 @@ import { GoblinApprenticeComponent } from './features/goblin-apprentice/goblin-a
 import { DevConsoleComponent } from './features/dev-console/dev-console.component';
 import { GameStateService } from './core/services/game-state.service';
 import { WindowStates } from './core/models/game.interfaces';
+import { MobileOverlayComponent } from './core/components/mobile-overlay/mobile-overlay.component';
 
 @Component({
   selector: 'app-root',
@@ -34,9 +35,10 @@ import { WindowStates } from './core/models/game.interfaces';
     BestiaryComponent, ChronicleComponent, SettingsComponent,
     DiscoveriesComponent, ArmoryComponent, EquipmentComponent, AlchemyComponent,
     LaboratoryComponent, ApothecaryComponent, GoblinApprenticeComponent,
-    DevConsoleComponent,
+    DevConsoleComponent, MobileOverlayComponent
   ],
   template: `
+    <app-mobile-overlay></app-mobile-overlay>
     <div class="w-full h-screen relative overflow-hidden bg-win95-teal">
       <!-- Header -->
       <div class="fixed top-0 left-0 right-0 h-[28px] bg-gradient-to-b from-[#c0c0c0] to-[#a0a0a0] border-b-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray flex items-center justify-between px-2 z-[10000] font-mono">
