@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
 import { ResearchNode } from '../../core/models/game.interfaces';
+import { RESOURCE_NAMES } from '../../core/models/resources.data';
 
 @Component({
   selector: 'app-research',
@@ -170,8 +171,7 @@ export class ResearchComponent {
   }
 
   getResourceName(id: string): string {
-    // Basic formatting if maps aren't imported, or import RESOURCE_NAMES
-    return id.charAt(0).toUpperCase() + id.slice(1).replace('_', ' ');
+    return RESOURCE_NAMES[id] || id;
   }
 
   attemptResearch(node: ResearchNode): void {
