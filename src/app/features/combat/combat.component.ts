@@ -17,33 +17,13 @@ import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
   template: `
     <app-window title="The Arena" windowId="combat" [initialX]="480" [initialY]="40" [width]="380" (closed)="onClose()">
         <div class="flex flex-col" @fadeSlide>
+
+
             @if (!combat().inCombat) {
             <!-- Enemy Selection -->
             <div class="p-2 border border-win95-dark-gray bg-[#ffffcc] mb-2 italic text-win95-black">
                 <p>The arena awaits. Choose your foe and test your arcane might.</p>
             </div>
-
-            <!-- Idle Options -->
-            @if (idle().autoCombatUnlocked) {
-            <fieldset class="border border-win95-dark-gray border-t-white border-l-white my-2 p-[12px_8px_8px] relative">
-                <legend class="bg-win95-gray px-1 font-system text-xs text-win95-black">Idle Combat</legend>
-                <label class="flex items-center gap-[6px] cursor-pointer text-win95-black">
-                    <input type="checkbox" [checked]="idle().autoCombat" (change)="toggleAutoCombat()" 
-                           class="appearance-none w-[13px] h-[13px] bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white relative checked:after:content-['✓'] checked:after:absolute checked:after:-top-[2px] checked:after:left-[1px] checked:after:text-xs checked:after:font-bold checked:after:text-black active:bg-win95-gray">
-                    Auto-Combat
-                </label>
-                <div class="flex items-center gap-2 text-[11px] mt-1 text-win95-black">
-                    <label>Speed:</label>
-                    <select [ngModel]="idle().combatTickMs" (ngModelChange)="setCombatSpeed($event)"
-                            class="bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] pad-[4px] font-system text-xs outline-none focus:outline-dotted focus:outline-1 focus:-outline-offset-2">
-                        <option [value]="2000">Slow</option>
-                        <option [value]="1000">Normal</option>
-                        <option [value]="500">Fast</option>
-                        <option [value]="250">Very Fast</option>
-                    </select>
-                </div>
-            </fieldset>
-            }
             @if (combat().victoryFlash) {
             <div class="text-center p-3 bg-[#ccffcc] border-2 border-[#008800] text-[#006600] font-bold mt-2" @pulse>
                 <div class="text-[16px]">[!] VICTORY! [!]</div>
@@ -220,6 +200,27 @@ __/____\\__
             </div>
             }
         </div>
+        <!-- Idle Options (always visible when unlocked) -->
+            @if (idle().autoCombatUnlocked) {
+            <fieldset class="border border-win95-dark-gray border-t-white border-l-white mb-2 p-[12px_8px_8px] relative">
+                <legend class="bg-win95-gray px-1 font-system text-xs text-win95-black">Idle Combat</legend>
+                <label class="flex items-center gap-[6px] cursor-pointer text-win95-black">
+                    <input type="checkbox" [checked]="idle().autoCombat" (change)="toggleAutoCombat()" 
+                           class="appearance-none w-[13px] h-[13px] bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white relative checked:after:content-['✓'] checked:after:absolute checked:after:-top-[2px] checked:after:left-[1px] checked:after:text-xs checked:after:font-bold checked:after:text-black active:bg-win95-gray">
+                    Auto-Combat
+                </label>
+                <div class="flex items-center gap-2 text-[11px] mt-1 text-win95-black">
+                    <label>Speed:</label>
+                    <select [ngModel]="idle().combatTickMs" (ngModelChange)="setCombatSpeed($event)"
+                            class="bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] pad-[4px] font-system text-xs outline-none focus:outline-dotted focus:outline-1 focus:-outline-offset-2">
+                        <option [value]="2000">Slow</option>
+                        <option [value]="1000">Normal</option>
+                        <option [value]="500">Fast</option>
+                        <option [value]="250">Very Fast</option>
+                    </select>
+                </div>
+            </fieldset>
+            }
     </app-window>
   `
 })
