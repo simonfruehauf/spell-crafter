@@ -275,6 +275,17 @@ export class GameStateService implements OnDestroy {
             return updated;
         });
     }
+    closeAllWindows(): void {
+        this._windows.update(windows => {
+            const updated = { ...windows };
+            for (const key of Object.keys(updated) as (keyof WindowStates)[]) {
+                if (updated[key].unlocked) {
+                    updated[key] = { ...updated[key], visible: false };
+                }
+            }
+            return updated;
+        });
+    }
 
     // RESOURCES (delegated to resource service)
     addMana(amount: number): void { this.resourceService.addMana(amount); }
@@ -295,6 +306,10 @@ export class GameStateService implements OnDestroy {
         if (!this._idle().autoCombatUnlocked) return;
         this._idle.update(i => ({ ...i, autoCombat: e }));
         this._combat.update(c => ({ ...c, autoCombat: e }));
+    }
+    setAutoProgress(e: boolean): void {
+        if (!this._idle().autoCombatUnlocked) return;
+        this._idle.update(i => ({ ...i, autoProgress: e }));
     }
     unlockAutoCombat(): void {
         this._idle.update(i => ({ ...i, autoCombatUnlocked: true }));
@@ -904,7 +919,7 @@ export class GameStateService implements OnDestroy {
 
     private createInitialIdleSettings(): IdleSettings {
         return {
-            autoCombat: false, autoCombatUnlocked: false,
+            autoCombat: false, autoCombatUnlocked: false, autoProgress: false,
             autoLoot: true, combatTickMs: 1000,
             passiveManaRegenUnlocked: false,
             usePotionUnlocked: false,

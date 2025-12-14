@@ -47,6 +47,7 @@ import { MobileOverlayComponent } from './core/components/mobile-overlay/mobile-
         <div class="flex gap-4 items-center">
           <span class="text-[11px] font-mono">&lt;&gt; {{ resources().mana | number:'1.0-0' }}/{{ resources().maxMana }}</span>
           <span class="text-[11px] font-mono">(o) {{ resources().gold }}</span>
+          <button class="px-[6px] py-[2px] font-mono text-[10px] bg-win95-gray border border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray cursor-pointer active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white" (click)="closeAllWindows()" title="Close All Windows">[X]</button>
           <button class="px-[6px] py-[2px] font-mono text-[10px] bg-win95-gray border border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray cursor-pointer active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white" (click)="resetAllWindows()" title="Reset Window Positions">[#]</button>
           <button class="px-[6px] py-[2px] font-mono text-[10px] bg-win95-gray border border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray cursor-pointer active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white" (click)="openWindow('settings')">[=]</button>
         </div>
@@ -170,6 +171,7 @@ export class App {
 
   openWindow(id: keyof WindowStates): void { this.gameState.openWindow(id); }
   closeWindow(id: keyof WindowStates): void { this.gameState.closeWindow(id); }
+  closeAllWindows(): void { this.gameState.closeAllWindows(); }
   resetAllWindows(): void { this.gameState.resetAllWindowPositions(); }
 
   getWindowIcon(id: keyof WindowStates): string {

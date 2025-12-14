@@ -204,11 +204,18 @@ __/____\\__
             @if (idle().autoCombatUnlocked) {
             <fieldset class="border border-win95-dark-gray border-t-white border-l-white mb-2 p-[12px_8px_8px] relative">
                 <legend class="bg-win95-gray px-1 font-system text-xs text-win95-black">Idle Combat</legend>
+                <div class="flex items-center gap-4">
                 <label class="flex items-center gap-[6px] cursor-pointer text-win95-black">
                     <input type="checkbox" [checked]="idle().autoCombat" (change)="toggleAutoCombat()" 
                            class="appearance-none w-[13px] h-[13px] bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white relative checked:after:content-['✓'] checked:after:absolute checked:after:-top-[2px] checked:after:left-[1px] checked:after:text-xs checked:after:font-bold checked:after:text-black active:bg-win95-gray">
                     Auto-Combat
                 </label>
+                <label class="flex items-center gap-[6px] cursor-pointer text-win95-black" title="Advance to next enemy when victory is trivial (>50% HP remaining)">
+                    <input type="checkbox" [checked]="idle().autoProgress" (change)="toggleAutoProgress()" 
+                           class="appearance-none w-[13px] h-[13px] bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white relative checked:after:content-['✓'] checked:after:absolute checked:after:-top-[2px] checked:after:left-[1px] checked:after:text-xs checked:after:font-bold checked:after:text-black active:bg-win95-gray">
+                    Auto-Progress
+                </label>
+                </div>
                 <div class="flex items-center gap-2 text-[11px] mt-1 text-win95-black">
                     <label>Speed:</label>
                     <select [ngModel]="idle().combatTickMs" (ngModelChange)="setCombatSpeed($event)"
@@ -371,6 +378,10 @@ export class CombatComponent {
 
   toggleAutoCombat(): void {
     this.gameState.setAutoCombat(!this.idle().autoCombat);
+  }
+
+  toggleAutoProgress(): void {
+    this.gameState.setAutoProgress(!this.idle().autoProgress);
   }
 
   setCombatSpeed(speedMs: number): void {

@@ -4,6 +4,7 @@ import {
     ActiveEffect, LootDrop, IdleSettings
 } from '../models/game.interfaces';
 import { RESOURCE_NAMES } from '../models/resources.data';
+import { ENEMIES } from '../models/game.data';
 
 export interface CombatSignals {
     combat: ReturnType<typeof signal<CombatState>>;
@@ -567,6 +568,7 @@ export class CombatService {
         const combat = this.signals.combat();
         const enemy = combat.currentEnemy;
         const isAutoCombat = this.signals.idle().autoCombat;
+        const isAutoProgress = this.signals.idle().autoProgress;
 
         if (victory && enemy) {
             this.callbacks.addGold(enemy.goldReward);
@@ -595,12 +597,31 @@ export class CombatService {
                 }, 1500);
             }
 
+            // Determine next enemy for auto-combat
+            let nextEnemy = enemy;
+
+            // Auto-progress: move to next enemy if victory was trivial (>50% HP remaining)
+            if (isAutoProgress && isAutoCombat) {
+                const player = this.signals.player();
+                const hpPercent = player.currentHP / player.maxHP;
+
+                if (hpPercent > 0.5) {
+                    // Find next enemy in list
+                    const currentIndex = ENEMIES.findIndex(e => e.id === enemy.id);
+                    if (currentIndex !== -1 && currentIndex < ENEMIES.length - 1) {
+                        nextEnemy = ENEMIES[currentIndex + 1];
+                        this.addCombatLog(`Advancing to ${nextEnemy.name}...`, 'info');
+                    }
+                }
+            }
+
             if (isAutoCombat) {
+                const enemyToFight = nextEnemy;
                 setTimeout(() => {
                     if (this.signals?.idle().autoCombat &&
                         this.signals.player().currentHP > 0 &&
                         !this.signals.combat().inCombat) {
-                        this.startCombat(enemy);
+                        this.startCombat(enemyToFight);
                     }
                 }, 1000);
             }

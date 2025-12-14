@@ -486,6 +486,7 @@ export interface IdleSettings {
   // autoMeditate removed (consolidated into passiveManaRegen)
   autoCombat: boolean;
   autoCombatUnlocked: boolean;
+  autoProgress: boolean;  // Auto-progress to next enemy when victory is trivial (>50% HP remaining)
   autoLoot: boolean;
   combatTickMs: number;
   passiveManaRegenUnlocked: boolean;
