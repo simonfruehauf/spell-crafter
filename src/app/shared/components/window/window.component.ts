@@ -96,6 +96,9 @@ export class WindowComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        // Bring window to front when it opens
+        this.bringToFront();
+
         // Try to load saved position, fall back to initial values
         if (this.windowId()) {
             const savedPos = this.gameState.getWindowPosition(this.windowId() as keyof WindowStates);
