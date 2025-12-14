@@ -1,4 +1,4 @@
-import { Component, inject, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -22,6 +22,13 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
       <div class="armory-content">
         <div class="armory-description">
           <p>Forge magical equipment from collected materials.</p>
+        </div>
+
+        <div class="filter-bar">
+          <label class="filter-toggle">
+            <input type="checkbox" [checked]="showCraftableOnly()" (change)="toggleCraftableFilter()">
+            Show Craftable Only
+          </label>
         </div>
 
         <div class="recipe-list">
@@ -92,6 +99,22 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
       background-color: #ffffcc;
       margin-bottom: 8px;
       font-style: italic;
+    }
+    .filter-bar {
+      margin-bottom: 8px;
+      padding: 4px 8px;
+      background-color: #d4d0c8;
+      border: 1px solid #808080;
+    }
+    .filter-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .filter-toggle input {
+      cursor: pointer;
     }
     .slot-section {
       margin: 4px 0;
@@ -187,6 +210,8 @@ export class ArmoryComponent {
   readonly resources = this.gameState.resources;
   readonly craftedEquipment = this.gameState.craftedEquipment;
 
+  readonly showCraftableOnly = signal(false);
+
   readonly slots: { id: EquipmentSlot; name: string }[] = [
     { id: 'head', name: 'Head' },
     { id: 'face', name: 'Face' },
@@ -198,7 +223,15 @@ export class ArmoryComponent {
   ];
 
   getRecipesBySlot(slot: EquipmentSlot): EquipmentRecipe[] {
-    return this.recipes().filter(r => r.resultItem.slot === slot && r.unlocked);
+    let recipes = this.recipes().filter(r => r.resultItem.slot === slot && r.unlocked);
+    if (this.showCraftableOnly()) {
+      recipes = recipes.filter(r => !this.hasCrafted(r) && this.canCraft(r));
+    }
+    return recipes;
+  }
+
+  toggleCraftableFilter(): void {
+    this.showCraftableOnly.update(v => !v);
   }
 
   getResourceName(id: string): string {

@@ -54,8 +54,14 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
         } @else {
           <!-- Potion Recipes -->
           <div class="section-header">Brew Potions</div>
+          <div class="filter-bar">
+            <label class="filter-toggle">
+              <input type="checkbox" [checked]="showCraftableOnly()" (change)="toggleCraftableFilter()">
+              Show Craftable Only
+            </label>
+          </div>
           <div class="recipe-list">
-            @for (potion of potions; track potion.id) {
+            @for (potion of filteredPotions(); track potion.id) {
               <div class="recipe-item">
                 <div class="recipe-header">
                   <span class="potion-symbol">{{ potion.symbol }}</span>
@@ -108,6 +114,22 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       font-weight: bold;
       font-size: 11px;
       margin-bottom: 4px;
+    }
+    .filter-bar {
+      margin-bottom: 8px;
+      padding: 4px 8px;
+      background-color: #d4d0c8;
+      border: 1px solid #808080;
+    }
+    .filter-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .filter-toggle input {
+      cursor: pointer;
     }
     .inventory-section {
       margin-bottom: 8px;
@@ -264,6 +286,8 @@ export class ApothecaryComponent implements OnDestroy {
   readonly potionInventory = this.gameState.potions;
   readonly brewing = this.gameState.brewing;
 
+  readonly showCraftableOnly = signal(false);
+
   // Tick signal for progress updates
   private readonly tick = signal(0);
   private tickInterval: ReturnType<typeof setInterval> | null = null;
@@ -304,6 +328,11 @@ export class ApothecaryComponent implements OnDestroy {
     return POTIONS
       .filter(p => inv[p.id] > 0)
       .map(p => ({ ...p, count: inv[p.id] }));
+  });
+
+  readonly filteredPotions = computed(() => {
+    if (!this.showCraftableOnly()) return POTIONS;
+    return POTIONS.filter(p => this.canBrew(p));
   });
 
   constructor() {
@@ -377,6 +406,10 @@ export class ApothecaryComponent implements OnDestroy {
 
   drink(potionId: string): void {
     this.gameState.drinkPotion(potionId);
+  }
+
+  toggleCraftableFilter(): void {
+    this.showCraftableOnly.update(v => !v);
   }
 
   onClose(): void {

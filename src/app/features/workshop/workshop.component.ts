@@ -1,4 +1,4 @@
-import { Component, inject, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -21,6 +21,13 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       <div class="workshop-content">
         <div class="workshop-description">
           <p>Forge permanent upgrades using collected resources.</p>
+        </div>
+
+        <div class="filter-bar">
+          <label class="filter-toggle">
+            <input type="checkbox" [checked]="showCraftableOnly()" (change)="toggleCraftableFilter()">
+            Show Craftable Only
+          </label>
         </div>
 
         <div class="upgrade-categories">
@@ -73,6 +80,22 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       margin-bottom: 8px;
       font-style: italic;
     }
+    .filter-bar {
+      margin-bottom: 8px;
+      padding: 4px 8px;
+      background-color: #d4d0c8;
+      border: 1px solid #808080;
+    }
+    .filter-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .filter-toggle input {
+      cursor: pointer;
+    }
     .upgrade-item {
       padding: 6px;
       margin: 4px 0;
@@ -103,6 +126,8 @@ export class WorkshopComponent {
   readonly upgrades = this.gameState.upgrades;
   readonly resources = this.gameState.resources;
 
+  readonly showCraftableOnly = signal(false);
+
   readonly categories = [
     { id: 'stats', name: 'Statistics' },
     { id: 'combat', name: 'Combat' },
@@ -112,7 +137,15 @@ export class WorkshopComponent {
   ];
 
   getUpgradesByCategory(cat: string): Upgrade[] {
-    return this.upgrades().filter(u => u.category === cat && u.unlocked);
+    let upgrades = this.upgrades().filter(u => u.category === cat && u.unlocked);
+    if (this.showCraftableOnly()) {
+      upgrades = upgrades.filter(u => u.level < u.maxLevel && this.canAffordUpgrade(u.id));
+    }
+    return upgrades;
+  }
+
+  toggleCraftableFilter(): void {
+    this.showCraftableOnly.update(v => !v);
   }
 
   getUpgradeCost(u: Upgrade): ResourceCost[] {
