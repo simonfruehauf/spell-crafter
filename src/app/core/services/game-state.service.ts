@@ -263,6 +263,15 @@ export class GameStateService implements OnDestroy {
         const w = this._windows()[id];
         return { x: w?.x, y: w?.y };
     }
+    resetAllWindowPositions(): void {
+        this._windows.update(windows => {
+            const updated = { ...windows };
+            for (const key of Object.keys(updated) as (keyof WindowStates)[]) {
+                updated[key] = { ...updated[key], x: undefined, y: undefined };
+            }
+            return updated;
+        });
+    }
 
     // RESOURCES (delegated to resource service)
     addMana(amount: number): void { this.resourceService.addMana(amount); }

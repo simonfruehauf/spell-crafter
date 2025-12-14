@@ -1,4 +1,4 @@
-import { Component, input, output, ElementRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, ElementRef, OnInit, inject, signal, ChangeDetectionStrategy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { windowAnimation } from '../../animations/animations';
 import { GameStateService } from '../../../core/services/game-state.service';
@@ -79,6 +79,21 @@ export class WindowComponent implements OnInit {
     private initialPosY = 0;
 
     private static highestZIndex = 1;
+
+    constructor() {
+        // Watch for position resets (when saved position becomes undefined)
+        effect(() => {
+            const windowId = this.windowId();
+            if (!windowId) return;
+
+            const windows = this.gameState.windows();
+            const windowState = windows[windowId as keyof WindowStates];
+            if (windowState && windowState.x === undefined && windowState.y === undefined) {
+                this.posX.set(this.initialX());
+                this.posY.set(this.initialY());
+            }
+        });
+    }
 
     ngOnInit(): void {
         // Try to load saved position, fall back to initial values
