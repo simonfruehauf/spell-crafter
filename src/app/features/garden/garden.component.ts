@@ -130,6 +130,7 @@ import { getResourcesByCategory, RESOURCE_NAMES } from '../../core/models/resour
       flex-direction: column;
       align-items: center;
       width: 100%;
+      min-height: 80px;
     }
     .plot-status {
       font-size: 10px;
