@@ -169,6 +169,8 @@ export class ResearchService {
                     total += effect.percentPerLevel * upgrade.level;
                 if (effect.type === 'maxRunes' && type === 'maxRunes')
                     total += effect.valuePerLevel * upgrade.level;
+                if (effect.type === 'gardenPlot' && type === 'gardenPlot')
+                    total += effect.valuePerLevel * upgrade.level;
             }
         }
         return total;

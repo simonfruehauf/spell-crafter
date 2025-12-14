@@ -50,7 +50,7 @@ import { getResourcesByCategory, RESOURCE_NAMES } from '../../core/models/resour
                   <button 
                     class="btn btn-harvest"
                     (click)="harvest(plot.id)">
-                    [~] Harvest
+                    Harvest
                   </button>
                 </div>
               } @else {
@@ -112,9 +112,6 @@ import { getResourcesByCategory, RESOURCE_NAMES } from '../../core/models/resour
     .plot.planted {
       background-color: #c0f0c0;
     }
-    .plot.ready {
-      background-color: #80ff80;
-    }
     .plot-icon {
       font-family: monospace;
       font-size: 18px;
@@ -164,7 +161,6 @@ import { getResourcesByCategory, RESOURCE_NAMES } from '../../core/models/resour
       &:active { border-color: #808080 #ffffff #ffffff #808080; }
     }
     .btn-harvest {
-      color: #800080;
       font-weight: bold;
     }
     .progress-container {

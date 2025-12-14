@@ -840,7 +840,7 @@ export const INITIAL_UPGRADES: Upgrade[] = [
 
     // SPECIAL UNLOCKS
     {
-        id: 'goblin_apprentice', name: 'Goblin Apprentice', description: 'Summon a goblin apprentice that generates 1 mana/s.',
+        id: 'goblin_apprentice', name: 'Goblin Apprentice', description: 'A goblin apprentice that meditates for you!',
         category: 'special', level: 0, maxLevel: 1,
         cost: [{ resourceId: 'goblin_tooth', amount: 20 }, { resourceId: 'goblin_skull', amount: 1 }],
         costMultiplier: 1.0, effect: { type: 'unlockFeature', feature: 'goblinApprentice' }, unlocked: true
@@ -851,7 +851,7 @@ export const INITIAL_UPGRADES: Upgrade[] = [
         id: 'garden_expansion', name: 'Garden Expansion', description: 'Add a new plot to the garden.',
         category: 'crafting', level: 0, maxLevel: 5,
         cost: [{ resourceId: 'mint_plant', amount: 5 }, { resourceId: 'healing_moss', amount: 3 }],
-        costMultiplier: 1.5, effect: { type: 'gardenPlot', valuePerLevel: 1 }, unlocked: false
+        costMultiplier: 1.5, effect: { type: 'gardenPlot', valuePerLevel: 1 }, unlocked: true
     },
 
     // RARE HERB UPGRADES
