@@ -1,17 +1,61 @@
 import { Injectable, signal } from '@angular/core';
 import {
-    GameState, Player, Resources, WindowStates, Rune, Spell,
+    Player, Resources, WindowStates, Rune, Spell,
     ResearchNode, CombatState, IdleSettings, Upgrade,
     EquipmentItem, EquipmentRecipe, EquippedItems, AlchemyState, AlchemyRecipe,
-    PotionInventory
+    PotionInventory, GardenState, BrewingState
 } from '../models/game.interfaces';
-import { RUNES, MAGIC_MISSILE, INITIAL_RESEARCH_TREE, INITIAL_UPGRADES, INITIAL_ALCHEMY_RECIPES } from '../models/game.data';
-import { INITIAL_CRAFTING_RESOURCES } from '../models/resources.data';
-import { INITIAL_EQUIPMENT_RECIPES } from '../models/equipment.data';
+import { RUNES, INITIAL_UPGRADES } from '../models/game.data';
 import { INITIAL_POTION_INVENTORY } from '../models/potions.data';
 
 const SAVE_KEY = 'spellcrafter-save';
-const SAVE_VERSION = 3;
+const SAVE_VERSION = 4;
+
+// =============================================================================
+// MIGRATION SYSTEM - Upgrade old saves to current version
+// =============================================================================
+
+type SaveMigration = (state: Record<string, unknown>) => Record<string, unknown>;
+
+/**
+ * Migration functions to upgrade saves from one version to the next.
+ * Each migration transforms state from version N to version N+1.
+ * The loadGame() merge-with-defaults pattern handles new optional fields,
+ * so migrations are only needed for breaking changes (restructured/renamed fields).
+ */
+const MIGRATIONS: Record<number, SaveMigration> = {
+    // v3 -> v4: Add garden/brewing support (no breaking changes, just version bump)
+    3: (state) => ({ ...state, version: 4 }),
+    // Future migrations:
+    // 4: (state) => ({ ...state, someNewField: convertOld(state.oldField), version: 5 }),
+};
+
+/**
+ * Migrate a save state from any older version to the current version.
+ */
+function migrateState(state: Record<string, unknown>): Record<string, unknown> {
+    let current = state;
+    let version = (current['version'] as number) || 1;
+
+    while (version < SAVE_VERSION) {
+        const migration = MIGRATIONS[version];
+        if (!migration) {
+            // No migration found, skip to current version (merge-with-defaults will fill gaps)
+            console.warn(`No migration for version ${version}, using defaults for missing fields`);
+            current = { ...current, version: SAVE_VERSION };
+            break;
+        }
+        console.log(`Migrating save from v${version} to v${version + 1}`);
+        current = migration(current);
+        version = current['version'] as number;
+    }
+
+    return current;
+}
+
+// =============================================================================
+// GAME SIGNALS INTERFACE
+// =============================================================================
 
 export interface GameSignals {
     player: ReturnType<typeof signal<Player>>;
@@ -29,7 +73,13 @@ export interface GameSignals {
     alchemyRecipes: ReturnType<typeof signal<AlchemyRecipe[]>>;
     alchemy: ReturnType<typeof signal<AlchemyState>>;
     potions: ReturnType<typeof signal<PotionInventory>>;
+    garden: ReturnType<typeof signal<GardenState>>;
+    brewing: ReturnType<typeof signal<BrewingState>>;
 }
+
+// =============================================================================
+// SAVE SERVICE
+// =============================================================================
 
 @Injectable({ providedIn: 'root' })
 export class SaveService {
@@ -65,6 +115,8 @@ export class SaveService {
             alchemyRecipes: this.signals.alchemyRecipes(),
             alchemy: this.signals.alchemy(),
             potions: this.signals.potions(),
+            garden: this.signals.garden(),
+            brewing: this.signals.brewing(),
         };
         localStorage.setItem(SAVE_KEY, JSON.stringify(state));
     }
@@ -76,30 +128,51 @@ export class SaveService {
         if (!saved) return false;
 
         try {
-            const state = JSON.parse(saved);
+            let state = JSON.parse(saved);
+
+            // Migrate older saves to current version
             if (state.version !== SAVE_VERSION) {
-                console.warn('Save version mismatch');
-                return false;
+                if (state.version > SAVE_VERSION) {
+                    console.warn('Save from newer version, cannot downgrade');
+                    return false;
+                }
+                state = migrateState(state);
+                // Persist migrated state
+                localStorage.setItem(SAVE_KEY, JSON.stringify(state));
             }
 
+            // === PLAYER ===
             this.signals.player.set(state.player);
+
+            // === RESOURCES ===
             this.signals.resources.set(state.resources);
-            // Merge saved windows with current defaults to handle newly added windows
+
+            // === WINDOWS: Merge with defaults (handles new windows) ===
             const currentWindows = this.signals.windows();
             this.signals.windows.set({ ...currentWindows, ...state.windows });
+
+            // === RUNES ===
             this.signals.knownRunes.set(
                 state.knownRunes.map((id: string) => RUNES[id]).filter(Boolean)
             );
+
+            // === SPELLS ===
             this.signals.craftedSpells.set(state.craftedSpells);
+
+            // === RESEARCH ===
             this.signals.researchTree.set(state.researchTree);
+
+            // === UPGRADES: Merge with defaults (handles new upgrades) ===
             this.signals.upgrades.set(
                 state.upgrades || JSON.parse(JSON.stringify(INITIAL_UPGRADES))
             );
-            // Merge saved idle settings with current defaults to handle newly added flags
+
+            // === IDLE: Merge with defaults (handles new idle flags) ===
             const currentIdle = this.signals.idle();
             this.signals.idle.set({ ...currentIdle, ...state.idle });
+
+            // === COMBAT: Reset ephemeral state ===
             if (state.combat) {
-                // Restore combat state but ensure ephemeral flags are reset (just in case)
                 this.signals.combat.set({
                     ...state.combat,
                     inCombat: false,
@@ -108,7 +181,8 @@ export class SaveService {
                     playerTurn: true
                 });
             }
-            // Load equipment state
+
+            // === EQUIPMENT ===
             if (state.equippedItems) {
                 this.signals.equippedItems.set(state.equippedItems);
             }
@@ -118,26 +192,38 @@ export class SaveService {
             if (state.equipmentRecipes) {
                 this.signals.equipmentRecipes.set(state.equipmentRecipes);
             }
-            // Load alchemy state
+
+            // === ALCHEMY: Reset active crafting (transient state) ===
             if (state.alchemyRecipes) {
                 this.signals.alchemyRecipes.set(state.alchemyRecipes);
             }
-            if (state.alchemy) {
-                // Reset active crafting on load (don't persist mid-craft state)
-                this.signals.alchemy.set({
-                    activeRecipeId: null,
-                    craftStartTime: 0,
-                    craftEndTime: 0,
-                });
+            this.signals.alchemy.set({
+                activeRecipeId: null,
+                craftStartTime: 0,
+                craftEndTime: 0,
+            });
+
+            // === POTIONS: Merge with defaults (handles new potions) ===
+            const defaultPotions = { ...INITIAL_POTION_INVENTORY };
+            this.signals.potions.set({ ...defaultPotions, ...(state.potions || {}) });
+
+            // === GARDEN: Merge with current defaults (handles new plots) ===
+            if (state.garden) {
+                const currentGarden = this.signals.garden();
+                this.signals.garden.set({ ...currentGarden, ...state.garden });
             }
-            // Load potion inventory
-            if (state.potions) {
-                this.signals.potions.set(state.potions);
-            } else {
-                this.signals.potions.set({ ...INITIAL_POTION_INVENTORY });
-            }
+            // If no garden in save, leave current default
+
+            // === BREWING: Reset active brewing (transient state) ===
+            this.signals.brewing.set({
+                activePotionId: null,
+                brewStartTime: 0,
+                brewEndTime: 0,
+            });
+
             return true;
-        } catch {
+        } catch (e) {
+            console.error('Failed to load save:', e);
             return false;
         }
     }
@@ -151,11 +237,23 @@ export class SaveService {
     importSave(data: string): boolean {
         try {
             const decoded = atob(data);
-            const state = JSON.parse(decoded);
-            if (state.version !== SAVE_VERSION) return false;
-            localStorage.setItem(SAVE_KEY, decoded);
+            let state = JSON.parse(decoded);
+
+            // Reject saves from newer versions (can't downgrade)
+            if (state.version > SAVE_VERSION) {
+                console.warn('Cannot import save from newer version');
+                return false;
+            }
+
+            // Migrate older saves forward
+            if (state.version < SAVE_VERSION) {
+                state = migrateState(state);
+            }
+
+            localStorage.setItem(SAVE_KEY, JSON.stringify(state));
             return this.loadGame();
-        } catch {
+        } catch (e) {
+            console.error('Failed to import save:', e);
             return false;
         }
     }

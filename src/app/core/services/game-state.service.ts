@@ -113,6 +113,8 @@ export class GameStateService implements OnDestroy {
             alchemyRecipes: this._alchemyRecipes,
             alchemy: this._alchemy,
             potions: this._potions,
+            garden: this._garden,
+            brewing: this._brewing,
         });
 
         // Register research service
@@ -243,6 +245,7 @@ export class GameStateService implements OnDestroy {
         this._alchemy.set(this.createInitialAlchemyState());
         this._potions.set(deepClone(INITIAL_POTION_INVENTORY));
         this._brewing.set(this.createInitialBrewingState());
+        this._garden.set(this.createInitialGardenState());
     }
 
     // WINDOW
