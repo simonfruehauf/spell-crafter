@@ -246,7 +246,7 @@ export const RUNES: Record<string, Rune> = {
 export const ENEMIES: Enemy[] = [
     {
         id: 'goblin', name: 'Goblin Trickster', level: 1,
-        WIS: 1, HP: 30, ARC: 2, VIT: 1, BAR: 0, LCK: 1, SPD: 1,
+        WIS: 1, HP: 30, ARC: 2, VIT: 1, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 30, maxHP: 30, goldReward: 5, expReward: 10,
         ascii: ASCII_ART.goblin, weakness: 'fire',
         lootTable: [
@@ -260,7 +260,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'wolf', name: 'Shadow Wolf', level: 1,
-        WIS: 0, HP: 28, ARC: 1, VIT: 2, BAR: 0, LCK: 2, SPD: 3,
+        WIS: 0, HP: 28, ARC: 1, VIT: 2, BAR: 0, LCK: 2, SPD: 3, CHA: 1,
         currentHP: 28, maxHP: 28, goldReward: 6, expReward: 12,
         ascii: ` /\\___
 (o   o)
@@ -274,7 +274,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'spider', name: 'Giant Spider', level: 2,
-        WIS: 0, HP: 32, ARC: 2, VIT: 1, BAR: 0, LCK: 1, SPD: 2,
+        WIS: 0, HP: 32, ARC: 2, VIT: 1, BAR: 0, LCK: 1, SPD: 2, CHA: 1,
         currentHP: 32, maxHP: 32, goldReward: 8, expReward: 14,
         ascii: ` /\\_/\\
 (o . o)
@@ -288,7 +288,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'skeleton', name: 'Risen Skeleton', level: 2,
-        WIS: 0, HP: 40, ARC: 3, VIT: 0, BAR: 0, LCK: 1, SPD: 1,
+        WIS: 0, HP: 40, ARC: 3, VIT: 0, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 40, maxHP: 40, goldReward: 8, expReward: 15,
         ascii: ASCII_ART.skeleton, weakness: 'holy', resistance: 'dark',
         lootTable: [
@@ -300,7 +300,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'fireImp', name: 'Fire Imp', level: 2,
-        WIS: 2, HP: 25, ARC: 5, VIT: 1, BAR: 0, LCK: 1, SPD: 1,
+        WIS: 2, HP: 25, ARC: 5, VIT: 1, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 25, maxHP: 25, goldReward: 10, expReward: 18,
         ascii: ` \\^/
  (o)
@@ -315,7 +315,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'waterElemental', name: 'Water Elemental', level: 3,
-        WIS: 3, HP: 38, ARC: 5, VIT: 3, BAR: 0, LCK: 1, SPD: 2,
+        WIS: 3, HP: 38, ARC: 5, VIT: 3, BAR: 0, LCK: 1, SPD: 2, CHA: 1,
         currentHP: 38, maxHP: 38, goldReward: 14, expReward: 24,
         ascii: ` ~~~
 (o o)
@@ -329,7 +329,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'iceWraith', name: 'Ice Wraith', level: 3,
-        WIS: 3, HP: 35, ARC: 4, VIT: 2, BAR: 0, LCK: 1, SPD: 1,
+        WIS: 3, HP: 35, ARC: 4, VIT: 2, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 35, maxHP: 35, goldReward: 12, expReward: 22,
         ascii: ASCII_ART.wraith, weakness: 'fire', resistance: 'ice',
         lootTable: [
@@ -342,7 +342,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'stormElemental', name: 'Storm Elemental', level: 4,
-        WIS: 4, HP: 45, ARC: 6, VIT: 2, BAR: 0, LCK: 1, SPD: 1,
+        WIS: 4, HP: 45, ARC: 6, VIT: 2, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 45, maxHP: 45, goldReward: 18, expReward: 30,
         ascii: ` /\\
 /~~\\
@@ -357,7 +357,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'forestGuardian', name: 'Forest Guardian', level: 4,
-        WIS: 4, HP: 55, ARC: 4, VIT: 5, BAR: 0, LCK: 2, SPD: 1,
+        WIS: 4, HP: 55, ARC: 4, VIT: 5, BAR: 0, LCK: 2, SPD: 1, CHA: 1,
         currentHP: 55, maxHP: 55, goldReward: 20, expReward: 35,
         ascii: ` /|\\
 (o o)
@@ -373,7 +373,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'earthGolem', name: 'Earth Golem', level: 5,
-        WIS: 0, HP: 80, ARC: 3, VIT: 4, BAR: 0, LCK: 1, SPD: 1,
+        WIS: 0, HP: 80, ARC: 3, VIT: 4, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 80, maxHP: 80, goldReward: 25, expReward: 40,
         ascii: `[###]
 |   |
@@ -390,7 +390,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'alchemistGolem', name: 'Alchemist Golem', level: 5,
-        WIS: 3, HP: 65, ARC: 5, VIT: 3, BAR: 0, LCK: 3, SPD: 1,
+        WIS: 3, HP: 65, ARC: 5, VIT: 3, BAR: 0, LCK: 3, SPD: 1, CHA: 1,
         currentHP: 65, maxHP: 65, goldReward: 28, expReward: 45,
         ascii: `[ooo]
 |~~~|
@@ -407,7 +407,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'voidShade', name: 'Void Shade', level: 6,
-        WIS: 5, HP: 50, ARC: 7, VIT: 2, BAR: 0, LCK: 1, SPD: 1,
+        WIS: 5, HP: 50, ARC: 7, VIT: 2, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 50, maxHP: 50, goldReward: 30, expReward: 50,
         ascii: ` ???
 ?   ?
@@ -422,7 +422,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'dreamWeaver', name: 'Dream Weaver', level: 6,
-        WIS: 6, HP: 48, ARC: 8, VIT: 2, BAR: 0, LCK: 2, SPD: 2,
+        WIS: 6, HP: 48, ARC: 8, VIT: 2, BAR: 0, LCK: 2, SPD: 2, CHA: 1,
         currentHP: 48, maxHP: 48, goldReward: 32, expReward: 55,
         ascii: ` *~*
 (o_o)
@@ -441,7 +441,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'phoenix', name: 'Lesser Phoenix', level: 7,
-        WIS: 6, HP: 60, ARC: 8, VIT: 5, BAR: 0, LCK: 1, SPD: 1,
+        WIS: 6, HP: 60, ARC: 8, VIT: 5, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 60, maxHP: 60, goldReward: 40, expReward: 65,
         ascii: `  _
  /#\\
@@ -456,7 +456,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'corruptedAngel', name: 'Corrupted Angel', level: 7,
-        WIS: 5, HP: 58, ARC: 9, VIT: 4, BAR: 0, LCK: 2, SPD: 2,
+        WIS: 5, HP: 58, ARC: 9, VIT: 4, BAR: 0, LCK: 2, SPD: 2, CHA: 1,
         currentHP: 58, maxHP: 58, goldReward: 45, expReward: 70,
         ascii: `  †
  /|\\
@@ -471,7 +471,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'demon', name: 'Lesser Demon', level: 8,
-        WIS: 4, HP: 70, ARC: 9, VIT: 3, BAR: 0, LCK: 1, SPD: 1,
+        WIS: 4, HP: 70, ARC: 9, VIT: 3, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 70, maxHP: 70, goldReward: 50, expReward: 80,
         ascii: ` /^\\
 |x x|
@@ -486,7 +486,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'titan', name: 'Stone Titan', level: 9,
-        WIS: 2, HP: 100, ARC: 6, VIT: 6, BAR: 0, LCK: 1, SPD: 1,
+        WIS: 2, HP: 100, ARC: 6, VIT: 6, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 100, maxHP: 100, goldReward: 70, expReward: 100,
         ascii: ` [#]
 [###]
@@ -501,7 +501,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'dragon', name: 'Young Dragon', level: 10,
-        WIS: 8, HP: 120, ARC: 10, VIT: 6, BAR: 0, LCK: 1, SPD: 1,
+        WIS: 8, HP: 120, ARC: 10, VIT: 6, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 120, maxHP: 120, goldReward: 100, expReward: 150,
         ascii: ASCII_ART.dragon, weakness: 'ice',
         lootTable: [
@@ -515,7 +515,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'ancientGuardian', name: 'Ancient Guardian', level: 11,
-        WIS: 8, HP: 130, ARC: 11, VIT: 7, BAR: 2, LCK: 2, SPD: 1,
+        WIS: 8, HP: 130, ARC: 11, VIT: 7, BAR: 2, LCK: 2, SPD: 1, CHA: 1,
         currentHP: 130, maxHP: 130, goldReward: 150, expReward: 200,
         ascii: `  [*]
  [###]
@@ -531,7 +531,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'elderThing', name: 'Elder Thing', level: 12,
-        WIS: 10, HP: 150, ARC: 12, VIT: 8, BAR: 0, LCK: 1, SPD: 1,
+        WIS: 10, HP: 150, ARC: 12, VIT: 8, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 150, maxHP: 150, goldReward: 200, expReward: 300,
         ascii: `  ?!?
  (??)
@@ -550,7 +550,7 @@ export const ENEMIES: Enemy[] = [
     },
     {
         id: 'cosmicHorror', name: 'Cosmic Horror', level: 15,
-        WIS: 12, HP: 200, ARC: 15, VIT: 10, BAR: 3, LCK: 3, SPD: 2,
+        WIS: 12, HP: 200, ARC: 15, VIT: 10, BAR: 3, LCK: 3, SPD: 2, CHA: 1,
         currentHP: 200, maxHP: 200, goldReward: 500, expReward: 500,
         ascii: `  ?*?
  /???\\
@@ -599,6 +599,12 @@ export const INITIAL_UPGRADES: Upgrade[] = [
         category: 'stats', level: 0, maxLevel: 10,
         cost: [{ resourceId: 'earth_essence', amount: 5 }, { resourceId: 'iron_ore', amount: 5 }],
         costMultiplier: 1.5, effect: { type: 'stat', stat: 'BAR', valuePerLevel: 1 }, unlocked: true
+    },
+    {
+        id: 'stats_cha_1', name: 'Charisma I', description: '+1 Charisma (improve market prices).',
+        category: 'stats', level: 0, maxLevel: 5,
+        cost: [{ resourceId: 'knowledge', amount: 5 }],
+        costMultiplier: 1.5, effect: { type: 'stat', stat: 'CHA', valuePerLevel: 1 }, unlocked: true
     },
     {
         id: 'max_hp', name: 'Max Health', description: 'Increase max HP by 10 per level.',
@@ -1070,6 +1076,11 @@ export const INITIAL_RESEARCH_TREE: ResearchNode[] = [
         id: 'unlock-inventory', name: 'The Vault', description: 'Store your collected resources.',
         manaCost: 15, unlocked: true, researched: false,
         unlockEffect: { type: 'window', windowId: 'inventory' }, prerequisites: []
+    },
+    {
+        id: 'unlock-market', name: 'Commerce', description: 'Unlock the Market to sell resources and buy goods.',
+        manaCost: 50, unlocked: false, researched: false,
+        unlockEffect: { type: 'window', windowId: 'market' }, prerequisites: ['unlock-inventory']
     },
     {
         id: 'unlock-runebook', name: 'The Runebook', description: 'A tome of arcane rune knowledge.',

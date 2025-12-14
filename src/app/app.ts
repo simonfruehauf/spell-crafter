@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AltarComponent } from './features/altar/altar.component';
 import { ResearchComponent } from './features/research/research.component';
@@ -21,10 +21,12 @@ import { ApothecaryComponent } from './features/apothecary/apothecary.component'
 import { GoblinApprenticeComponent } from './features/goblin-apprentice/goblin-apprentice.component';
 import { GardenComponent } from './features/garden/garden.component';
 import { SpellbookComponent } from './features/spellbook/spellbook.component';
+import { MarketComponent } from './features/market/market.component';
 import { DevConsoleComponent } from './features/dev-console/dev-console.component';
 import { GameStateService } from './core/services/game-state.service';
 import { WindowStates } from './core/models/game.interfaces';
 import { MobileOverlayComponent } from './core/components/mobile-overlay/mobile-overlay.component';
+import { THEMES } from './core/models/market.data';
 
 @Component({
   selector: 'app-root',
@@ -37,11 +39,11 @@ import { MobileOverlayComponent } from './core/components/mobile-overlay/mobile-
     BestiaryComponent, ChronicleComponent, SettingsComponent,
     DiscoveriesComponent, ArmoryComponent, EquipmentComponent, AlchemyComponent,
     LaboratoryComponent, ApothecaryComponent, GoblinApprenticeComponent,
-    GardenComponent, SpellbookComponent, DevConsoleComponent, MobileOverlayComponent
+    GardenComponent, SpellbookComponent, MarketComponent, DevConsoleComponent, MobileOverlayComponent
   ],
   template: `
     <app-mobile-overlay></app-mobile-overlay>
-    <div class="w-full h-screen relative overflow-hidden bg-win95-teal">
+    <div class="w-full h-screen relative overflow-hidden" [ngClass]="activeThemeClass()">
       <!-- Header -->
       <div class="fixed top-0 left-0 right-0 h-[28px] bg-gradient-to-b from-[#c0c0c0] to-[#a0a0a0] border-b-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray flex items-center justify-between px-2 z-[10000] font-mono">
         <span class="font-bold text-xs cursor-pointer select-none" (click)="onTitleClick()">-=[ Spell-Crafter: Chronicles of the Arcane ]=-</span>
@@ -129,6 +131,9 @@ import { MobileOverlayComponent } from './core/components/mobile-overlay/mobile-
         @if (windows().spellbook.unlocked && windows().spellbook.visible) {
           <app-spellbook (closed)="closeWindow('spellbook')"></app-spellbook>
         }
+        @if (windows().market.unlocked && windows().market.visible) {
+          <app-market (closed)="closeWindow('market')"></app-market>
+        }
         @if (showDevConsole()) {
           <app-dev-console (closed)="showDevConsole.set(false)"></app-dev-console>
         }
@@ -143,26 +148,31 @@ export class App {
   readonly resources = this.gameState.resources;
   readonly windows = this.gameState.windows;
   readonly closedWindows = this.gameState.closedWindows;
+  readonly themes = this.gameState.themes;
 
   // Dev Console - secret activation
   readonly showDevConsole = signal(false);
   private titleClickCount = 0;
   private titleClickTimer: ReturnType<typeof setTimeout> | null = null;
 
+  readonly activeThemeClass = computed(() => {
+    const activeId = this.themes().active;
+    const theme = THEMES.find(t => t.id === activeId);
+    if (!theme || !theme.cssClass) return 'bg-win95-teal';
+    return theme.cssClass;
+  });
+
   onTitleClick(): void {
     this.titleClickCount++;
 
-    // Reset timer on each click
     if (this.titleClickTimer) {
       clearTimeout(this.titleClickTimer);
     }
 
-    // Reset click count after 2 seconds of inactivity
     this.titleClickTimer = setTimeout(() => {
       this.titleClickCount = 0;
     }, 2000);
 
-    // Open dev console after 10 clicks
     if (this.titleClickCount >= 10) {
       this.showDevConsole.set(true);
       this.titleClickCount = 0;
@@ -185,7 +195,7 @@ export class App {
       stats: '[#]', bestiary: '[M]', chronicle: '[L]', settings: '[=]',
       discoveries: '[*]', armory: '[E]', equipment: '[+]', alchemy: '[~]',
       laboratory: '[%]', apothecary: '[v]', goblinApprentice: '[g]',
-      garden: '[P]', spellbook: '[Q]',
+      garden: '[P]', spellbook: '[Q]', market: '[$]'
     };
     return icons[id] || '[?]';
   }
@@ -197,7 +207,7 @@ export class App {
       stats: 'Stats', bestiary: 'Bestiary', chronicle: 'Chronicle', settings: 'Settings',
       discoveries: 'Discoveries', armory: 'Armory', equipment: 'Equipment', alchemy: 'Alembic',
       laboratory: 'Laboratory', apothecary: 'Potions', goblinApprentice: 'Goblin',
-      garden: 'Garden', spellbook: 'Spellbook',
+      garden: 'Garden', spellbook: 'Spellbook', market: 'Market'
     };
     return labels[id] || id;
   }

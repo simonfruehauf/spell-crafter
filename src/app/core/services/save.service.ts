@@ -75,6 +75,7 @@ export interface GameSignals {
     potions: ReturnType<typeof signal<PotionInventory>>;
     garden: ReturnType<typeof signal<GardenState>>;
     brewing: ReturnType<typeof signal<BrewingState>>;
+    discoveredResources: ReturnType<typeof signal<string[]>>;
 }
 
 // =============================================================================
@@ -117,6 +118,7 @@ export class SaveService {
             potions: this.signals.potions(),
             garden: this.signals.garden(),
             brewing: this.signals.brewing(),
+            discoveredResources: this.signals.discoveredResources(),
         };
         localStorage.setItem(SAVE_KEY, JSON.stringify(state));
     }
@@ -220,6 +222,10 @@ export class SaveService {
                 brewStartTime: 0,
                 brewEndTime: 0,
             });
+
+            // === DISCOVERY ===
+            this.signals.discoveredResources.set(state.discoveredResources || []);
+
 
             return true;
         } catch (e) {

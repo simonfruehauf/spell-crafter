@@ -7,10 +7,11 @@ import {
     ActiveEffect, LootDrop, ResourceCost, Upgrade, DamageType,
     EquipmentItem, EquipmentRecipe, EquippedItems, EquipmentSlot, PlayerStats,
     AlchemyRecipe, AlchemyState, PotionInventory, Potion, BrewingState,
-    GardenState, GardenPlot
+    GardenState, GardenPlot, ThemeState
 } from '../models/game.interfaces';
 import { INITIAL_RESEARCH_TREE, RUNES, MAGIC_MISSILE, ENEMIES, INITIAL_UPGRADES, INITIAL_ALCHEMY_RECIPES } from '../models/game.data';
 import { INITIAL_CRAFTING_RESOURCES, RESOURCE_NAMES, RESOURCE_DEFS } from '../models/resources.data';
+import { SELL_PRICES, BUY_MULTIPLIERS, THEMES } from '../models/market.data';
 import { INITIAL_EQUIPMENT_RECIPES, INITIAL_EQUIPPED_ITEMS, EQUIPMENT_ITEMS } from '../models/equipment.data';
 import { POTIONS, POTIONS_MAP, INITIAL_POTION_INVENTORY } from '../models/potions.data';
 import { deepClone } from '../../shared/utils/clone.utils';
@@ -48,6 +49,8 @@ export class GameStateService implements OnDestroy {
     private readonly _potions = signal<PotionInventory>(deepClone(INITIAL_POTION_INVENTORY));
     private readonly _brewing = signal<BrewingState>(this.createInitialBrewingState());
     private readonly _garden = signal<GardenState>(this.createInitialGardenState());
+    private readonly _themes = signal<ThemeState>({ active: 'default', unlocked: ['default'] });
+    private readonly _discoveredResources = signal<string[]>(Object.keys(INITIAL_CRAFTING_RESOURCES));
 
     // Public readonly
     readonly player = this._player.asReadonly();
@@ -67,6 +70,21 @@ export class GameStateService implements OnDestroy {
     readonly potions = this._potions.asReadonly();
     readonly brewing = this._brewing.asReadonly();
     readonly garden = this._garden.asReadonly();
+    readonly themes = this._themes.asReadonly();
+    readonly discoveredResources = this._discoveredResources.asReadonly();
+
+    readonly chaBonus = computed(() => {
+        const cha = this._player().CHA;
+        // Sell bonus: +4% per point exponentially (CHA^1.2 * 0.05)
+        return Math.pow(cha, 1.2) * 0.05;
+    });
+
+    readonly buyDiscount = computed(() => {
+        const cha = this._player().CHA;
+        // Buy discount factor: decays from 1.0 down to ~0.5
+        // finalPrice = baseBuyPrice * factor
+        return (1 + Math.exp(-cha * 0.05)) / 2;
+    });
 
     // Computed
     readonly availableResearch = computed(() =>
@@ -115,6 +133,7 @@ export class GameStateService implements OnDestroy {
             potions: this._potions,
             garden: this._garden,
             brewing: this._brewing,
+            discoveredResources: this._discoveredResources,
         });
 
         // Register research service
@@ -292,8 +311,18 @@ export class GameStateService implements OnDestroy {
     addMana(amount: number): void { this.resourceService.addMana(amount); }
     spendMana(amount: number): boolean { return this.resourceService.spendMana(amount); }
     addGold(amount: number): void { this.resourceService.addGold(amount); }
-    addCraftingResource(id: string, amount: number): void { this.resourceService.addCraftingResource(id, amount); }
+    addCraftingResource(id: string, amount: number): void {
+        this.resourceService.addCraftingResource(id, amount);
+        if (amount > 0) this.trackDiscovery(id);
+    }
     spendCraftingResources(costs: ResourceCost[]): boolean { return this.resourceService.spendCraftingResources(costs); }
+
+    private trackDiscovery(id: string): void {
+        const discovered = this._discoveredResources();
+        if (!discovered.includes(id)) {
+            this._discoveredResources.update(list => [...list, id]);
+        }
+    }
     canAffordResources(costs: ResourceCost[]): boolean { return this.resourceService.canAffordResources(costs); }
 
     // MEDITATION
@@ -740,7 +769,7 @@ export class GameStateService implements OnDestroy {
         }
     }
 
-    spendAttributePoint(stat: 'WIS' | 'ARC' | 'VIT' | 'BAR' | 'LCK' | 'SPD'): boolean {
+    spendAttributePoint(stat: 'WIS' | 'ARC' | 'VIT' | 'BAR' | 'LCK' | 'SPD' | 'CHA'): boolean {
         const player = this._player();
         if (player.attributePoints <= 0) return false;
         this._player.update(p => ({
@@ -914,7 +943,7 @@ export class GameStateService implements OnDestroy {
     private createInitialPlayer(): Player {
         return {
             id: 'player', name: 'Apprentice',
-            WIS: 1, HP: 50, ARC: 1, VIT: 1, BAR: 0, LCK: 1, SPD: 1,
+            WIS: 1, HP: 50, ARC: 1, VIT: 1, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
             currentHP: 50, maxHP: 50, currentMana: 0, maxMana: 25,
             level: 1, experience: 0, experienceToLevel: 100, attributePoints: 0
         };
@@ -942,6 +971,7 @@ export class GameStateService implements OnDestroy {
             goblinApprentice: { unlocked: false, visible: false },
             garden: { unlocked: false, visible: false },
             spellbook: { unlocked: false, visible: false },
+            market: { unlocked: false, visible: false },
         };
     }
 
@@ -1073,6 +1103,111 @@ export class GameStateService implements OnDestroy {
         if (!plot || plot.plantedHerbId === null) return 0;
         const elapsed = Date.now() - plot.plantedAt;
         return Math.min(100, (elapsed / plot.growthDurationMs) * 100);
+    }
+
+    // MARKET ACTIONS
+    sellResource(resourceId: string, amount: number): boolean {
+        amount = Math.floor(amount);
+        if (amount <= 0) return false;
+
+        const current = this._resources().crafting[resourceId] || 0;
+        if (current < amount) return false;
+
+        const def = RESOURCE_DEFS[resourceId];
+        if (!def) return false;
+
+        const basePrice = SELL_PRICES[def.rarity] || 1;
+        // Sell Formula: Base * (1 + CHA_BONUS)
+        const pricePerUnit = basePrice * (1 + this.chaBonus());
+        const totalGold = Math.floor(pricePerUnit * amount);
+
+        if (totalGold <= 0) return false;
+
+        // Remove resource
+        this.addCraftingResource(resourceId, -amount);
+        // Add gold
+        this.addGold(totalGold);
+
+        return true;
+    }
+
+    buyResource(resourceId: string, amount: number): boolean {
+        const def = RESOURCE_DEFS[resourceId];
+        if (!def) return false;
+
+        // Determine base multiplier
+        const multiplier = BUY_MULTIPLIERS[def.rarity] || 50;
+        const basePrice = (SELL_PRICES[def.rarity] || 1);
+        const baseBuyPrice = basePrice * multiplier;
+
+        // Apply CHA discount
+        // Final Price = BaseBuy * DiscountFactor
+        // DiscountFactor goes from 1.0 (CHA 0) -> 0.5 (High CHA)
+        const discountedPrice = baseBuyPrice * this.buyDiscount();
+        const finalPrice = Math.max(1, Math.floor(discountedPrice));
+        const totalCost = finalPrice * amount;
+
+        if (this._resources().gold < totalCost) return false;
+
+        this.addGold(-totalCost);
+        this.addCraftingResource(resourceId, amount);
+        return true;
+    }
+
+    buyTheme(themeId: string): boolean {
+        const theme = THEMES.find(t => t.id === themeId);
+        if (!theme) return false;
+
+        // Check if already unlocked
+        if (this._themes().unlocked.includes(themeId)) return false;
+
+        if (this._resources().gold < theme.cost) return false;
+
+        this.addGold(-theme.cost);
+        this._themes.update(t => ({
+            ...t,
+            unlocked: [...t.unlocked, themeId]
+        }));
+        return true;
+    }
+
+    equipTheme(themeId: string): void {
+        const theme = THEMES.find(t => t.id === themeId);
+        if (!theme) return;
+
+        if (this._themes().unlocked.includes(themeId)) {
+            this._themes.update(t => ({ ...t, active: themeId }));
+        }
+    }
+
+    respecStats(): boolean {
+        const p = this._player();
+        const cost = 100 + (p.level * 50);
+
+        if (this._resources().gold < cost) return false;
+
+        this.addGold(-cost);
+
+        // Reset stats to base (1 for most, 0 for BAR)
+        // Everything else goes back to attributePoints
+
+        const totalInvested =
+            (p.WIS - 1) +
+            (p.ARC - 1) +
+            (p.VIT - 1) +
+            (p.BAR - 0) +
+            (p.LCK - 1) +
+            (p.SPD - 1) +
+            (p.CHA - 1);
+
+        this._player.update(prev => ({
+            ...prev,
+            WIS: 1, ARC: 1, VIT: 1, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
+            attributePoints: prev.attributePoints + totalInvested
+        }));
+
+        this.combatService.addCombatLog(`Stats reset! Points refunded.`, 'info');
+        return true;
     }
 
     ngOnDestroy(): void {

@@ -16,6 +16,7 @@ const STAT_INFO: Record<string, StatInfo> = {
   BAR: { name: 'BAR', fullName: 'Barrier', description: 'Reduces damage taken. Each point blocks 0.5 damage from attacks.' },
   LCK: { name: 'LCK', fullName: 'Luck', description: 'Increases crit chance (+2% per point, max 25%) and loot drops (+3% chance, +1.5% quantity per point, max 50%).' },
   SPD: { name: 'SPD', fullName: 'Speed', description: 'Reduces combat turn delay by 15ms per point. Minimum delay is 200ms.' },
+  CHA: { name: 'CHA', fullName: 'Charisma', description: 'Increases sell prices and reduces buy prices at the Market.' },
 };
 
 @Component({

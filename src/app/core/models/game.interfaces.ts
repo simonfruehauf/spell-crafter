@@ -20,6 +20,7 @@ export interface PlayerStats {
   BAR: number;  // Barrier - damage reduction
   LCK: number;  // Luck - crit chance, loot bonus
   SPD: number;  // Speed - combat turn speed
+  CHA: number;  // Charisma - market prices
 }
 
 /**
@@ -191,6 +192,7 @@ export interface WindowStates {
   goblinApprentice: WindowState;
   garden: WindowState;
   spellbook: WindowState;
+  market: WindowState;
 }
 
 /**
@@ -511,6 +513,7 @@ export interface GameState {
   upgrades: Upgrade[];
   combat: CombatState;
   idle: IdleSettings;
+  themes: ThemeState;
   tickRate: number;
   // Equipment system
   equippedItems: EquippedItems;
@@ -520,4 +523,14 @@ export interface GameState {
   potions: PotionInventory;
   // Garden system
   garden: GardenState;
+  discoveredResources: string[];
 }
+
+/**
+ * Theme state
+ */
+export interface ThemeState {
+  active: string;
+  unlocked: string[];
+}
+
