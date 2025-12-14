@@ -92,7 +92,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     }
     .alchemy-description {
       padding: 8px;
-      border: 1px solid #808080;
+      border: 1px solid var(--win95-dark-gray);
       background-color: #ffffcc;
       margin-bottom: 8px;
       font-style: italic;
@@ -104,19 +104,19 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     }
     .recipe-item {
       padding: 6px;
-      border: 1px solid #808080;
-      background-color: #e0e0e0;
+      border: 1px solid var(--win95-dark-gray);
+      background-color: var(--win95-light-gray);
     }
     .recipe-header {
       display: flex;
       justify-content: space-between;
       font-weight: bold;
     }
-    .recipe-name { color: #000080; }
-    .recipe-time { font-size: 9px; color: #606060; }
+    .recipe-name { color: var(--win95-blue); }
+    .recipe-time { font-size: 9px; color: var(--win95-dark-gray); }
     .recipe-desc { 
       font-size: 10px; 
-      color: #404040; 
+      color: var(--win95-black); 
       margin: 2px 0 4px 0; 
     }
     .recipe-io {
@@ -134,7 +134,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     }
     .io-label {
       font-weight: bold;
-      color: #404040;
+      color: var(--win95-black);
     }
     .cost-item {
       padding: 1px 4px;
@@ -157,23 +157,23 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .btn-transmute {
       padding: 2px 8px;
       font-size: 10px;
-      background-color: #c0c0c0;
+      background-color: var(--win95-gray);
       border: 1px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
+      border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
       cursor: pointer;
       &:disabled {
-        color: #808080;
+        color: var(--win95-dark-gray);
         cursor: not-allowed;
       }
-      &:not(:disabled):hover { background-color: #d0d0d0; }
-      &:not(:disabled):active { border-color: #808080 #ffffff #ffffff #808080; }
+      &:not(:disabled):hover { background-color: var(--win95-light-gray); }
+      &:not(:disabled):active { border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray); }
     }
     
     /* Progress section - Win95 style */
     .progress-section {
       padding: 12px;
-      border: 1px solid #808080;
-      background-color: #c0c0c0;
+      border: 1px solid var(--win95-dark-gray);
+      background-color: var(--win95-gray);
       text-align: center;
     }
     .progress-label {
@@ -181,9 +181,9 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       margin-bottom: 8px;
     }
     .progress-container {
-      background: #ffffff;
+      background: var(--win95-white);
       border: 2px solid;
-      border-color: #808080 #ffffff #ffffff #808080;
+      border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray);
       height: 20px;
       padding: 2px;
       margin-bottom: 4px;
@@ -191,26 +191,26 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .progress-bar {
       background: repeating-linear-gradient(
         90deg, 
-        navy 0px, navy 8px, 
-        #c0c0c0 8px, #c0c0c0 10px
+        var(--win95-blue) 0px, var(--win95-blue) 8px, 
+        var(--win95-gray) 8px, var(--win95-gray) 10px
       );
       height: 100%;
       /* No transition - steps discretely like Win95 */
     }
     .progress-time {
       font-size: 10px;
-      color: #404040;
+      color: var(--win95-black);
       margin-bottom: 8px;
     }
     .btn-cancel {
       padding: 2px 8px;
       font-size: 10px;
-      background-color: #c0c0c0;
+      background-color: var(--win95-gray);
       border: 1px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
+      border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
       cursor: pointer;
-      &:hover { background-color: #d0d0d0; }
-      &:active { border-color: #808080 #ffffff #ffffff #808080; }
+      &:hover { background-color: var(--win95-light-gray); }
+      &:active { border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray); }
     }
   `]
 })

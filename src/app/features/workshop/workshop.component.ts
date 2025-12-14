@@ -75,7 +75,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     }
     .workshop-description {
       padding: 8px;
-      border: 1px solid #808080;
+      border: 1px solid var(--win95-dark-gray);
       background-color: #ffffcc;
       margin-bottom: 8px;
       font-style: italic;
@@ -83,8 +83,8 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .filter-bar {
       margin-bottom: 8px;
       padding: 4px 8px;
-      background-color: #d4d0c8;
-      border: 1px solid #808080;
+      background-color: var(--win95-light-gray);
+      border: 1px solid var(--win95-dark-gray);
     }
     .filter-toggle {
       display: flex;
@@ -99,8 +99,8 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .upgrade-item {
       padding: 6px;
       margin: 4px 0;
-      border: 1px solid #808080;
-      background-color: #e0e0e0;
+      border: 1px solid var(--win95-dark-gray);
+      background-color: var(--win95-light-gray);
       &.maxed { background-color: #90ee90; }
     }
     .upgrade-header {
@@ -109,7 +109,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       font-weight: bold;
     }
     .upgrade-level { font-family: 'Courier New', monospace; font-size: 10px; }
-    .upgrade-desc { font-size: 10px; color: #404040; margin: 2px 0; }
+    .upgrade-desc { font-size: 10px; color: var(--win95-black); margin: 2px 0; }
     .upgrade-cost { font-size: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
     .cost-item { 
       padding: 1px 4px; 

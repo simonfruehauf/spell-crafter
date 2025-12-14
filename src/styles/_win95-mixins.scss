@@ -2,20 +2,20 @@
 // WIN95 STYLING MIXINS - Spell-Crafting Unfolding Game
 // =============================================================================
 
-// Color Variables
-$win95-gray: #c0c0c0;
-$win95-dark-gray: #808080;
-$win95-light-gray: #dfdfdf;
-$win95-white: #ffffff;
-$win95-black: #000000;
-$win95-blue: #000080;
-$win95-blue-gradient-start: #000080;
-$win95-blue-gradient-end: #1084d0;
-$win95-teal: #008080;
+// Color Variables - Mapped to CSS Custom Properties
+$win95-gray: var(--win95-gray);
+$win95-dark-gray: var(--win95-dark-gray);
+$win95-light-gray: var(--win95-light-gray);
+$win95-white: var(--win95-white);
+$win95-black: var(--win95-black);
+$win95-blue: var(--win95-blue);
+$win95-blue-gradient-start: var(--win95-blue-start);
+$win95-blue-gradient-end: var(--win95-blue-end);
+$win95-teal: var(--win95-teal);
 
 // System fonts
-$win95-font-system: 'Tahoma', 'MS Sans Serif', 'Segoe UI', sans-serif;
-$win95-font-mono: 'Courier New', 'Consolas', monospace;
+$win95-font-system: var(--win95-font-system);
+$win95-font-mono: var(--win95-font-mono);
 
 // =============================================================================
 // MIXINS
@@ -47,16 +47,17 @@ $win95-font-mono: 'Courier New', 'Consolas', monospace;
   font-size: 12px;
   cursor: pointer;
   outline: none;
-  
+
   &:hover {
-    background-color: darken($win95-gray, 5%);
+    // SASS darken doesn't work with CSS vars, using derived var
+    background-color: var(--win95-gray-dark);
   }
-  
+
   &:active {
     border-color: $win95-dark-gray $win95-white $win95-white $win95-dark-gray;
     padding: 5px 11px 3px 13px;
   }
-  
+
   &:disabled {
     color: $win95-dark-gray;
     cursor: not-allowed;
@@ -92,7 +93,7 @@ $win95-font-mono: 'Courier New', 'Consolas', monospace;
   font-family: $win95-font-system;
   font-size: 12px;
   outline: none;
-  
+
   &:focus {
     outline: 1px dotted $win95-black;
     outline-offset: -2px;
@@ -105,15 +106,15 @@ $win95-font-mono: 'Courier New', 'Consolas', monospace;
     width: 16px;
     height: 16px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: repeating-conic-gradient($win95-gray 0% 25%, $win95-white 0% 50%) 50% / 2px 2px;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     @include win95-panel;
   }
-  
+
   &::-webkit-scrollbar-button {
     @include win95-button;
     width: 16px;
@@ -127,16 +128,16 @@ $win95-font-mono: 'Courier New', 'Consolas', monospace;
   @include win95-scrollbar;
   overflow-y: auto;
   padding: 2px;
-  
+
   .list-item {
     padding: 2px 4px;
     cursor: pointer;
-    
+
     &:hover {
       background-color: $win95-blue;
       color: $win95-white;
     }
-    
+
     &.selected {
       background-color: $win95-blue;
       color: $win95-white;
@@ -149,16 +150,14 @@ $win95-font-mono: 'Courier New', 'Consolas', monospace;
   @include win95-inset;
   height: 20px;
   padding: 2px;
-  
+
   .progress-fill {
     height: 100%;
-    background: repeating-linear-gradient(
-      90deg,
-      $win95-blue,
-      $win95-blue 8px,
-      transparent 8px,
-      transparent 10px
-    );
+    background: repeating-linear-gradient(90deg,
+        $win95-blue,
+        $win95-blue 8px,
+        transparent 8px,
+        transparent 10px);
   }
 }
 
@@ -170,7 +169,7 @@ $win95-font-mono: 'Courier New', 'Consolas', monospace;
   margin: 8px 0;
   padding: 12px 8px 8px;
   position: relative;
-  
+
   legend {
     background-color: $win95-gray;
     padding: 0 4px;

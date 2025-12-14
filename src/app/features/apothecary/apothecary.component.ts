@@ -101,15 +101,15 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     }
     .apothecary-description {
       padding: 8px;
-      border: 1px solid #808080;
+      border: 1px solid var(--win95-dark-gray);
       background-color: #ffffcc;
       margin-bottom: 8px;
       font-style: italic;
       font-size: 11px;
     }
     .section-header {
-      background-color: #800080;
-      color: white;
+      background-color: var(--win95-blue);
+      color: var(--win95-white);
       padding: 2px 6px;
       font-weight: bold;
       font-size: 11px;
@@ -119,7 +119,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       margin-bottom: 8px;
       padding: 4px 8px;
       background-color: #d4d0c8;
-      border: 1px solid #808080;
+      border: 1px solid var(--win95-dark-gray);
     }
     .filter-toggle {
       display: flex;
@@ -139,9 +139,9 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       flex-wrap: wrap;
       gap: 4px;
       padding: 4px;
-      background: white;
+      background: var(--win95-white);
       border: 2px solid;
-      border-color: #808080 #ffffff #ffffff #808080;
+      border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray);
     }
     .inventory-item {
       display: flex;
@@ -152,20 +152,20 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       border: 1px solid #80c080;
       font-size: 10px;
     }
-    .potion-symbol { color: #800080; }
+    .potion-symbol { color: var(--win95-blue); }
     .potion-count { font-weight: bold; color: #008000; }
     .btn-drink {
       margin-left: auto;
       padding: 0 4px;
       font-size: 10px;
-      background-color: #c0c0c0;
+      background-color: var(--win95-gray);
       border: 1px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
+      border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
       cursor: pointer;
-      color: #800080;
+      color: var(--win95-blue);
       font-weight: bold;
-      &:hover { background-color: #d0d0d0; }
-      &:active { border-color: #808080 #ffffff #ffffff #808080; }
+      &:hover { background-color: var(--win95-light-gray); }
+      &:active { border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray); }
     }
     .recipe-list {
       display: flex;
@@ -174,18 +174,18 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     }
     .recipe-item {
       padding: 6px;
-      border: 1px solid #808080;
-      background-color: #e0e0e0;
+      border: 1px solid var(--win95-dark-gray);
+      background-color: var(--win95-gray);
     }
     .recipe-header {
       display: flex;
       gap: 6px;
       font-weight: bold;
     }
-    .recipe-name { color: #000080; }
+    .recipe-name { color: var(--win95-blue); }
     .recipe-desc { 
       font-size: 10px; 
-      color: #404040; 
+      color: var(--win95-black); 
       margin: 2px 0 4px 0; 
     }
     .recipe-costs {
@@ -198,7 +198,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     }
     .cost-label {
       font-weight: bold;
-      color: #404040;
+      color: var(--win95-black);
     }
     .cost-item {
       padding: 1px 4px;
@@ -220,34 +220,34 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .btn-brew {
       padding: 2px 8px;
       font-size: 10px;
-      background-color: #c0c0c0;
+      background-color: var(--win95-gray);
       border: 1px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
+      border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
       cursor: pointer;
       &:disabled {
-        color: #808080;
+        color: var(--win95-dark-gray);
         cursor: not-allowed;
       }
-      &:not(:disabled):hover { background-color: #d0d0d0; }
-      &:not(:disabled):active { border-color: #808080 #ffffff #ffffff #808080; }
+      &:not(:disabled):hover { background-color: var(--win95-light-gray); }
+      &:not(:disabled):active { border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray); }
     }
     
     /* Progress section - Win95 style */
     .progress-section {
       padding: 12px;
-      border: 1px solid #808080;
-      background-color: #c0c0c0;
+      border: 1px solid var(--win95-dark-gray);
+      background-color: var(--win95-gray);
       text-align: center;
     }
     .progress-label {
       font-weight: bold;
       margin-bottom: 8px;
-      color: #800080;
+      color: var(--win95-blue);
     }
     .progress-container {
-      background: #ffffff;
+      background: var(--win95-white);
       border: 2px solid;
-      border-color: #808080 #ffffff #ffffff #808080;
+      border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray);
       height: 20px;
       padding: 2px;
       margin-bottom: 4px;
@@ -255,25 +255,25 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .progress-bar {
       background: repeating-linear-gradient(
         90deg, 
-        #800080 0px, #800080 8px, 
-        #c0c0c0 8px, #c0c0c0 10px
+        var(--win95-blue) 0px, var(--win95-blue) 8px, 
+        var(--win95-gray) 8px, var(--win95-gray) 10px
       );
       height: 100%;
     }
     .progress-time {
       font-size: 10px;
-      color: #404040;
+      color: var(--win95-black);
       margin-bottom: 8px;
     }
     .btn-cancel {
       padding: 2px 8px;
       font-size: 10px;
-      background-color: #c0c0c0;
+      background-color: var(--win95-gray);
       border: 1px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
+      border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
       cursor: pointer;
-      &:hover { background-color: #d0d0d0; }
-      &:active { border-color: #808080 #ffffff #ffffff #808080; }
+      &:hover { background-color: var(--win95-light-gray); }
+      &:active { border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray); }
     }
   `]
 })

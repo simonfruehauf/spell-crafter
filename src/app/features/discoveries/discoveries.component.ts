@@ -79,8 +79,8 @@ import { GameStateService } from '../../core/services/game-state.service';
     }
 
     .section-header {
-      background-color: #000080;
-      color: white;
+      background-color: var(--win95-blue);
+      color: var(--win95-white);
       padding: 2px 6px;
       font-weight: bold;
       font-size: 11px;
@@ -90,9 +90,9 @@ import { GameStateService } from '../../core/services/game-state.service';
     .discoveries-list {
       max-height: 100px;
       overflow-y: auto;
-      background-color: #ffffff;
+      background-color: var(--win95-white);
       border: 2px solid;
-      border-color: #808080 #ffffff #ffffff #808080;
+      border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray);
     }
 
     .discovery-item {
@@ -101,7 +101,7 @@ import { GameStateService } from '../../core/services/game-state.service';
       padding: 2px 6px;
       font-size: 11px;
       font-family: 'Courier New', monospace;
-      border-bottom: 1px solid #e0e0e0;
+      border-bottom: 1px solid var(--win95-light-gray);
 
       &:last-child {
         border-bottom: none;
@@ -109,7 +109,7 @@ import { GameStateService } from '../../core/services/game-state.service';
 
       &.rune {
         .rune-symbol {
-          color: #000080;
+          color: var(--win95-blue);
           font-weight: bold;
         }
       }
@@ -126,7 +126,7 @@ import { GameStateService } from '../../core/services/game-state.service';
     }
 
     .empty-message {
-      color: #808080;
+      color: var(--win95-black);
       font-style: italic;
       text-align: center;
       padding: 8px;

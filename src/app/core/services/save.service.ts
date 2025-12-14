@@ -3,7 +3,7 @@ import {
     Player, Resources, WindowStates, Rune, Spell,
     ResearchNode, CombatState, IdleSettings, Upgrade,
     EquipmentItem, EquipmentRecipe, EquippedItems, AlchemyState, AlchemyRecipe,
-    PotionInventory, GardenState, BrewingState
+    PotionInventory, GardenState, BrewingState, ThemeState
 } from '../models/game.interfaces';
 import { RUNES, INITIAL_UPGRADES } from '../models/game.data';
 import { INITIAL_POTION_INVENTORY } from '../models/potions.data';
@@ -76,6 +76,7 @@ export interface GameSignals {
     garden: ReturnType<typeof signal<GardenState>>;
     brewing: ReturnType<typeof signal<BrewingState>>;
     discoveredResources: ReturnType<typeof signal<string[]>>;
+    themes: ReturnType<typeof signal<ThemeState>>;
 }
 
 // =============================================================================
@@ -119,6 +120,7 @@ export class SaveService {
             garden: this.signals.garden(),
             brewing: this.signals.brewing(),
             discoveredResources: this.signals.discoveredResources(),
+            themes: this.signals.themes(),
         };
         localStorage.setItem(SAVE_KEY, JSON.stringify(state));
     }
@@ -226,6 +228,11 @@ export class SaveService {
             // === DISCOVERY ===
             this.signals.discoveredResources.set(state.discoveredResources || []);
 
+            // === THEMES ===
+            this.signals.themes.set({
+                ...{ active: 'default', unlocked: ['default'] },
+                ...(state.themes || {})
+            });
 
             return true;
         } catch (e) {

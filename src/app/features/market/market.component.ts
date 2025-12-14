@@ -149,7 +149,7 @@ import { PotionInventory, ResourceDef } from '../../core/models/game.interfaces'
         background: #e0e0e0;
     }
     .stat-row { font-size: 11px; display: flex; gap: 4px; }
-    .label { font-weight: bold; color: #404040; }
+    .label { font-weight: bold; color: var(--win95-black); }
     .success { color: #008000; font-weight: bold; }
     .highlight { color: #800000; font-weight: bold; }
 
@@ -157,30 +157,30 @@ import { PotionInventory, ResourceDef } from '../../core/models/game.interfaces'
         display: flex;
         gap: 2px;
         margin-bottom: 8px;
-        border-bottom: 1px solid #808080;
+        border-bottom: 1px solid var(--win95-dark-gray);
         padding-bottom: 2px;
     }
     .tab-btn {
-        background: #c0c0c0;
-        border: 1px solid #fff;
-        border-right-color: #808080;
-        border-bottom-color: #808080;
+        background: var(--win95-gray);
+        border: 1px solid var(--win95-white);
+        border-right-color: var(--win95-dark-gray);
+        border-bottom-color: var(--win95-dark-gray);
         padding: 4px 8px;
         font-size: 11px;
         cursor: pointer;
         font-family: 'Tahoma', sans-serif;
     }
     .tab-btn:active, .tab-btn.active {
-        background: #fff;
-        border-color: #808080;
-        border-right-color: #fff;
-        border-bottom-color: #fff;
+        background: var(--win95-white);
+        border-color: var(--win95-dark-gray);
+        border-right-color: var(--win95-white);
+        border-bottom-color: var(--win95-white);
         font-weight: bold;
     }
 
     .section-header {
-        background-color: #000080;
-        color: white;
+        background-color: var(--win95-blue);
+        color: var(--win95-white);
         padding: 2px 6px;
         font-weight: bold;
         font-size: 11px;
@@ -198,9 +198,9 @@ import { PotionInventory, ResourceDef } from '../../core/models/game.interfaces'
         display: flex;
         flex-direction: column;
         gap: 4px;
-        background: white;
+        background: var(--win95-white);
         border: 2px solid;
-        border-color: #808080 #ffffff #ffffff #808080;
+        border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray);
         padding: 4px;
     }
 
@@ -208,14 +208,14 @@ import { PotionInventory, ResourceDef } from '../../core/models/game.interfaces'
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #f0f0f0;
+        background: var(--win95-light-gray);
         padding: 4px 8px;
-        border: 1px solid #d0d0d0;
+        border: 1px solid var(--win95-light-gray);
     }
-    .market-item:hover, .theme-item:hover { background: #e8e8e8; } 
+    .market-item:hover, .theme-item:hover { background: var(--win95-gray); } 
 
     .active-theme {
-        background: #e0ffe0;
+        background: var(--win95-white);
         border-color: #008000;
         position: relative;
     }
@@ -224,9 +224,9 @@ import { PotionInventory, ResourceDef } from '../../core/models/game.interfaces'
         display: flex;
         flex-direction: column;
     }
-    .item-name, .theme-name { font-weight: bold; font-size: 11px; color: #000; }
-    .theme-desc { font-size: 10px; color: #666; font-style: italic; }
-    .item-stock { font-size: 10px; color: #444; }
+    .item-name, .theme-name { font-weight: bold; font-size: 11px; color: var(--win95-black); }
+    .theme-desc { font-size: 10px; color: var(--win95-dark-gray); font-style: italic; }
+    .item-stock { font-size: 10px; color: var(--win95-black); }
 
     .item-actions, .theme-actions {
         display: flex;
@@ -235,7 +235,7 @@ import { PotionInventory, ResourceDef } from '../../core/models/game.interfaces'
         gap: 2px;
     }
     
-    .price { font-size: 11px; color: #000; font-weight: bold; }
+    .price { font-size: 11px; color: var(--win95-black); font-weight: bold; }
     .price.cost { color: #800000; }
     
     .sell-controls {
@@ -244,29 +244,29 @@ import { PotionInventory, ResourceDef } from '../../core/models/game.interfaces'
     }
 
     .btn {
-        background: #c0c0c0;
-        border: 1px solid #fff;
-        border-right-color: #808080;
-        border-bottom-color: #808080;
-        color: #000;
+        background: var(--win95-gray);
+        border: 1px solid var(--win95-white);
+        border-right-color: var(--win95-dark-gray);
+        border-bottom-color: var(--win95-dark-gray);
+        color: var(--win95-black);
         cursor: pointer;
         font-family: 'Tahoma', sans-serif;
         font-size: 11px;
         padding: 2px 6px;
     }
-    .btn:hover:not(:disabled) { background: #d0d0d0; }
+    .btn:hover:not(:disabled) { background: var(--win95-light-gray); }
     .btn:active:not(:disabled) {
-        border-color: #808080;
-        border-right-color: #fff;
-        border-bottom-color: #fff;
+        border-color: var(--win95-dark-gray);
+        border-right-color: var(--win95-white);
+        border-bottom-color: var(--win95-white);
         transform: translate(1px, 1px);
     }
-    .btn:disabled { color: #808080; cursor: default; }
+    .btn:disabled { color: var(--win95-dark-gray); cursor: default; }
 
     .btn-small { padding: 1px 4px; font-size: 10px; min-width: 24px; }
     .btn-buy, .btn-equip { padding: 3px 8px; width: 80px; }
     
-    .common { color: #000; }
+    .common { color: var(--win95-black); }
     .uncommon { color: #006600; }
     .rare { color: #0000cc; }
     .epic { color: #800080; }
@@ -278,9 +278,9 @@ import { PotionInventory, ResourceDef } from '../../core/models/game.interfaces'
         align-items: center;
     }
     .service-box {
-        background: #f0f0f0;
+        background: var(--win95-light-gray);
         padding: 15px;
-        border: 1px solid #808080;
+        border: 1px solid var(--win95-dark-gray);
         text-align: center;
         max-width: 280px;
         box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
@@ -292,7 +292,7 @@ import { PotionInventory, ResourceDef } from '../../core/models/game.interfaces'
     
     .empty-msg {
         text-align: center;
-        color: #808080;
+        color: var(--win95-dark-gray);
         padding: 10px;
         font-style: italic;
     }

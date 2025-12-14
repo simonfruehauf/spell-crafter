@@ -91,7 +91,7 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
     }
     .equipment-description {
       padding: 6px;
-      border: 1px solid #808080;
+      border: 1px solid var(--win95-dark-gray);
       background-color: #ffffcc;
       margin-bottom: 8px;
       font-style: italic;
@@ -108,7 +108,7 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
       padding: 4px 6px;
       cursor: pointer;
       border: 1px solid transparent;
-      &:hover { background-color: #e8e8e8; }
+      &:hover { background-color: var(--win95-light-gray); }
     }
     .slot-name {
       font-weight: bold;
@@ -119,13 +119,13 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
       flex: 1;
       font-size: 11px;
       padding: 2px 6px;
-      background-color: #f8f8f8;
-      border: 1px solid #c0c0c0;
-      &.empty { color: #808080; }
-      &.active { border-color: #000080; background-color: #e0e0ff; }
+      background-color: var(--win95-white);
+      border: 1px solid var(--win95-gray);
+      &.empty { color: var(--win95-dark-gray); }
+      &.active { border-color: var(--win95-blue); background-color: var(--win95-light-gray); }
     }
     .item-name {
-      &.mundane { color: #404040; }
+      &.mundane { color: var(--win95-black); }
       &.elevated { color: #008800; }
       &.exceptional { color: #0066cc; }
       &.primal { color: #9900cc; }
@@ -146,15 +146,15 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
       font-weight: bold;
     }
     .item-title {
-      &.mundane { color: #404040; }
+      &.mundane { color: var(--win95-black); }
       &.elevated { color: #008800; }
       &.exceptional { color: #0066cc; }
       &.primal { color: #9900cc; }
       &.epochal { color: #cc6600; }
       &.unique { color: #cc0066; }
     }
-    .item-rarity { font-size: 9px; color: #606060; }
-    .item-desc { font-size: 10px; color: #404040; margin: 4px 0; }
+    .item-rarity { font-size: 9px; color: var(--win95-dark-gray); }
+    .item-desc { font-size: 10px; color: var(--win95-black); margin: 4px 0; }
     .item-bonuses {
       display: flex;
       flex-wrap: wrap;
@@ -173,25 +173,25 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
       font-size: 10px;
       background-color: #ffcccc;
       border: 1px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
+      border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
       cursor: pointer;
       &:hover { background-color: #ffaaaa; }
-      &:active { border-color: #808080 #ffffff #ffffff #808080; }
+      &:active { border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray); }
     }
     .available-items { margin-top: 4px; }
     .available-header { font-weight: bold; font-size: 10px; margin-bottom: 4px; }
-    .no-items { font-style: italic; font-size: 10px; color: #808080; }
+    .no-items { font-style: italic; font-size: 10px; color: var(--win95-dark-gray); }
     .available-item {
       padding: 4px 6px;
       margin: 2px 0;
-      border: 1px solid #c0c0c0;
-      background-color: #f8f8f8;
+      border: 1px solid var(--win95-gray);
+      background-color: var(--win95-white);
       cursor: pointer;
-      &:hover { background-color: #e8e8ff; border-color: #8080ff; }
+      &:hover { background-color: var(--win95-light-gray); border-color: var(--win95-blue); }
     }
     .avail-header { font-size: 11px; }
     .avail-name {
-      &.mundane { color: #404040; }
+      &.mundane { color: var(--win95-black); }
       &.elevated { color: #008800; }
       &.exceptional { color: #0066cc; }
       &.primal { color: #9900cc; }

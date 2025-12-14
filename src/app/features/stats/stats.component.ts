@@ -150,8 +150,8 @@ const STAT_INFO: Record<string, StatInfo> = {
       position: relative;
     }
     .level-section {
-      background-color: #000080;
-      color: #ffffff;
+      background-color: var(--win95-blue);
+      color: var(--win95-white);
       padding: 6px;
       margin-bottom: 8px;
     }
@@ -177,7 +177,7 @@ const STAT_INFO: Record<string, StatInfo> = {
       text-align: center;
       font-size: 10px;
       line-height: 14px;
-      color: #ffffff;
+      color: var(--win95-white);
       text-shadow: 1px 1px 0 #000;
     }
     .stat-row {
@@ -193,14 +193,14 @@ const STAT_INFO: Record<string, StatInfo> = {
       font-weight: bold;
       font-size: 10px;
       padding: 2px 6px;
-      background-color: #c0c0c0;
+      background-color: var(--win95-gray);
       border: 1px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
+      border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
       cursor: pointer;
       font-family: 'Courier New', monospace;
-      &:hover { background-color: #d0d0d0; }
+      &:hover { background-color: var(--win95-light-gray); }
       &:active, &.active { 
-        border-color: #808080 #ffffff #ffffff #808080;
+        border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray);
         background-color: #a0a0a0;
       }
     }
@@ -208,7 +208,7 @@ const STAT_INFO: Record<string, StatInfo> = {
       margin-top: 6px;
       padding: 6px;
       background-color: #ffffcc;
-      border: 1px solid #808080;
+      border: 1px solid var(--win95-dark-gray);
       font-size: 10px;
       line-height: 1.4;
     }
@@ -222,13 +222,13 @@ const STAT_INFO: Record<string, StatInfo> = {
       padding: 1px 4px;
       background-color: #90ee90;
       border: 1px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
+      border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
       cursor: pointer;
       font-family: 'Courier New', monospace;
       font-weight: bold;
       color: #006600;
       &:hover { background-color: #70cc70; }
-      &:active { border-color: #808080 #ffffff #ffffff #808080; }
+      &:active { border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray); }
     }
     .points-badge {
       font-size: 10px;

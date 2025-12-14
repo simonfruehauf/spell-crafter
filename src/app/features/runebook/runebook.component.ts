@@ -72,7 +72,7 @@ import { RUNES } from '../../core/models/game.data';
     }
     .runebook-description {
       padding: 8px;
-      border: 1px solid #808080;
+      border: 1px solid var(--win95-dark-gray);
       background-color: #ffffcc;
       margin-bottom: 8px;
       font-style: italic;
@@ -84,21 +84,21 @@ import { RUNES } from '../../core/models/game.data';
     .rune-entry {
       padding: 6px;
       margin: 4px 0;
-      border: 1px solid #808080;
-      background-color: #e8e8ff;
-      &.undiscovered { background-color: #e0e0e0; opacity: 0.7; }
+      border: 1px solid var(--win95-dark-gray);
+      background-color: var(--win95-light-gray);
+      &.undiscovered { background-color: var(--win95-light-gray); opacity: 0.7; }
     }
     .rune-header {
       display: flex;
       gap: 6px;
       align-items: center;
     }
-    .rune-symbol { font-family: 'Courier New', monospace; color: #000080; font-weight: bold; }
+    .rune-symbol { font-family: 'Courier New', monospace; color: var(--win95-blue); font-weight: bold; }
     .rune-name { font-weight: bold; }
-    .rune-element { font-size: 9px; color: #606060; margin-left: auto; }
-    .rune-desc { font-size: 10px; color: #404040; margin: 2px 0; }
+    .rune-element { font-size: 9px; color: var(--win95-dark-gray); margin-left: auto; }
+    .rune-desc { font-size: 10px; color: var(--win95-black); margin: 2px 0; }
     .rune-effect { font-size: 10px; color: #006600; font-style: italic; }
-    .empty-msg { color: #808080; font-style: italic; padding: 8px; text-align: center; }
+    .empty-msg { color: var(--win95-dark-gray); font-style: italic; padding: 8px; text-align: center; }
   `]
 })
 export class RunebookComponent {

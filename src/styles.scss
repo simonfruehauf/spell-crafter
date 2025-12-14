@@ -4,14 +4,85 @@
 @tailwind components;
 @tailwind utilities;
 
-// Ensure tailwind doesn't override base font for retro feel
-:root {
-    font-family: 'Tahoma', 'MS Sans Serif', 'Segoe UI', sans-serif;
-}
-
 // =============================================================================
 // GLOBAL STYLES - Spell-Crafting Unfolding Game
 // =============================================================================
+
+:root {
+    // Base Colors (Default / Classic)
+    --win95-gray: #c0c0c0;
+    --win95-dark-gray: #808080;
+    --win95-light-gray: #dfdfdf;
+    --win95-white: #ffffff;
+    --win95-black: #000000;
+    --win95-blue: #000080;
+    --win95-blue-start: #000080;
+    --win95-blue-end: #1084d0;
+    --win95-teal: #008080;
+
+    // Derived Colors (Pre-calculated for css usage where sass functions fail)
+    --win95-gray-dark: #b4b4b4; // darken 5%
+
+    // Fonts
+    --win95-font-system: 'Tahoma', 'MS Sans Serif', 'Segoe UI', sans-serif;
+    --win95-font-mono: 'Courier New', 'Consolas', monospace;
+}
+
+// THEME: Dark Mode
+body.theme-dark {
+    --win95-gray: #404040;
+    --win95-dark-gray: #202020;
+    --win95-light-gray: #606060;
+    --win95-white: #e0e0e0;
+    --win95-black: #ffffff; // Text is white
+    --win95-blue: #6060ff;
+    --win95-blue-start: #2a2a2a;
+    --win95-blue-end: #3a3a3a;
+    --win95-teal: #1a1a1a; // Desktop background
+    --win95-gray-dark: #303030;
+}
+
+// THEME: Ocean Blue
+body.theme-ocean {
+    --win95-gray: #a0b0c0;
+    --win95-dark-gray: #607080;
+    --win95-light-gray: #c0d0e0;
+    --win95-white: #f0f8ff;
+    --win95-black: #001020;
+    --win95-blue: #004080;
+    --win95-blue-start: #004080;
+    --win95-blue-end: #0080c0;
+    --win95-teal: #006090;
+    --win95-gray-dark: #90a0b0;
+}
+
+// THEME: Forest Green
+body.theme-forest {
+    --win95-gray: #a0c0a0;
+    --win95-dark-gray: #608060;
+    --win95-light-gray: #c0e0c0;
+    --win95-white: #f0fff0;
+    --win95-black: #002000;
+    --win95-blue: #006000;
+    --win95-blue-start: #206020;
+    --win95-blue-end: #40a040;
+    --win95-teal: #004020;
+    --win95-gray-dark: #90b090;
+}
+
+// THEME: High Contrast
+body.theme-contrast {
+    --win95-gray: #ffffff;
+    --win95-dark-gray: #000000; // Borders
+    --win95-light-gray: #ffffff;
+    --win95-white: #ffffff;
+    --win95-black: #000000;
+    --win95-blue: #000000; // Selection
+    --win95-blue-start: #000000;
+    --win95-blue-end: #000000;
+    --win95-teal: #ffffff;
+    --win95-gray-dark: #dddddd;
+}
 
 * {
     box-sizing: border-box;
@@ -27,18 +98,13 @@ body {
 }
 
 body {
-    background-color: $win95-teal;
-    font-family: $win95-font-system;
+    background-color: var(--win95-teal);
+    font-family: var(--win95-font-system);
     font-size: 12px;
-    color: $win95-black;
+    color: var(--win95-black);
     // Disable text smoothing for authentic retro look
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
-}
-
-// Ensure tailwind doesn't override base font for retro feel
-:root {
-    font-family: 'Tahoma', 'MS Sans Serif', 'Segoe UI', sans-serif;
 }
 
 
@@ -350,7 +416,18 @@ fieldset {
 // =============================================================================
 // THEMES
 // =============================================================================
-.theme-dark { background-color: #1a1a1a; }
-.theme-ocean { background-color: #006994; }
-.theme-forest { background-color: #228b22; }
-.theme-contrast { background-color: #000000; }
+.theme-dark {
+    background-color: #1a1a1a;
+}
+
+.theme-ocean {
+    background-color: #006994;
+}
+
+.theme-forest {
+    background-color: #228b22;
+}
+
+.theme-contrast {
+    background-color: #000000;
+}

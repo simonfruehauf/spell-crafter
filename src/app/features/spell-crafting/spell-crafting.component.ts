@@ -119,20 +119,20 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
   styles: [`
     .scriptorium-content { display: flex; flex-direction: column; }
     .scriptorium-description {
-      padding: 8px; border: 1px solid #808080;
+      padding: 8px; border: 1px solid var(--win95-dark-gray);
       background-color: #ffffcc; margin-bottom: 8px; font-style: italic;
     }
     .crafting-area { display: flex; }
     .rune-list, .spell-assembly { flex: 1; }
     .section-header {
-      background-color: #000080; color: white;
+      background-color: var(--win95-blue); color: var(--win95-white);
       padding: 2px 6px; font-weight: bold; margin-bottom: 4px;
       font-family: 'Courier New', monospace;
     }
     .rune-item {
       display: flex; gap: 4px; font-family: 'Courier New', monospace;
-      .rune-symbol { color: #000080; }
-      .rune-type { font-size: 9px; color: #606060; margin-left: auto; }
+      .rune-symbol { color: var(--win95-blue); }
+      .rune-type { font-size: 9px; color: var(--win95-dark-gray); margin-left: auto; }
     }
     .spell-slots {
       padding: 4px; display: flex; flex-wrap: wrap;
@@ -141,14 +141,14 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     }
     .spell-slot {
       display: inline-flex; padding: 2px 6px;
-      background-color: #e0e0ff; border: 1px solid #8080ff;
+      background-color: var(--win95-light-gray); border: 1px solid var(--win95-blue);
       cursor: pointer; font-size: 11px; font-family: 'Courier New', monospace;
       &:hover { background-color: #ffcccc; }
     }
     .rune-item.disabled {
       opacity: 0.5; cursor: not-allowed;
     }
-    .empty-msg { color: #808080; font-style: italic; padding: 8px; text-align: center; }
+    .empty-msg { color: var(--win95-dark-gray); font-style: italic; padding: 8px; text-align: center; }
     .stat-row { display: flex; justify-content: space-between; font-size: 11px; }
     .stat-row.heal-stat { color: #008000; }
     .cost-list { display: flex; flex-wrap: wrap; gap: 4px; font-size: 10px; }
@@ -159,14 +159,14 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .spell-item {
       display: flex; align-items: center; gap: 6px;
       font-family: 'Courier New', monospace;
-      .spell-symbol { color: #000080; }
+      .spell-symbol { color: var(--win95-blue); }
       .spell-name { font-weight: bold; }
-      .spell-stats { font-size: 10px; color: #606060; flex: 1; }
+      .spell-stats { font-size: 10px; color: var(--win95-dark-gray); flex: 1; }
     }
     .btn-tiny {
       padding: 0 4px; font-size: 10px; font-family: 'Courier New', monospace;
-      background-color: #c0c0c0; border: 1px solid;
-      border-color: #ffffff #808080 #808080 #ffffff; cursor: pointer;
+      background-color: var(--win95-gray); border: 1px solid;
+      border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white); cursor: pointer;
     }
   `]
 })

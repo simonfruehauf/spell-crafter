@@ -42,7 +42,7 @@ import { GameStateService } from '../../core/services/game-state.service';
       overflow-y: auto;
       padding: 4px;
       background-color: #000;
-      border: 2px inset #808080;
+      border: 2px inset var(--win95-dark-gray);
       font-family: 'Courier New', monospace;
       font-size: 10px;
       scroll-behavior: smooth;
@@ -58,12 +58,12 @@ import { GameStateService } from '../../core/services/game-state.service';
       &.effect { color: #66ccff; }
       &.crit { color: #ff00ff; font-weight: bold; }
     }
-    .empty-msg { color: #666666; font-style: italic; padding: 8px; }
+    .empty-msg { color: var(--win95-dark-gray); font-style: italic; padding: 8px; }
     .chronicle-stats {
       font-size: 11px;
       padding: 4px;
-      background-color: #000080;
-      color: #ffffff;
+      background-color: var(--win95-blue);
+      color: var(--win95-white);
       text-align: center;
     }
   `]

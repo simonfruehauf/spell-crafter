@@ -95,7 +95,7 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
     }
     .armory-description {
       padding: 8px;
-      border: 1px solid #808080;
+      border: 1px solid var(--win95-dark-gray);
       background-color: #ffffcc;
       margin-bottom: 8px;
       font-style: italic;
@@ -103,8 +103,8 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
     .filter-bar {
       margin-bottom: 8px;
       padding: 4px 8px;
-      background-color: #d4d0c8;
-      border: 1px solid #808080;
+      background-color: var(--win95-light-gray);
+      border: 1px solid var(--win95-dark-gray);
     }
     .filter-toggle {
       display: flex;
@@ -123,8 +123,8 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
     .recipe-item {
       padding: 6px;
       margin: 4px 0;
-      border: 1px solid #808080;
-      background-color: #e0e0e0;
+      border: 1px solid var(--win95-dark-gray);
+      background-color: var(--win95-light-gray);
       &.crafted { background-color: #d0ffd0; }
     }
     .recipe-header {
@@ -133,15 +133,15 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
       font-weight: bold;
     }
     .recipe-name {
-      &.mundane { color: #404040; }
+      &.mundane { color: var(--win95-black); }
       &.elevated { color: #008800; }
       &.exceptional { color: #0066cc; }
       &.primal { color: #9900cc; }
       &.epochal { color: #cc6600; }
       &.unique { color: #cc0066; font-weight: bold; }
     }
-    .recipe-rarity { font-size: 9px; color: #606060; }
-    .recipe-desc { font-size: 10px; color: #404040; margin: 2px 0; }
+    .recipe-rarity { font-size: 9px; color: var(--win95-dark-gray); }
+    .recipe-desc { font-size: 10px; color: var(--win95-black); margin: 2px 0; }
     .recipe-bonuses {
       display: flex;
       flex-wrap: wrap;
@@ -170,16 +170,16 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
     .btn-craft {
       padding: 2px 8px;
       font-size: 10px;
-      background-color: #c0c0c0;
+      background-color: var(--win95-gray);
       border: 1px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
+      border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
       cursor: pointer;
       &:disabled {
-        color: #808080;
+        color: var(--win95-dark-gray);
         cursor: not-allowed;
       }
-      &:not(:disabled):hover { background-color: #d0d0d0; }
-      &:not(:disabled):active { border-color: #808080 #ffffff #ffffff #808080; }
+      &:not(:disabled):hover { background-color: var(--win95-light-gray); }
+      &:not(:disabled):active { border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray); }
     }
     .crafted-section { margin-top: 8px; }
     .crafted-list {
@@ -190,16 +190,16 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
     .crafted-item {
       font-size: 10px;
       padding: 2px 6px;
-      border: 1px solid #808080;
-      background-color: #f0f0f0;
-      &.mundane { border-color: #808080; }
+      border: 1px solid var(--win95-dark-gray);
+      background-color: var(--win95-light-gray);
+      &.mundane { border-color: var(--win95-dark-gray); }
       &.elevated { border-color: #008800; background-color: #e8ffe8; }
       &.exceptional { border-color: #0066cc; background-color: #e8f0ff; }
       &.primal { border-color: #9900cc; background-color: #f8e8ff; }
       &.epochal { border-color: #cc6600; background-color: #fff8e8; }
       &.unique { border-color: #cc0066; background-color: #ffe8f0; }
     }
-    .item-slot { color: #606060; margin-left: 4px; }
+    .item-slot { color: var(--win95-dark-gray); margin-left: 4px; }
   `]
 })
 export class ArmoryComponent {

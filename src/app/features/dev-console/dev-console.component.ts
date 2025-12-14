@@ -92,17 +92,17 @@ import { INITIAL_EQUIPMENT_RECIPES } from '../../core/models/equipment.data';
             overflow-y: auto;
         }
         .section {
-            border: 1px inset #808080;
+            border: 1px inset var(--win95-dark-gray);
             padding: 8px;
-            background: #d4d0c8;
+            background: var(--win95-light-gray);
         }
         .section-title {
             font-weight: bold;
             margin-bottom: 6px;
-            color: #000080;
+            color: var(--win95-blue);
         }
         .command-section {
-            background: #000080;
+            background: var(--win95-blue);
             padding: 8px;
             color: #00ff00;
         }
@@ -112,7 +112,7 @@ import { INITIAL_EQUIPMENT_RECIPES } from '../../core/models/equipment.data';
             align-items: center;
         }
         .input-group label {
-            color: #ffffff;
+            color: var(--win95-white);
         }
         .command-input {
             flex: 1;
@@ -121,7 +121,7 @@ import { INITIAL_EQUIPMENT_RECIPES } from '../../core/models/equipment.data';
             font-size: 11px;
             background: #000000;
             color: #00ff00;
-            border: 1px inset #808080;
+            border: 1px inset var(--win95-dark-gray);
         }
         .quick-actions {
             display: flex;
@@ -148,12 +148,12 @@ import { INITIAL_EQUIPMENT_RECIPES } from '../../core/models/equipment.data';
             padding: 2px 8px;
             font-family: 'Courier New', monospace;
             font-size: 10px;
-            background: #c0c0c0;
+            background: var(--win95-gray);
             border: 2px solid;
-            border-color: #ffffff #808080 #808080 #ffffff;
+            border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
             cursor: pointer;
             &:active {
-                border-color: #808080 #ffffff #ffffff #808080;
+                border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray);
             }
         }
         .console-output {
@@ -164,7 +164,7 @@ import { INITIAL_EQUIPMENT_RECIPES } from '../../core/models/equipment.data';
             max-height: 150px;
             overflow-y: auto;
             font-size: 10px;
-            border: 1px inset #808080;
+            border: 1px inset var(--win95-dark-gray);
         }
         .log-entry {
             margin-bottom: 2px;

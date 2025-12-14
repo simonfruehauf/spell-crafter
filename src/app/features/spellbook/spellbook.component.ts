@@ -5,11 +5,11 @@ import { GameStateService } from '../../core/services/game-state.service';
 import { Spell } from '../../core/models/game.interfaces';
 
 @Component({
-    selector: 'app-spellbook',
-    standalone: true,
-    imports: [CommonModule, WindowComponent],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    template: `
+  selector: 'app-spellbook',
+  standalone: true,
+  imports: [CommonModule, WindowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
     <app-window 
       title="Spellbook" 
       windowId="spellbook"
@@ -69,7 +69,7 @@ import { Spell } from '../../core/models/game.interfaces';
       </div>
     </app-window>
   `,
-    styles: [`
+  styles: [`
     .spellbook-content {
       display: flex;
       flex-direction: column;
@@ -79,13 +79,13 @@ import { Spell } from '../../core/models/game.interfaces';
     }
     .spellbook-description {
       padding: 6px;
-      border: 1px solid #808080;
+      border: 1px solid var(--win95-dark-gray);
       background-color: #ffffcc;
       font-style: italic;
       font-size: 11px;
     }
     fieldset {
-      border: 1px solid #808080;
+      border: 1px solid var(--win95-dark-gray);
       padding: 6px;
       margin: 0;
     }
@@ -95,7 +95,7 @@ import { Spell } from '../../core/models/game.interfaces';
       padding: 0 4px;
     }
     .queue-section {
-      background-color: #f0f0ff;
+      background-color: var(--win95-white);
     }
     .queue-list {
       display: flex;
@@ -109,8 +109,8 @@ import { Spell } from '../../core/models/game.interfaces';
       align-items: center;
       gap: 4px;
       padding: 3px 6px;
-      background-color: #e8e8ff;
-      border: 1px solid #a0a0cc;
+      background-color: var(--win95-light-gray);
+      border: 1px solid var(--win95-dark-gray);
       font-size: 11px;
       &.current {
         background-color: #ccffcc;
@@ -118,45 +118,45 @@ import { Spell } from '../../core/models/game.interfaces';
       }
     }
     .queue-index {
-      color: #606060;
+      color: var(--win95-dark-gray);
       min-width: 18px;
     }
     .spell-symbol {
-      color: #000080;
+      color: var(--win95-blue);
       font-weight: bold;
     }
     .spell-name {
       flex: 1;
     }
     .spell-mana {
-      color: #606060;
+      color: var(--win95-dark-gray);
       font-size: 10px;
     }
     .queue-controls {
       display: flex;
       gap: 2px;
       button {
-        background: #c0c0c0;
-        border: 1px outset #ffffff;
+        background: var(--win95-gray);
+        border: 1px outset var(--win95-white);
         padding: 1px 4px;
         font-size: 9px;
         cursor: pointer;
-        &:hover:not(:disabled) { background: #d0d0d0; }
+        &:hover:not(:disabled) { background: var(--win95-light-gray); }
         &:disabled { opacity: 0.5; cursor: default; }
         &.remove-btn { color: #cc0000; }
       }
     }
     .clear-btn {
       margin-top: 6px;
-      background: #c0c0c0;
-      border: 1px outset #ffffff;
+      background: var(--win95-gray);
+      border: 1px outset var(--win95-white);
       padding: 2px 8px;
       font-size: 10px;
       cursor: pointer;
-      &:hover { background: #d0d0d0; }
+      &:hover { background: var(--win95-light-gray); }
     }
     .available-section {
-      background-color: #fff8f0;
+      background-color: var(--win95-white);
     }
     .spell-list {
       display: flex;
@@ -170,13 +170,13 @@ import { Spell } from '../../core/models/game.interfaces';
       align-items: center;
       gap: 4px;
       padding: 2px 6px;
-      background-color: #f8f0e8;
-      border: 1px solid #c0a080;
+      background-color: var(--win95-light-gray);
+      border: 1px solid var(--win95-dark-gray);
       font-size: 11px;
     }
     .add-btn {
       background: #90ee90;
-      border: 1px outset #ffffff;
+      border: 1px outset var(--win95-white);
       padding: 1px 6px;
       font-size: 10px;
       cursor: pointer;
@@ -184,7 +184,7 @@ import { Spell } from '../../core/models/game.interfaces';
       &:hover { background: #a0ffa0; }
     }
     .empty-msg {
-      color: #808080;
+      color: var(--win95-dark-gray);
       font-style: italic;
       font-size: 10px;
       padding: 4px;
@@ -193,44 +193,44 @@ import { Spell } from '../../core/models/game.interfaces';
   `]
 })
 export class SpellbookComponent {
-    closed = output<void>();
-    private gameState = inject(GameStateService);
+  closed = output<void>();
+  private gameState = inject(GameStateService);
 
-    readonly craftedSpells = this.gameState.craftedSpells;
-    readonly combat = this.gameState.combat;
+  readonly craftedSpells = this.gameState.craftedSpells;
+  readonly combat = this.gameState.combat;
 
-    spellQueue = () => this.combat().spellQueue;
-    currentQueueIndex = () => this.combat().spellQueueIndex;
+  spellQueue = () => this.combat().spellQueue;
+  currentQueueIndex = () => this.combat().spellQueueIndex;
 
-    getSpellById(id: string): Spell | undefined {
-        return this.craftedSpells().find(s => s.id === id);
+  getSpellById(id: string): Spell | undefined {
+    return this.craftedSpells().find(s => s.id === id);
+  }
+
+  addToQueue(spellId: string): void {
+    this.gameState.addToSpellQueue(spellId);
+  }
+
+  removeFromQueue(index: number): void {
+    this.gameState.removeFromSpellQueue(index);
+  }
+
+  moveUp(index: number): void {
+    if (index > 0) {
+      this.gameState.reorderSpellQueue(index, index - 1);
     }
+  }
 
-    addToQueue(spellId: string): void {
-        this.gameState.addToSpellQueue(spellId);
+  moveDown(index: number): void {
+    if (index < this.spellQueue().length - 1) {
+      this.gameState.reorderSpellQueue(index, index + 1);
     }
+  }
 
-    removeFromQueue(index: number): void {
-        this.gameState.removeFromSpellQueue(index);
-    }
+  clearQueue(): void {
+    this.gameState.clearSpellQueue();
+  }
 
-    moveUp(index: number): void {
-        if (index > 0) {
-            this.gameState.reorderSpellQueue(index, index - 1);
-        }
-    }
-
-    moveDown(index: number): void {
-        if (index < this.spellQueue().length - 1) {
-            this.gameState.reorderSpellQueue(index, index + 1);
-        }
-    }
-
-    clearQueue(): void {
-        this.gameState.clearSpellQueue();
-    }
-
-    onClose(): void {
-        this.closed.emit();
-    }
+  onClose(): void {
+    this.closed.emit();
+  }
 }

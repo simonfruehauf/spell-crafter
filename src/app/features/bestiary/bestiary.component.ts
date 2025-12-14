@@ -71,7 +71,7 @@ import { Enemy } from '../../core/models/game.interfaces';
     }
     .bestiary-description {
       padding: 8px;
-      border: 1px solid #808080;
+      border: 1px solid var(--win95-dark-gray);
       background-color: #ffffcc;
       margin-bottom: 8px;
       font-style: italic;
@@ -83,33 +83,33 @@ import { Enemy } from '../../core/models/game.interfaces';
     }
     .enemy-entry {
       padding: 6px;
-      border: 1px solid #808080;
-      background-color: #e0e0e0;
+      border: 1px solid var(--win95-dark-gray);
+      background-color: var(--win95-light-gray);
       &.known { background-color: #e8ffe8; }
     }
     .enemy-header {
       display: flex;
       justify-content: space-between;
       font-weight: bold;
-      &.unknown { color: #808080; }
+      &.unknown { color: var(--win95-dark-gray); }
     }
-    .enemy-kills { font-size: 10px; color: #606060; }
+    .enemy-kills { font-size: 10px; color: var(--win95-dark-gray); }
     .enemy-ascii {
       pre {
         font-family: 'Courier New', monospace;
         font-size: 9px;
         line-height: 1.1;
-        color: #404040;
+        color: var(--win95-black);
         margin: 4px 0;
       }
     }
     .enemy-stats, .enemy-weakness, .enemy-rewards {
       font-size: 10px;
-      color: #404040;
+      color: var(--win95-black);
     }
     .weak { color: #cc0000; margin-right: 8px; }
     .resist { color: #0000cc; }
-    .enemy-unknown { font-size: 10px; color: #808080; font-style: italic; }
+    .enemy-unknown { font-size: 10px; color: var(--win95-dark-gray); font-style: italic; }
   `]
 })
 export class BestiaryComponent {
