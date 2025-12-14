@@ -73,7 +73,8 @@ import { RUNES } from '../../core/models/game.data';
     .runebook-description {
       padding: 8px;
       border: 1px solid var(--win95-dark-gray);
-      background-color: #ffffcc;
+      background-color: var(--win95-white); // was #ffffcc
+      color: var(--win95-black);
       margin-bottom: 8px;
       font-style: italic;
     }

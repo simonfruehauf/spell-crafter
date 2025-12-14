@@ -145,8 +145,8 @@ import { PotionInventory, ResourceDef } from '../../core/models/game.interfaces'
         justify-content: space-between;
         margin-bottom: 8px;
         padding: 4px 8px;
-        border: 1px solid #808080;
-        background: #e0e0e0;
+        border: 1px solid var(--win95-dark-gray);
+        background: var(--win95-light-gray);
     }
     .stat-row { font-size: 11px; display: flex; gap: 4px; }
     .label { font-weight: bold; color: var(--win95-black); }

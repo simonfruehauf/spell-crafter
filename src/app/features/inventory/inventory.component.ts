@@ -62,7 +62,8 @@ import { ResourceCategory } from '../../core/models/game.interfaces';
     .inventory-description {
       padding: 8px;
       border: 1px solid #808080;
-      background-color: #ffffcc;
+      background-color: var(--win95-white); // was #ffffcc
+      color: var(--win95-black);
       margin-bottom: 8px;
       font-style: italic;
     }

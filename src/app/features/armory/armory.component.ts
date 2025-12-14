@@ -96,7 +96,8 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
     .armory-description {
       padding: 8px;
       border: 1px solid var(--win95-dark-gray);
-      background-color: #ffffcc;
+      background-color: var(--win95-white);
+      color: var(--win95-black);
       margin-bottom: 8px;
       font-style: italic;
     }
@@ -112,6 +113,7 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
       gap: 6px;
       font-size: 11px;
       cursor: pointer;
+      color: var(--win95-black);
     }
     .filter-toggle input {
       cursor: pointer;
@@ -125,7 +127,10 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
       margin: 4px 0;
       border: 1px solid var(--win95-dark-gray);
       background-color: var(--win95-light-gray);
-      &.crafted { background-color: #d0ffd0; }
+      &.crafted { 
+        background-color: var(--win95-white); // Simplified for theme support
+        border: 1px dashed var(--win95-dark-gray); // Visual distinction
+      }
     }
     .recipe-header {
       display: flex;
@@ -133,13 +138,16 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
       font-weight: bold;
     }
     .recipe-name {
+      // Use standard colors or theme variables if possible, otherwise keep hardcoded but ensure contrast
       &.mundane { color: var(--win95-black); }
-      &.elevated { color: #008800; }
-      &.exceptional { color: #0066cc; }
-      &.primal { color: #9900cc; }
-      &.epochal { color: #cc6600; }
-      &.unique { color: #cc0066; font-weight: bold; }
+      &.elevated { color: #008800; } // Consider varying by theme, but fine for now on light-gray
+      &.exceptional { color: #0044cc; } // Slightly darker for better contrast
+      &.primal { color: #8800bb; }
+      &.epochal { color: #cc5500; }
+      &.unique { color: #bb0055; font-weight: bold; }
     }
+    // High contrast adjustments for dark mode could be done via more complex CSS or just acceptable mid-tones
+    
     .recipe-rarity { font-size: 9px; color: var(--win95-dark-gray); }
     .recipe-desc { font-size: 10px; color: var(--win95-black); margin: 2px 0; }
     .recipe-bonuses {
@@ -151,9 +159,15 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
     .bonus {
       font-size: 10px;
       padding: 1px 4px;
-      background-color: #ccffcc;
-      border: 1px solid #88cc88;
-      &.negative { background-color: #ffcccc; border-color: #cc8888; }
+      // Use theme vars instead of hardcoded pale green
+      background-color: var(--win95-white);
+      border: 1px solid var(--win95-dark-gray);
+      color: var(--win95-black);
+      
+      &.negative { 
+         color: #cc0000;
+         border-color: #cc0000;
+      }
     }
     .recipe-cost {
       font-size: 10px;
@@ -164,8 +178,18 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
     }
     .cost-item {
       padding: 1px 4px;
-      background-color: #ffcccc;
-      &.affordable { background-color: #ccffcc; }
+      background-color: var(--win95-white); // Keep consistent background
+      border: 1px solid var(--win95-dark-gray);
+      color: var(--win95-black);
+      opacity: 0.7; // Fade out unaffordable? Or just plain style
+      
+      &.affordable { 
+        opacity: 1;
+        font-weight: bold;
+        background-color: var(--win95-white);
+        border-color: var(--win95-black);
+      }
+      // If we want red/green cues, use text color or border, not background
     }
     .btn-craft {
       padding: 2px 8px;
@@ -173,6 +197,7 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
       background-color: var(--win95-gray);
       border: 1px solid;
       border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
+      color: var(--win95-black);
       cursor: pointer;
       &:disabled {
         color: var(--win95-dark-gray);
@@ -192,12 +217,14 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
       padding: 2px 6px;
       border: 1px solid var(--win95-dark-gray);
       background-color: var(--win95-light-gray);
+      color: var(--win95-black);
+      
       &.mundane { border-color: var(--win95-dark-gray); }
-      &.elevated { border-color: #008800; background-color: #e8ffe8; }
-      &.exceptional { border-color: #0066cc; background-color: #e8f0ff; }
-      &.primal { border-color: #9900cc; background-color: #f8e8ff; }
-      &.epochal { border-color: #cc6600; background-color: #fff8e8; }
-      &.unique { border-color: #cc0066; background-color: #ffe8f0; }
+      &.elevated { border-color: #008800; }
+      &.exceptional { border-color: #0066cc; }
+      &.primal { border-color: #9900cc; }
+      &.epochal { border-color: #cc6600; }
+      &.unique { border-color: #cc0066; }
     }
     .item-slot { color: var(--win95-dark-gray); margin-left: 4px; }
   `]

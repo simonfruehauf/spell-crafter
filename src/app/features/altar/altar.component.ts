@@ -73,8 +73,9 @@ import { GameStateService } from '../../core/services/game-state.service';
 
     .altar-description {
       padding: 8px;
-      border: 1px solid #808080;
-      background-color: #ffffcc;
+      border: 1px solid var(--win95-dark-gray);
+      background-color: var(--win95-white); // was #ffffcc
+      color: var(--win95-black);
       margin-bottom: 8px;
       font-style: italic;
     }
@@ -87,7 +88,7 @@ import { GameStateService } from '../../core/services/game-state.service';
     .altar-ascii {
       font-family: 'Courier New', monospace;
       font-size: 14px;
-      color: #000080;
+      color: var(--win95-blue); // was #000080
       margin: 0;
     }
 

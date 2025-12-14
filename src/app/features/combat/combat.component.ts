@@ -21,11 +21,11 @@ import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
 
             @if (!combat().inCombat) {
             <!-- Enemy Selection -->
-            <div class="p-2 border border-win95-dark-gray bg-[#ffffcc] mb-2 italic text-win95-black">
+            <div class="p-2 border border-win95-dark-gray bg-[var(--win95-white)] mb-2 italic text-win95-black">
                 <p>The arena awaits. Choose your foe and test your arcane might.</p>
             </div>
             @if (combat().victoryFlash) {
-            <div class="text-center p-3 bg-[#ccffcc] border-2 border-[#008800] text-[#006600] font-bold mt-2" @pulse>
+            <div class="text-center p-3 bg-[var(--win95-white)] border-2 border-[#008800] text-[#006600] font-bold mt-2" @pulse>
                 <div class="text-[16px]">[!] VICTORY! [!]</div>
             </div>
             }
@@ -41,7 +41,7 @@ import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
 
             <div class="mt-2 text-win95-black">
                 <div class="bg-win95-blue text-white py-[2px] px-[6px] font-bold mb-1 font-mono">Choose Your Opponent</div>
-                <div class="bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] overflow-y-auto p-[2px] h-[140px]">
+                <div class="bg-[var(--win95-white)] text-win95-black border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] overflow-y-auto p-[2px] h-[140px]">
                     @for (enemy of enemies; track enemy.id) {
                     <div class="flex gap-[6px] font-mono cursor-pointer p-[2px_4px] hover:bg-win95-blue hover:text-white" 
                          [class.bg-win95-blue]="selectedEnemy()?.id === enemy.id"
@@ -58,7 +58,7 @@ import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
 
 
             @if (isLockedOut()) {
-            <div class="text-center p-2 bg-[#ffcccc] border-2 border-[#cc0000] text-[#800000] font-bold mt-2" @pulse>
+            <div class="text-center p-2 bg-[var(--win95-gray)] border-2 border-[#cc0000] text-[#800000] font-bold mt-2" @pulse>
                 <div class="text-[16px]">[X]</div>
                 <div class="text-[11px]">Recovery in {{ getLockoutSeconds() }}s...</div>
             </div>
@@ -81,7 +81,7 @@ import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
                 <!-- Enemy Display -->
                 <div class="text-center p-1" [@shake]="enemyShakeState()">
                     <div class="font-bold text-xs font-mono text-win95-black">{{ combat().currentEnemy?.name }}</div>
-                    <pre class="font-mono text-[10px] m-0 leading-[1.1] text-black text-left inline-block whitespace-pre">{{ combat().currentEnemy?.ascii }}</pre>
+                    <pre class="font-mono text-[10px] m-0 leading-[1.1] text-win95-black text-left inline-block whitespace-pre">{{ combat().currentEnemy?.ascii }}</pre>
                     <div class="relative h-[18px] p-[2px] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] bg-win95-dark-gray">
                         <div class="h-full bg-[#00aa00] transition-[width] duration-200 ease-linear" [style.width.%]="enemyHPPercent()">
                         </div>
@@ -92,7 +92,7 @@ import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
                     @if (combat().enemyEffects.length > 0) {
                     <div class="flex flex-wrap gap-1 justify-center mt-1">
                         @for (effect of combat().enemyEffects; track effect.name) {
-                        <span class="text-[9px] px-[4px] py-[1px] font-mono bg-[#ffcccc] text-[#660000]">[{{ effect.name }}: {{ effect.remainingTurns }}]</span>
+                        <span class="text-[9px] px-[4px] py-[1px] font-mono bg-[var(--win95-white)] border border-[#800000] text-[#660000]">[{{ effect.name }}: {{ effect.remainingTurns }}]</span>
                         }
                     </div>
                     }
@@ -135,7 +135,7 @@ __/____\\__
                     @if (nonShieldEffects().length > 0) {
                     <div class="flex flex-wrap gap-1 justify-center mt-1">
                         @for (effect of nonShieldEffects(); track effect.name) {
-                        <span class="text-[9px] px-[4px] py-[1px] font-mono bg-[#ccffcc] text-[#006600]">[{{ effect.name }}: {{ effect.remainingTurns }}]</span>
+                        <span class="text-[9px] px-[4px] py-[1px] font-mono bg-[var(--win95-white)] border border-[#006600] text-[#006600]">[{{ effect.name }}: {{ effect.remainingTurns }}]</span>
                         }
                     </div>
                     }
@@ -144,7 +144,7 @@ __/____\\__
                 <!-- Spell Selection -->
                 <div class="mt-2 text-win95-black">
                     <div class="bg-win95-blue text-white py-[2px] px-[6px] font-bold mb-1 font-mono">Select Spell</div>
-                    <div class="bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] overflow-y-auto p-[2px] h-[80px]">
+                    <div class="bg-[var(--win95-white)] text-win95-black border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] overflow-y-auto p-[2px] h-[80px]">
                         @for (spell of craftedSpells(); track spell.id) {
                         <div class="flex gap-[6px] font-mono cursor-pointer p-[2px_4px] hover:bg-win95-blue hover:text-white" 
                              [class.bg-win95-blue]="selectedSpell()?.id === spell.id"
@@ -166,7 +166,7 @@ __/____\\__
                 @if (idle().usePotionUnlocked && availablePotions().length > 0) {
                 <div class="mt-2 text-win95-black">
                     <div class="bg-[#800080] text-white py-[2px] px-[6px] font-bold mb-1 font-mono">Use Potion</div>
-                    <div class="bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] overflow-y-auto p-[2px] max-h-[60px]">
+                    <div class="bg-[var(--win95-white)] text-win95-black border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] overflow-y-auto p-[2px] max-h-[60px]">
                         @for (potion of availablePotions(); track potion.id) {
                         <div class="flex gap-[6px] font-mono cursor-pointer p-[2px_4px] hover:bg-[#800080] hover:text-white" 
                              [class.bg-[#800080]]="selectedPotion()?.id === potion.id"
@@ -207,19 +207,19 @@ __/____\\__
                 <div class="flex items-center gap-4">
                 <label class="flex items-center gap-[6px] cursor-pointer text-win95-black">
                     <input type="checkbox" [checked]="idle().autoCombat" (change)="toggleAutoCombat()" 
-                           class="appearance-none w-[13px] h-[13px] bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white relative checked:after:content-['✓'] checked:after:absolute checked:after:-top-[2px] checked:after:left-[1px] checked:after:text-xs checked:after:font-bold checked:after:text-black active:bg-win95-gray">
+                           class="appearance-none w-[13px] h-[13px] bg-[var(--win95-white)] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white relative checked:after:content-['✓'] checked:after:absolute checked:after:-top-[2px] checked:after:left-[1px] checked:after:text-xs checked:after:font-bold checked:after:text-win95-black active:bg-win95-gray">
                     Auto-Combat
                 </label>
                 <label class="flex items-center gap-[6px] cursor-pointer text-win95-black" title="Advance to next enemy when victory is trivial (>50% HP remaining)">
                     <input type="checkbox" [checked]="idle().autoProgress" (change)="toggleAutoProgress()" 
-                           class="appearance-none w-[13px] h-[13px] bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white relative checked:after:content-['✓'] checked:after:absolute checked:after:-top-[2px] checked:after:left-[1px] checked:after:text-xs checked:after:font-bold checked:after:text-black active:bg-win95-gray">
+                           class="appearance-none w-[13px] h-[13px] bg-[var(--win95-white)] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white relative checked:after:content-['✓'] checked:after:absolute checked:after:-top-[2px] checked:after:left-[1px] checked:after:text-xs checked:after:font-bold checked:after:text-win95-black active:bg-win95-gray">
                     Auto-Progress
                 </label>
                 </div>
                 <div class="flex items-center gap-2 text-[11px] mt-1 text-win95-black">
                     <label>Speed:</label>
                     <select [ngModel]="idle().combatTickMs" (ngModelChange)="setCombatSpeed($event)"
-                            class="bg-white border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] pad-[4px] font-system text-xs outline-none focus:outline-dotted focus:outline-1 focus:-outline-offset-2">
+                            class="bg-[var(--win95-white)] text-win95-black border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] pad-[4px] font-system text-xs outline-none focus:outline-dotted focus:outline-1 focus:-outline-offset-2">
                         <option [value]="2000">Slow</option>
                         <option [value]="1000">Normal</option>
                         <option [value]="500">Fast</option>

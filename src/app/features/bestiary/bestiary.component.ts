@@ -72,7 +72,8 @@ import { Enemy } from '../../core/models/game.interfaces';
     .bestiary-description {
       padding: 8px;
       border: 1px solid var(--win95-dark-gray);
-      background-color: #ffffcc;
+      background-color: var(--win95-white); // was #ffffcc
+      color: var(--win95-black);
       margin-bottom: 8px;
       font-style: italic;
     }
@@ -85,7 +86,11 @@ import { Enemy } from '../../core/models/game.interfaces';
       padding: 6px;
       border: 1px solid var(--win95-dark-gray);
       background-color: var(--win95-light-gray);
-      &.known { background-color: #e8ffe8; }
+      &.known { 
+        background-color: var(--win95-white); // was #e8ffe8
+        border-color: #008800;
+        color: var(--win95-black);
+      }
     }
     .enemy-header {
       display: flex;

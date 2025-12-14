@@ -82,7 +82,8 @@ import { GameStateService } from '../../core/services/game-state.service';
     .grimoire-description {
       padding: 8px;
       border: 1px solid #808080;
-      background-color: #ffffcc;
+      background-color: var(--win95-white); // was #ffffcc
+      color: var(--win95-black);
       margin-bottom: 8px;
       font-style: italic;
     }
@@ -94,15 +95,16 @@ import { GameStateService } from '../../core/services/game-state.service';
     .spell-entry {
       padding: 6px;
       border: 1px solid #808080;
-      background-color: #f0f0ff;
+      background-color: var(--win95-light-gray); // was #f0f0ff
+      color: var(--win95-black);
     }
     .spell-header {
       display: flex;
       align-items: center;
       gap: 6px;
       font-weight: bold;
-      .spell-symbol { color: #000080; }
-      .spell-level { margin-left: auto; font-size: 10px; color: #606060; }
+      .spell-symbol { color: var(--win95-blue); }
+      .spell-level { margin-left: auto; font-size: 10px; color: var(--win95-black); opacity: 0.7; }
       .uncraft-btn {
         background: none;
         border: none;
@@ -136,7 +138,8 @@ import { GameStateService } from '../../core/services/game-state.service';
       display: flex;
       gap: 8px;
       font-size: 10px;
-      color: #404040;
+      color: var(--win95-black);
+      opacity: 0.8;
     }
     .spell-effects {
       display: flex;
@@ -147,9 +150,14 @@ import { GameStateService } from '../../core/services/game-state.service';
     .effect-tag {
       font-size: 9px;
       padding: 1px 4px;
-      background-color: #e0e0ff;
-      border: 1px solid #8080cc;
-      &.default { background-color: #ffe0e0; border-color: #cc8080; }
+      background-color: var(--win95-white); // was #e0e0ff
+      border: 1px solid var(--win95-blue);
+      color: var(--win95-black); 
+      &.default { 
+        background-color: var(--win95-white); // was #ffe0e0
+        border-color: #cc0000; 
+        color: var(--win95-black);
+      }
     }
     .empty-msg { color: #808080; font-style: italic; padding: 8px; text-align: center; }
   `]

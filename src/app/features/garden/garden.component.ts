@@ -79,7 +79,8 @@ import { getResourcesByCategory, RESOURCE_NAMES } from '../../core/models/resour
     .garden-description {
       padding: 8px;
       border: 1px solid #808080;
-      background-color: #ffffcc;
+      background-color: var(--win95-white); // was #ffffcc
+      color: var(--win95-black);
       font-style: italic;
       font-size: 11px;
     }
@@ -88,7 +89,7 @@ import { getResourcesByCategory, RESOURCE_NAMES } from '../../core/models/resour
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
       padding: 8px;
-      background: white;
+      background: var(--win95-white); // was white
       border: 2px solid;
       border-color: #808080 #ffffff #ffffff #808080;
       justify-items: center;
@@ -110,7 +111,8 @@ import { getResourcesByCategory, RESOURCE_NAMES } from '../../core/models/resour
       width: 90px;
     }
     .plot.planted {
-      background-color: #c0f0c0;
+      background-color: var(--win95-white); // was #c0f0c0
+      border-color: #008800;
     }
     .plot-icon {
       font-family: monospace;
@@ -121,7 +123,7 @@ import { getResourcesByCategory, RESOURCE_NAMES } from '../../core/models/resour
     .plot-label {
       font-size: 9px;
       font-weight: bold;
-      color: #006000;
+      color: var(--win95-black); // was #006000
       margin-bottom: 2px;
       text-align: center;
     }
@@ -134,14 +136,15 @@ import { getResourcesByCategory, RESOURCE_NAMES } from '../../core/models/resour
     }
     .plot-status {
       font-size: 10px;
-      color: #404040;
+      color: var(--win95-black); // was #404040
       margin-bottom: 4px;
     }
     .herb-select {
       width: 100%;
       font-size: 9px;
       padding: 2px;
-      background-color: white;
+      background-color: var(--win95-white); // was white
+      color: var(--win95-black);
       border: 1px solid;
       border-color: #808080 #ffffff #ffffff #808080;
     }
@@ -166,7 +169,7 @@ import { getResourcesByCategory, RESOURCE_NAMES } from '../../core/models/resour
     }
     .progress-container {
       width: 100%;
-      background: #ffffff;
+      background: var(--win95-white); // was #ffffff
       border: 1px solid;
       border-color: #808080 #ffffff #ffffff #808080;
       height: 8px;

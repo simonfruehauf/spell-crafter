@@ -30,44 +30,44 @@
 
 // THEME: Dark Mode
 body.theme-dark {
-    --win95-gray: #404040;
-    --win95-dark-gray: #202020;
-    --win95-light-gray: #606060;
-    --win95-white: #e0e0e0;
-    --win95-black: #ffffff; // Text is white
-    --win95-blue: #6060ff;
-    --win95-blue-start: #2a2a2a;
-    --win95-blue-end: #3a3a3a;
-    --win95-teal: #1a1a1a; // Desktop background
-    --win95-gray-dark: #303030;
+    --win95-gray: #2b2b2b; // Dark charcoal base (Face)
+    --win95-dark-gray: #111111; // Deep shadows (Darker than face)
+    --win95-light-gray: #3a3a3a; // Subtle mid-tone
+    --win95-white: #464646; // Dark Gray (Lighter than face, serves as Highlight AND Input BG)
+    --win95-black: #ffffff; // Pure White text for max contrast on dark backgrounds
+    --win95-blue: #7289da; // Soft Blurple
+    --win95-blue-start: #23272a;
+    --win95-blue-end: #2c2f33;
+    --win95-teal: #121212;
+    --win95-gray-dark: #202020;
 }
 
 // THEME: Ocean Blue
 body.theme-ocean {
-    --win95-gray: #a0b0c0;
-    --win95-dark-gray: #607080;
-    --win95-light-gray: #c0d0e0;
-    --win95-white: #f0f8ff;
-    --win95-black: #001020;
-    --win95-blue: #004080;
-    --win95-blue-start: #004080;
-    --win95-blue-end: #0080c0;
-    --win95-teal: #006090;
-    --win95-gray-dark: #90a0b0;
+    --win95-gray: #b0c4de; // Light Steel Blue base
+    --win95-dark-gray: #708090; // Slate Gray shadows
+    --win95-light-gray: #dae8fc; // Very light blue highlights
+    --win95-white: #f0f8ff; // Alice Blue
+    --win95-black: #00102a; // Deep Navy text
+    --win95-blue: #005090; // Selection blue
+    --win95-blue-start: #003366; // Deep Ocean
+    --win95-blue-end: #006699; // Lighter Ocean
+    --win95-teal: #4682b4; // Steel Blue background
+    --win95-gray-dark: #9fb3cc; // Slightly darker base
 }
 
 // THEME: Forest Green
 body.theme-forest {
-    --win95-gray: #a0c0a0;
-    --win95-dark-gray: #608060;
-    --win95-light-gray: #c0e0c0;
-    --win95-white: #f0fff0;
-    --win95-black: #002000;
-    --win95-blue: #006000;
-    --win95-blue-start: #206020;
-    --win95-blue-end: #40a040;
-    --win95-teal: #004020;
-    --win95-gray-dark: #90b090;
+    --win95-gray: #acc8ba; // Sage Green base
+    --win95-dark-gray: #7e9c8e; // Darker Sage shadows
+    --win95-light-gray: #cbeedd; // Minty highlight
+    --win95-white: #f5fffa; // Mint Cream
+    --win95-black: #1a2f23; // Dark Forest Green text
+    --win95-blue: #2e8b57; // Sea Green selection
+    --win95-blue-start: #1b4d3e; // Deep Green
+    --win95-blue-end: #2d8255; // Medium Green
+    --win95-teal: #355e3b; // Hunter Green background
+    --win95-gray-dark: #9bb6a9; // Slightly darker base
 }
 
 // THEME: High Contrast
@@ -115,32 +115,32 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: repeating-conic-gradient(#c0c0c0 0% 25%, #ffffff 0% 50%) 50% / 2px 2px;
+    background: repeating-conic-gradient(var(--win95-gray) 0% 25%, var(--win95-white) 0% 50%) 50% / 2px 2px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #c0c0c0;
+    background-color: var(--win95-gray);
     border: 2px solid;
-    border-color: #ffffff #808080 #808080 #ffffff;
+    border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: #d0d0d0;
+    filter: brightness(1.1);
 }
 
 ::-webkit-scrollbar-corner {
-    background-color: #c0c0c0;
+    background-color: var(--win95-gray);
 }
 
 ::-webkit-scrollbar-button {
-    background-color: #c0c0c0;
+    background-color: var(--win95-gray);
     border: 2px solid;
-    border-color: #ffffff #808080 #808080 #ffffff;
+    border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
     height: 16px;
 }
 
 ::-webkit-scrollbar-button:active {
-    border-color: #808080 #ffffff #ffffff #808080;
+    border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray);
 }
 
 // Win95 styled checkboxes
@@ -149,9 +149,9 @@ input[type="checkbox"] {
     -webkit-appearance: none;
     width: 13px;
     height: 13px;
-    background-color: #ffffff;
+    background-color: var(--win95-white);
     border: 2px solid;
-    border-color: #808080 #ffffff #ffffff #808080;
+    border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray);
     cursor: pointer;
     position: relative;
     vertical-align: middle;
@@ -163,11 +163,11 @@ input[type="checkbox"] {
         left: 1px;
         font-size: 12px;
         font-weight: bold;
-        color: #000000;
+        color: var(--win95-black);
     }
 
     &:active {
-        background-color: #c0c0c0;
+        background-color: var(--win95-gray);
     }
 }
 

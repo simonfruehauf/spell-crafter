@@ -120,7 +120,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .scriptorium-content { display: flex; flex-direction: column; }
     .scriptorium-description {
       padding: 8px; border: 1px solid var(--win95-dark-gray);
-      background-color: #ffffcc; margin-bottom: 8px; font-style: italic;
+      background-color: var(--win95-white); color: var(--win95-black); margin-bottom: 8px; font-style: italic;
     }
     .crafting-area { display: flex; }
     .rune-list, .spell-assembly { flex: 1; }
@@ -143,7 +143,8 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       display: inline-flex; padding: 2px 6px;
       background-color: var(--win95-light-gray); border: 1px solid var(--win95-blue);
       cursor: pointer; font-size: 11px; font-family: 'Courier New', monospace;
-      &:hover { background-color: #ffcccc; }
+      color: var(--win95-black);
+      &:hover { background-color: var(--win95-white); }
     }
     .rune-item.disabled {
       opacity: 0.5; cursor: not-allowed;
@@ -153,8 +154,9 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .stat-row.heal-stat { color: #008000; }
     .cost-list { display: flex; flex-wrap: wrap; gap: 4px; font-size: 10px; }
     .cost-item {
-      padding: 1px 4px; background-color: #ffcccc;
-      &.affordable { background-color: #ccffcc; }
+      padding: 1px 4px; background-color: var(--win95-white); border: 1px solid var(--win95-dark-gray);
+      color: var(--win95-black);
+      &.affordable { border-color: var(--win95-blue); font-weight: bold; }
     }
     .spell-item {
       display: flex; align-items: center; gap: 6px;

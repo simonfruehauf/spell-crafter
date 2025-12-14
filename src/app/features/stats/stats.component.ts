@@ -207,7 +207,9 @@ const STAT_INFO: Record<string, StatInfo> = {
     .stat-info-box {
       margin-top: 6px;
       padding: 6px;
-      background-color: #ffffcc;
+      padding: 6px;
+      background-color: var(--win95-white); // was #ffffcc
+      color: var(--win95-black);
       border: 1px solid var(--win95-dark-gray);
       font-size: 10px;
       line-height: 1.4;
@@ -220,14 +222,14 @@ const STAT_INFO: Record<string, StatInfo> = {
     .add-btn {
       font-size: 10px;
       padding: 1px 4px;
-      background-color: #90ee90;
+      background-color: var(--win95-gray); // was #90ee90
       border: 1px solid;
       border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
       cursor: pointer;
       font-family: 'Courier New', monospace;
       font-weight: bold;
       color: #006600;
-      &:hover { background-color: #70cc70; }
+      &:hover { background-color: var(--win95-light-gray); }
       &:active { border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray); }
     }
     .points-badge {

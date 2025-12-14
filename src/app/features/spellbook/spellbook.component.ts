@@ -80,7 +80,8 @@ import { Spell } from '../../core/models/game.interfaces';
     .spellbook-description {
       padding: 6px;
       border: 1px solid var(--win95-dark-gray);
-      background-color: #ffffcc;
+      background-color: var(--win95-white); // was #ffffcc
+      color: var(--win95-black);
       font-style: italic;
       font-size: 11px;
     }
@@ -113,8 +114,10 @@ import { Spell } from '../../core/models/game.interfaces';
       border: 1px solid var(--win95-dark-gray);
       font-size: 11px;
       &.current {
-        background-color: #ccffcc;
-        border-color: #80cc80;
+        background-color: var(--win95-white); // was #ccffcc
+        color: var(--win95-black);
+        border: 2px solid var(--win95-blue); // emphasize border instead
+        font-weight: bold;
       }
     }
     .queue-index {
@@ -175,13 +178,14 @@ import { Spell } from '../../core/models/game.interfaces';
       font-size: 11px;
     }
     .add-btn {
-      background: #90ee90;
+      background: var(--win95-gray); // was #90ee90
+      color: var(--win95-blue);
       border: 1px outset var(--win95-white);
       padding: 1px 6px;
       font-size: 10px;
       cursor: pointer;
       margin-left: auto;
-      &:hover { background: #a0ffa0; }
+      &:hover { background: var(--win95-light-gray); }
     }
     .empty-msg {
       color: var(--win95-dark-gray);

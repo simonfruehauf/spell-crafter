@@ -19,7 +19,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       [width]="340"
       (closed)="onClose()">
       <div class="flex flex-col max-h-[450px]">
-        <div class="p-2 border border-win95-dark-gray bg-[#ffffcc] mb-2 italic text-win95-black">
+        <div class="p-2 border border-win95-dark-gray bg-[var(--win95-white)] mb-2 italic text-win95-black">
           <p>Ancient tomes and scrolls line the walls. 
              Spend mana to uncover new arcane knowledge.</p>
         </div>
@@ -37,37 +37,37 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
         }
 
         <div class="flex flex-wrap gap-1 mb-2">
-          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-win95-dark-gray bg-[#e0e0e0] cursor-pointer hover:bg-[#d0d0d0]" 
+          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-win95-dark-gray bg-[#e0e0e0] text-black cursor-pointer hover:bg-[#d0d0d0]" 
                   [class.font-bold]="activeFilter() === null" 
                   [class.border-2]="activeFilter() === null"
                   [class.border-inset]="activeFilter() === null"
                   (click)="setFilter(null)">All</button>
           
-          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#8080cc] bg-[#ccccff] cursor-pointer hover:bg-[#d0d0d0]" 
+          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#8080cc] bg-[#ccccff] text-black cursor-pointer hover:bg-[#d0d0d0]" 
                   [class.font-bold]="activeFilter() === 'window'"
                   [class.border-2]="activeFilter() === 'window'"
                   [class.border-inset]="activeFilter() === 'window'"
                   (click)="setFilter('window')">Feature</button>
                   
-          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#cc80cc] bg-[#ffccff] cursor-pointer hover:bg-[#d0d0d0]" 
+          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#cc80cc] bg-[#ffccff] text-black cursor-pointer hover:bg-[#d0d0d0]" 
                   [class.font-bold]="activeFilter() === 'rune'"
                   [class.border-2]="activeFilter() === 'rune'"
                   [class.border-inset]="activeFilter() === 'rune'"
                   (click)="setFilter('rune')">Rune</button>
                   
-          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#80cc80] bg-[#ccffcc] cursor-pointer hover:bg-[#d0d0d0]" 
+          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#80cc80] bg-[#ccffcc] text-black cursor-pointer hover:bg-[#d0d0d0]" 
                   [class.font-bold]="activeFilter() === 'stat'"
                   [class.border-2]="activeFilter() === 'stat'"
                   [class.border-inset]="activeFilter() === 'stat'"
                   (click)="setFilter('stat')">Stat</button>
                   
-          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#80cccc] bg-[#ccffff] cursor-pointer hover:bg-[#d0d0d0]" 
+          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#80cccc] bg-[#ccffff] text-black cursor-pointer hover:bg-[#d0d0d0]" 
                   [class.font-bold]="activeFilter() === 'maxMana'"
                   [class.border-2]="activeFilter() === 'maxMana'"
                   [class.border-inset]="activeFilter() === 'maxMana'"
                   (click)="setFilter('maxMana')">Mana</button>
                   
-          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#cccc80] bg-[#ffffcc] cursor-pointer hover:bg-[#d0d0d0]" 
+          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#cccc80] bg-[var(--win95-white)] text-[var(--win95-black)] cursor-pointer hover:bg-[#d0d0d0]" 
                   [class.font-bold]="activeFilter() === 'idle'"
                   [class.border-2]="activeFilter() === 'idle'"
                   [class.border-inset]="activeFilter() === 'idle'"

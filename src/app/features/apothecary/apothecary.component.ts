@@ -102,7 +102,8 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .apothecary-description {
       padding: 8px;
       border: 1px solid var(--win95-dark-gray);
-      background-color: #ffffcc;
+      background-color: var(--win95-white);
+      color: var(--win95-black);
       margin-bottom: 8px;
       font-style: italic;
       font-size: 11px;
@@ -118,7 +119,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .filter-bar {
       margin-bottom: 8px;
       padding: 4px 8px;
-      background-color: #d4d0c8;
+      background-color: var(--win95-light-gray);
       border: 1px solid var(--win95-dark-gray);
     }
     .filter-toggle {
@@ -127,6 +128,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       gap: 6px;
       font-size: 11px;
       cursor: pointer;
+      color: var(--win95-black);
     }
     .filter-toggle input {
       cursor: pointer;
@@ -148,12 +150,13 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       align-items: center;
       gap: 4px;
       padding: 2px 6px;
-      background-color: #e0ffe0;
-      border: 1px solid #80c080;
+      background-color: var(--win95-light-gray);
+      border: 1px solid var(--win95-dark-gray);
+      color: var(--win95-black);
       font-size: 10px;
     }
     .potion-symbol { color: var(--win95-blue); }
-    .potion-count { font-weight: bold; color: #008000; }
+    .potion-count { font-weight: bold; color: #008800; } // Keep green but consistent
     .btn-drink {
       margin-left: auto;
       padding: 0 4px;
@@ -175,7 +178,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .recipe-item {
       padding: 6px;
       border: 1px solid var(--win95-dark-gray);
-      background-color: var(--win95-gray);
+      background-color: var(--win95-light-gray);
     }
     .recipe-header {
       display: flex;
@@ -202,18 +205,22 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     }
     .cost-item {
       padding: 1px 4px;
-      background-color: #ffcccc;
-      border: 1px solid #cc8888;
+      // Theme aware: use white background, black text
+      background-color: var(--win95-white);
+      border: 1px solid var(--win95-dark-gray);
+      color: var(--win95-black);
+      
       &.affordable { 
-        background-color: #ccffcc; 
-        border-color: #88cc88;
+        background-color: var(--win95-white); 
+        border-color: var(--win95-blue); // Blue border for affordable/active
+        font-weight: bold;
       }
       &.mana {
-        background-color: #ccccff;
-        border-color: #8888cc;
+        // Special styling for mana if desired, but keep it readable
+        border-color: var(--win95-blue);
+        color: var(--win95-blue);
         &.affordable {
-          background-color: #ccccff;
-          border-color: #8888cc;
+          font-weight: bold;
         }
       }
     }
@@ -223,6 +230,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       background-color: var(--win95-gray);
       border: 1px solid;
       border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
+      color: var(--win95-black);
       cursor: pointer;
       &:disabled {
         color: var(--win95-dark-gray);
@@ -271,6 +279,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       background-color: var(--win95-gray);
       border: 1px solid;
       border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
+      color: var(--win95-black);
       cursor: pointer;
       &:hover { background-color: var(--win95-light-gray); }
       &:active { border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray); }

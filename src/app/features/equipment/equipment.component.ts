@@ -92,7 +92,8 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
     .equipment-description {
       padding: 6px;
       border: 1px solid var(--win95-dark-gray);
-      background-color: #ffffcc;
+      background-color: var(--win95-white);
+      color: var(--win95-black);
       margin-bottom: 8px;
       font-style: italic;
       font-size: 11px;
@@ -136,9 +137,10 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
     .slot-panel { margin-top: 8px; }
     .equipped-info {
       padding: 6px;
-      background-color: #e8ffe8;
-      border: 1px solid #88cc88;
+      background-color: var(--win95-white); // was #e8ffe8
+      border: 1px solid var(--win95-blue); // was #88cc88
       margin-bottom: 8px;
+      color: var(--win95-black);
     }
     .item-header {
       display: flex;
@@ -164,18 +166,23 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
     .bonus {
       font-size: 10px;
       padding: 1px 4px;
-      background-color: #ccffcc;
-      border: 1px solid #88cc88;
-      &.negative { background-color: #ffcccc; border-color: #cc8888; }
+      background-color: var(--win95-white);
+      border: 1px solid var(--win95-dark-gray);
+      color: var(--win95-black);
+      &.negative { 
+        color: #cc0000;
+        border-color: #cc0000;
+      }
     }
     .btn-unequip {
       padding: 2px 8px;
       font-size: 10px;
-      background-color: #ffcccc;
+      background-color: var(--win95-gray);
+      color: #800000; // Danger red text
       border: 1px solid;
       border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
       cursor: pointer;
-      &:hover { background-color: #ffaaaa; }
+      &:hover { background-color: var(--win95-light-gray); }
       &:active { border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray); }
     }
     .available-items { margin-top: 4px; }
@@ -202,9 +209,10 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
     .bonus-sm {
       font-size: 9px;
       padding: 0 3px;
-      background-color: #e8ffe8;
-      border: 1px solid #aaccaa;
-      &.negative { background-color: #ffe8e8; border-color: #ccaaaa; }
+      background-color: var(--win95-white);
+      border: 1px solid var(--win95-dark-gray);
+      color: var(--win95-black);
+      &.negative { color: #cc0000; border-color: #cc0000; }
     }
   `]
 })

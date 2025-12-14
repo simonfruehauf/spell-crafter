@@ -39,7 +39,7 @@ import { GameStateService } from '../../core/services/game-state.service';
       font-family: 'Courier New', monospace;
       font-size: 16px;
       margin: 0;
-      color: #000080;
+      color: var(--win95-blue); // was #000080
       text-align: center;
       line-height: 1.2;
     }
@@ -54,8 +54,7 @@ import { GameStateService } from '../../core/services/game-state.service';
     }
     .mana-rate {
       font-size: 12px;
-      color: #000080;
-
+      color: var(--win95-blue); // was #000080
       font-weight: bold;
     }
   `]

@@ -76,7 +76,8 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .workshop-description {
       padding: 8px;
       border: 1px solid var(--win95-dark-gray);
-      background-color: #ffffcc;
+      background-color: var(--win95-white); // was #ffffcc
+      color: var(--win95-black);
       margin-bottom: 8px;
       font-style: italic;
     }
@@ -101,7 +102,10 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       margin: 4px 0;
       border: 1px solid var(--win95-dark-gray);
       background-color: var(--win95-light-gray);
-      &.maxed { background-color: #90ee90; }
+      &.maxed { 
+        background-color: var(--win95-white); // was #90ee90
+        border-color: #008800; // border indication instead
+      }
     }
     .upgrade-header {
       display: flex;
@@ -113,8 +117,13 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .upgrade-cost { font-size: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
     .cost-item { 
       padding: 1px 4px; 
-      background-color: #ffcccc; 
-      &.affordable { background-color: #ccffcc; }
+      background-color: var(--win95-white); // was #ffcccc
+      color: var(--win95-black);
+      border: 1px solid var(--win95-dark-gray);
+      &.affordable { 
+        font-weight: bold;
+        border-color: var(--win95-blue); // was #ccffcc background
+      }
     }
     .maxed-text { color: #008800; font-weight: bold; text-align: center; }
     .btn-sm { padding: 2px 8px; font-size: 10px; }

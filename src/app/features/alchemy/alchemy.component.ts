@@ -93,7 +93,8 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
     .alchemy-description {
       padding: 8px;
       border: 1px solid var(--win95-dark-gray);
-      background-color: #ffffcc;
+      background-color: var(--win95-white); // was #ffffcc
+      color: var(--win95-black);
       margin-bottom: 8px;
       font-style: italic;
     }
@@ -140,6 +141,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       padding: 1px 4px;
       background-color: #ffcccc;
       border: 1px solid #cc8888;
+      color: black; // Ensure text is black on light backgrounds
       &.affordable { 
         background-color: #ccffcc; 
         border-color: #88cc88;
@@ -149,6 +151,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       padding: 1px 4px;
       background-color: #cce0ff;
       border: 1px solid #8899cc;
+      color: black; // Ensure text is black on light backgrounds
       &.random {
         background-color: #ffe0cc;
         border-color: #cc9988;
