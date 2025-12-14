@@ -239,8 +239,8 @@ export class LaboratoryComponent {
     let writePtr = 0;
     const totalBlocks = 240;
 
-    // Calculate speed to fit in 5-10 seconds
-    const duration = 5000 + Math.random() * 5000;
+    // Calculate speed to fit in 14-24 seconds
+    const duration = 12000 + Math.random() * 12000;
     const intervalTime = duration / totalBlocks;
 
     const intervalId = setInterval(() => {

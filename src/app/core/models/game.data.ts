@@ -432,6 +432,7 @@ export const ENEMIES: Enemy[] = [
             { resourceId: 'starlight_shard', minAmount: 1, maxAmount: 2, chance: 0.3 },
             { resourceId: 'moonstone', minAmount: 1, maxAmount: 1, chance: 0.15 },
             { resourceId: 'enchanted_ink', minAmount: 1, maxAmount: 2, chance: 0.3 },
+            { resourceId: 'world_seed', minAmount: 1, maxAmount: 1, chance: 0.05 },
         ],
     },
     {
@@ -557,7 +558,7 @@ export const ENEMIES: Enemy[] = [
             { resourceId: 'heart_of_magic', minAmount: 1, maxAmount: 1, chance: 0.05 },
             { resourceId: 'crown_fragment', minAmount: 1, maxAmount: 1, chance: 0.05 },
             { resourceId: 'void_crystal', minAmount: 1, maxAmount: 1, chance: 0.05 },
-            { resourceId: 'world_seed', minAmount: 1, maxAmount: 1, chance: 0.03 },
+            { resourceId: 'world_seed', minAmount: 1, maxAmount: 1, chance: 0.05 },
             { resourceId: 'divine_mark', minAmount: 1, maxAmount: 1, chance: 0.1 },
             { resourceId: 'soul_coin', minAmount: 1, maxAmount: 2, chance: 0.3 },
         ],
@@ -847,6 +848,26 @@ export const INITIAL_UPGRADES: Upgrade[] = [
         cost: [{ resourceId: 'mint_plant', amount: 5 }, { resourceId: 'healing_moss', amount: 3 }],
         costMultiplier: 1.5, effect: { type: 'gardenPlot', valuePerLevel: 1 }, unlocked: false
     },
+
+    // RARE HERB UPGRADES
+    {
+        id: 'void_attunement', name: 'Void Attunement', description: '+8% spell damage per level.',
+        category: 'combat', level: 0, maxLevel: 3,
+        cost: [{ resourceId: 'voidbloom', amount: 1 }, { resourceId: 'void_essence', amount: 3 }],
+        costMultiplier: 2.0, effect: { type: 'damage', percentPerLevel: 8 }, unlocked: false, prerequisite: 'spell_power'
+    },
+    {
+        id: 'worldtree_blessing', name: 'Worldtree Blessing', description: '+2 HP regen per 5s per level.',
+        category: 'idle', level: 0, maxLevel: 3,
+        cost: [{ resourceId: 'worldtree_leaf', amount: 2 }, { resourceId: 'life_essence', amount: 5 }],
+        costMultiplier: 2.0, effect: { type: 'hpRegen', valuePerLevel: 2 }, unlocked: false, prerequisite: 'hp_regen'
+    },
+    {
+        id: 'herbal_mastery', name: 'Herbal Mastery', description: '+5% potion effectiveness per level.',
+        category: 'crafting', level: 0, maxLevel: 5,
+        cost: [{ resourceId: 'mint_plant', amount: 10 }, { resourceId: 'mana_blossom', amount: 5 }],
+        costMultiplier: 1.5, effect: { type: 'potionPower', percentPerLevel: 5 }, unlocked: false
+    },
 ];
 
 // =============================================================================
@@ -945,6 +966,42 @@ export const INITIAL_ALCHEMY_RECIPES: AlchemyRecipe[] = [
         inputs: [{ resourceId: 'dark_essence', amount: 3 }, { resourceId: 'soul_shard', amount: 1 }],
         outputs: [{ resourceId: 'void_essence', amount: 1 }],
         craftTimeMs: 40000, unlocked: true,
+    },
+    // Herb-based transmutations
+    {
+        id: 'transmute-ghostcap', name: 'Ghostly Transmutation',
+        description: 'Convert ghostcap into wraith essence.',
+        inputs: [{ resourceId: 'ghostcap', amount: 3 }, { resourceId: 'dark_essence', amount: 1 }],
+        outputs: [{ resourceId: 'wraith_essence', amount: 2 }],
+        craftTimeMs: 20000, unlocked: true,
+    },
+    {
+        id: 'transmute-dreamweed', name: 'Dream Distillation',
+        description: 'Extract arcane essence from dreamweed.',
+        inputs: [{ resourceId: 'dreamweed', amount: 4 }, { resourceId: 'moonstone_powder', amount: 2 }],
+        outputs: [{ resourceId: 'arcane_essence', amount: 2 }],
+        craftTimeMs: 25000, unlocked: true,
+    },
+    {
+        id: 'transmute-dragonlily', name: 'Draconic Infusion',
+        description: 'Concentrate dragon lily into primal fire.',
+        inputs: [{ resourceId: 'dragonlily', amount: 2 }, { resourceId: 'fire_essence', amount: 3 }],
+        outputs: [{ resourceId: 'phoenix_ash', amount: 1 }],
+        craftTimeMs: 35000, unlocked: true,
+    },
+    {
+        id: 'transmute-thornroot', name: 'Venomous Extraction',
+        description: 'Extract poison from thornroot.',
+        inputs: [{ resourceId: 'thornroot', amount: 5 }, { resourceId: 'spider_silk', amount: 2 }],
+        outputs: [{ resourceId: 'dark_essence', amount: 2 }],
+        craftTimeMs: 20000, unlocked: true,
+    },
+    {
+        id: 'transmute-voidbloom', name: 'Void Crystallization',
+        description: 'Crystallize voidbloom into pure void.',
+        inputs: [{ resourceId: 'voidbloom', amount: 1 }, { resourceId: 'void_essence', amount: 2 }],
+        outputs: [{ resourceId: 'dimensional_shard', amount: 1 }],
+        craftTimeMs: 45000, unlocked: true,
     },
 ];
 

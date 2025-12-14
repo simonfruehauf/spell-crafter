@@ -275,6 +275,88 @@ export const POTIONS: Potion[] = [
     },
 
     // =========================================================================
+    // RARE HERB ELIXIRS
+    // =========================================================================
+    {
+        id: 'spectral_shroud',
+        name: 'Spectral Shroud',
+        description: 'Ghostly protection. Dodge the next attack.',
+        effects: [
+            { type: 'shield', value: 999, duration: 1 }
+        ],
+        craftCost: [{ resourceId: 'ghostcap', amount: 2 }, { resourceId: 'wraith_essence', amount: 1 }],
+        manaCost: 30,
+        symbol: '[?]'
+    },
+    {
+        id: 'prophetic_draught',
+        name: 'Prophetic Draught',
+        description: 'Visions of the future. +20% crit chance for 3 turns.',
+        effects: [
+            { type: 'critBoost', value: 20, duration: 3 }
+        ],
+        craftCost: [{ resourceId: 'dreamweed', amount: 3 }, { resourceId: 'moonstone_powder', amount: 2 }],
+        manaCost: 28,
+        symbol: '[~]'
+    },
+    {
+        id: 'dragonfire_elixir',
+        name: 'Dragonfire Elixir',
+        description: 'Draconic fury. +35% spell damage for 2 turns.',
+        effects: [
+            { type: 'damageBoost', value: 35, duration: 2 }
+        ],
+        craftCost: [{ resourceId: 'dragonlily', amount: 2 }, { resourceId: 'fire_essence', amount: 3 }],
+        manaCost: 40,
+        symbol: '[D]'
+    },
+    {
+        id: 'venomous_tincture',
+        name: 'Venomous Tincture',
+        description: 'Coat your spells in poison. +15% damage for 4 turns.',
+        effects: [
+            { type: 'damageBoost', value: 15, duration: 4 }
+        ],
+        craftCost: [{ resourceId: 'thornroot', amount: 4 }, { resourceId: 'dark_essence', amount: 1 }],
+        manaCost: 22,
+        symbol: '[T]'
+    },
+    {
+        id: 'frostbite_brew',
+        name: 'Frostbite Brew',
+        description: 'Chilling power. +3 SPD for 4 turns.',
+        effects: [
+            { type: 'buffStat', value: 3, duration: 4, stat: 'SPD' }
+        ],
+        craftCost: [{ resourceId: 'frostleaf', amount: 4 }, { resourceId: 'ice_essence', amount: 2 }],
+        manaCost: 24,
+        symbol: '[F]'
+    },
+    {
+        id: 'radiant_cordial',
+        name: 'Radiant Cordial',
+        description: 'Blessed light. Heal 20 HP and cleanse debuffs.',
+        effects: [
+            { type: 'healFlat', value: 20 },
+            { type: 'cleanse', value: 0 }
+        ],
+        craftCost: [{ resourceId: 'sunpetal', amount: 4 }, { resourceId: 'holy_essence', amount: 1 }],
+        manaCost: 30,
+        symbol: '[S]'
+    },
+    {
+        id: 'voidbloom_extract',
+        name: 'Voidbloom Extract',
+        description: 'The rarest elixir. +50% all damage for 2 turns.',
+        effects: [
+            { type: 'damageBoost', value: 50, duration: 2 }
+        ],
+        craftCost: [{ resourceId: 'voidbloom', amount: 1 }, { resourceId: 'void_essence', amount: 2 }],
+        manaCost: 60,
+        symbol: '[0]'
+    },
+
+    // =========================================================================
     // GARDEN ELIXIRS
     // =========================================================================
     {

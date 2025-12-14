@@ -437,7 +437,8 @@ export type UpgradeEffect =
   | { type: 'soulBonus'; percentPerLevel: number }
   | { type: 'allDefense'; percentPerLevel: number }
   | { type: 'beastDamage'; percentPerLevel: number }
-  | { type: 'gardenPlot'; valuePerLevel: number };
+  | { type: 'gardenPlot'; valuePerLevel: number }
+  | { type: 'potionPower'; percentPerLevel: number };
 
 /**
  * Combat log entry
