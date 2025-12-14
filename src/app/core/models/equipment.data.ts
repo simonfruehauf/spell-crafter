@@ -469,6 +469,54 @@ export const EQUIPMENT_ITEMS: Record<string, EquipmentItem> = {
         ],
         rarity: 'epochal',
     },
+
+    // =========================================================================
+    // RESOURCE-USE EQUIPMENT - Using underutilized resources
+    // =========================================================================
+    goblin_talisman: {
+        id: 'goblin_talisman',
+        name: 'Goblin Talisman',
+        description: 'A crude talisman made from goblin remains.',
+        slot: 'accessory',
+        bonuses: [
+            { type: 'stat', stat: 'LCK', value: 3 },
+            { type: 'lootChance', value: 8 },
+        ],
+        rarity: 'elevated',
+    },
+    temporal_bracers: {
+        id: 'temporal_bracers',
+        name: 'Temporal Bracers',
+        description: 'Bracers infused with the sands of time.',
+        slot: 'handL',
+        bonuses: [
+            { type: 'stat', stat: 'SPD', value: 3 },
+            { type: 'stat', stat: 'LCK', value: 2 },
+        ],
+        rarity: 'primal',
+    },
+    void_prism_pendant: {
+        id: 'void_prism_pendant',
+        name: 'Void Prism Pendant',
+        description: 'A pendant that refracts reality itself.',
+        slot: 'accessory',
+        bonuses: [
+            { type: 'damagePercent', value: 18 },
+            { type: 'critDamage', value: 12 },
+        ],
+        rarity: 'primal',
+    },
+    mana_conduit: {
+        id: 'mana_conduit',
+        name: 'Mana Conduit',
+        description: 'A focus that amplifies magical energy.',
+        slot: 'handL',
+        bonuses: [
+            { type: 'maxMana', value: 40 },
+            { type: 'stat', stat: 'WIS', value: 2 },
+        ],
+        rarity: 'exceptional',
+    },
 };
 
 // =============================================================================
@@ -877,6 +925,48 @@ export const INITIAL_EQUIPMENT_RECIPES: EquipmentRecipe[] = [
             { resourceId: 'world_seed', amount: 1 },
             { resourceId: 'voidbloom', amount: 2 },
             { resourceId: 'elder_rune', amount: 1 },
+        ],
+        unlocked: true,
+    },
+
+    // RESOURCE-USE EQUIPMENT RECIPES
+    {
+        id: 'recipe_goblin_talisman',
+        resultItem: EQUIPMENT_ITEMS['goblin_talisman'],
+        cost: [
+            { resourceId: 'goblin_skull', amount: 1 },
+            { resourceId: 'goblin_tooth', amount: 10 },
+            { resourceId: 'binding_thread', amount: 3 },
+        ],
+        unlocked: true,
+    },
+    {
+        id: 'recipe_temporal_bracers',
+        resultItem: EQUIPMENT_ITEMS['temporal_bracers'],
+        cost: [
+            { resourceId: 'temporal_sand', amount: 3 },
+            { resourceId: 'lightning_essence', amount: 5 },
+            { resourceId: 'mithril_ore', amount: 2 },
+        ],
+        unlocked: true,
+    },
+    {
+        id: 'recipe_void_prism_pendant',
+        resultItem: EQUIPMENT_ITEMS['void_prism_pendant'],
+        cost: [
+            { resourceId: 'void_prism', amount: 1 },
+            { resourceId: 'void_essence', amount: 8 },
+            { resourceId: 'diamond', amount: 1 },
+        ],
+        unlocked: true,
+    },
+    {
+        id: 'recipe_mana_conduit',
+        resultItem: EQUIPMENT_ITEMS['mana_conduit'],
+        cost: [
+            { resourceId: 'mana_battery', amount: 2 },
+            { resourceId: 'mana_crystal', amount: 10 },
+            { resourceId: 'arcane_essence', amount: 8 },
         ],
         unlocked: true,
     },

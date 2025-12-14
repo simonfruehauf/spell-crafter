@@ -385,6 +385,7 @@ export const ENEMIES: Enemy[] = [
             { resourceId: 'iron_ore', minAmount: 2, maxAmount: 4, chance: 0.5 },
             { resourceId: 'silver_ore', minAmount: 1, maxAmount: 2, chance: 0.3 },
             { resourceId: 'gold_ore', minAmount: 1, maxAmount: 1, chance: 0.15 },
+            { resourceId: 'runed_stone', minAmount: 1, maxAmount: 1, chance: 0.25 },
         ],
     },
     {
@@ -401,6 +402,7 @@ export const ENEMIES: Enemy[] = [
             { resourceId: 'inscription_dust', minAmount: 1, maxAmount: 2, chance: 0.35 },
             { resourceId: 'binding_rune', minAmount: 1, maxAmount: 1, chance: 0.2 },
             { resourceId: 'amethyst', minAmount: 1, maxAmount: 1, chance: 0.15 },
+            { resourceId: 'spell_parchment', minAmount: 1, maxAmount: 2, chance: 0.3 },
         ],
     },
     {
@@ -433,6 +435,8 @@ export const ENEMIES: Enemy[] = [
             { resourceId: 'moonstone', minAmount: 1, maxAmount: 1, chance: 0.15 },
             { resourceId: 'enchanted_ink', minAmount: 1, maxAmount: 2, chance: 0.3 },
             { resourceId: 'world_seed', minAmount: 1, maxAmount: 1, chance: 0.05 },
+            { resourceId: 'spell_parchment', minAmount: 1, maxAmount: 3, chance: 0.4 },
+            { resourceId: 'magic_candle', minAmount: 1, maxAmount: 1, chance: 0.2 },
         ],
     },
     {
@@ -447,6 +451,7 @@ export const ENEMIES: Enemy[] = [
             { resourceId: 'phoenix_feather', minAmount: 1, maxAmount: 2, chance: 0.4 },
             { resourceId: 'phoenix_ash', minAmount: 1, maxAmount: 1, chance: 0.25 },
             { resourceId: 'temporal_sand', minAmount: 1, maxAmount: 1, chance: 0.15 },
+            { resourceId: 'arcane_ash', minAmount: 1, maxAmount: 2, chance: 0.35 },
         ],
     },
     {
@@ -867,6 +872,20 @@ export const INITIAL_UPGRADES: Upgrade[] = [
         category: 'crafting', level: 0, maxLevel: 5,
         cost: [{ resourceId: 'mint_plant', amount: 10 }, { resourceId: 'mana_blossom', amount: 5 }],
         costMultiplier: 1.5, effect: { type: 'potionPower', percentPerLevel: 5 }, unlocked: false
+    },
+
+    // CURRENCY-USE UPGRADES
+    {
+        id: 'arcane_investment', name: 'Arcane Investment', description: '+8% gold from combat per level.',
+        category: 'idle', level: 0, maxLevel: 5,
+        cost: [{ resourceId: 'arcane_token', amount: 3 }, { resourceId: 'gold_ore', amount: 5 }],
+        costMultiplier: 1.5, effect: { type: 'goldBoost', percentPerLevel: 8 }, unlocked: true
+    },
+    {
+        id: 'divine_protection', name: 'Divine Protection', description: '+12% all defenses per level.',
+        category: 'stats', level: 0, maxLevel: 3,
+        cost: [{ resourceId: 'divine_mark', amount: 1 }, { resourceId: 'holy_essence', amount: 3 }],
+        costMultiplier: 2.5, effect: { type: 'allDefense', percentPerLevel: 12 }, unlocked: false, prerequisite: 'bar_1'
     },
 ];
 
