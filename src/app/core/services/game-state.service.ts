@@ -6,10 +6,11 @@ import {
     ResearchNode, CombatState, CombatLogEntry, Enemy, IdleSettings,
     ActiveEffect, LootDrop, ResourceCost, Upgrade, DamageType,
     EquipmentItem, EquipmentRecipe, EquippedItems, EquipmentSlot, PlayerStats,
-    AlchemyRecipe, AlchemyState, PotionInventory, Potion, BrewingState
+    AlchemyRecipe, AlchemyState, PotionInventory, Potion, BrewingState,
+    GardenState, GardenPlot
 } from '../models/game.interfaces';
 import { INITIAL_RESEARCH_TREE, RUNES, MAGIC_MISSILE, ENEMIES, INITIAL_UPGRADES, INITIAL_ALCHEMY_RECIPES } from '../models/game.data';
-import { INITIAL_CRAFTING_RESOURCES, RESOURCE_NAMES } from '../models/resources.data';
+import { INITIAL_CRAFTING_RESOURCES, RESOURCE_NAMES, RESOURCE_DEFS } from '../models/resources.data';
 import { INITIAL_EQUIPMENT_RECIPES, INITIAL_EQUIPPED_ITEMS, EQUIPMENT_ITEMS } from '../models/equipment.data';
 import { POTIONS, POTIONS_MAP, INITIAL_POTION_INVENTORY } from '../models/potions.data';
 import { deepClone } from '../../shared/utils/clone.utils';
@@ -46,6 +47,7 @@ export class GameStateService implements OnDestroy {
     private readonly _alchemy = signal<AlchemyState>(this.createInitialAlchemyState());
     private readonly _potions = signal<PotionInventory>(deepClone(INITIAL_POTION_INVENTORY));
     private readonly _brewing = signal<BrewingState>(this.createInitialBrewingState());
+    private readonly _garden = signal<GardenState>(this.createInitialGardenState());
 
     // Public readonly
     readonly player = this._player.asReadonly();
@@ -64,6 +66,7 @@ export class GameStateService implements OnDestroy {
     readonly alchemy = this._alchemy.asReadonly();
     readonly potions = this._potions.asReadonly();
     readonly brewing = this._brewing.asReadonly();
+    readonly garden = this._garden.asReadonly();
 
     // Computed
     readonly availableResearch = computed(() =>
@@ -871,6 +874,7 @@ export class GameStateService implements OnDestroy {
             alchemy: { unlocked: false, visible: false },
             apothecary: { unlocked: false, visible: false },
             goblinApprentice: { unlocked: false, visible: false },
+            garden: { unlocked: false, visible: false },
         };
     }
 
@@ -894,6 +898,113 @@ export class GameStateService implements OnDestroy {
             usePotionUnlocked: false,
             goblinApprenticeUnlocked: false,
         };
+    }
+
+    // GARDEN SYSTEM
+    private createInitialGardenState(): GardenState {
+        return {
+            plots: [
+                { id: 0, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: true },
+                { id: 1, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
+                { id: 2, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
+                { id: 3, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
+                { id: 4, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
+                { id: 5, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
+            ],
+            maxPlots: 6,
+        };
+    }
+
+    getUnlockedPlotCount(): number {
+        // Base plot (1) + upgrade levels
+        return 1 + this.getUpgradeBonus('gardenPlot');
+    }
+
+    plantHerb(plotId: number, herbId: string = 'mint_plant'): boolean {
+        const garden = this._garden();
+        const plot = garden.plots.find(p => p.id === plotId);
+        if (!plot) return false;
+
+        // Check if plot is unlocked (based on upgrade)
+        if (plotId >= this.getUnlockedPlotCount()) return false;
+
+        // Check if already planted
+        if (plot.plantedHerbId !== null) return false;
+
+        // For non-basic herbs, check and spend seed
+        // Basic 'mint_plant' can always be planted for free
+        if (herbId !== 'mint_plant') {
+            const resources = this._resources();
+            if ((resources.crafting[herbId] || 0) < 1) return false;
+            // Spend 1 of the herb as seed
+            this.resourceService.spendCraftingResources([{ resourceId: herbId, amount: 1 }]);
+        }
+
+        // Determine growth time based on rarity
+        const herbDef = RESOURCE_DEFS[herbId];
+        let growthDurationMs = 10000; // default: common = 10s
+        if (herbDef) {
+            switch (herbDef.rarity) {
+                case 'common': growthDurationMs = 10000; break;    // 10s
+                case 'uncommon': growthDurationMs = 15000; break;  // 15s
+                case 'rare': growthDurationMs = 25000; break;      // 25s
+                case 'epic':
+                case 'legendary': growthDurationMs = 30000; break; // 30s
+            }
+        }
+
+        // Plant the herb
+        this._garden.update(g => ({
+            ...g,
+            plots: g.plots.map(p =>
+                p.id === plotId
+                    ? { ...p, plantedHerbId: herbId, plantedAt: Date.now(), growthDurationMs }
+                    : p
+            )
+        }));
+        return true;
+    }
+
+    harvestPlot(plotId: number): boolean {
+        const garden = this._garden();
+        const plot = garden.plots.find(p => p.id === plotId);
+        if (!plot) return false;
+
+        // Check if planted
+        if (plot.plantedHerbId === null) return false;
+
+        // Check if fully grown
+        const growthComplete = Date.now() >= plot.plantedAt + plot.growthDurationMs;
+        if (!growthComplete) return false;
+
+        // Harvest - add 2 of the planted herb (1 seed + 1 grown)
+        this.resourceService.addCraftingResource(plot.plantedHerbId, 2);
+
+        // Clear the plot
+        this._garden.update(g => ({
+            ...g,
+            plots: g.plots.map(p =>
+                p.id === plotId
+                    ? { ...p, plantedHerbId: null, plantedAt: 0 }
+                    : p
+            )
+        }));
+        return true;
+    }
+
+    isPlotReady(plotId: number): boolean {
+        const garden = this._garden();
+        const plot = garden.plots.find(p => p.id === plotId);
+        if (!plot || plot.plantedHerbId === null) return false;
+        return Date.now() >= plot.plantedAt + plot.growthDurationMs;
+    }
+
+    getPlotProgress(plotId: number): number {
+        const garden = this._garden();
+        const plot = garden.plots.find(p => p.id === plotId);
+        if (!plot || plot.plantedHerbId === null) return 0;
+        const elapsed = Date.now() - plot.plantedAt;
+        return Math.min(100, (elapsed / plot.growthDurationMs) * 100);
     }
 
     ngOnDestroy(): void {

@@ -189,6 +189,26 @@ export interface WindowStates {
   alchemy: WindowState;
   apothecary: WindowState;
   goblinApprentice: WindowState;
+  garden: WindowState;
+}
+
+/**
+ * Garden plot state
+ */
+export interface GardenPlot {
+  id: number;
+  plantedHerbId: string | null;  // Currently always 'mint_plant' when planted
+  plantedAt: number;             // Timestamp when planted
+  growthDurationMs: number;      // Time to mature (default 30000ms)
+  unlocked: boolean;
+}
+
+/**
+ * Garden state
+ */
+export interface GardenState {
+  plots: GardenPlot[];
+  maxPlots: number;
 }
 
 /**
@@ -416,7 +436,8 @@ export type UpgradeEffect =
   | { type: 'allGains'; percentPerLevel: number }
   | { type: 'soulBonus'; percentPerLevel: number }
   | { type: 'allDefense'; percentPerLevel: number }
-  | { type: 'beastDamage'; percentPerLevel: number };
+  | { type: 'beastDamage'; percentPerLevel: number }
+  | { type: 'gardenPlot'; valuePerLevel: number };
 
 /**
  * Combat log entry
@@ -491,4 +512,6 @@ export interface GameState {
   equipmentRecipes: EquipmentRecipe[];
   // Potion system
   potions: PotionInventory;
+  // Garden system
+  garden: GardenState;
 }

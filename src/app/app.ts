@@ -19,6 +19,7 @@ import { AlchemyComponent } from './features/alchemy/alchemy.component';
 import { LaboratoryComponent } from './features/laboratory/laboratory.component';
 import { ApothecaryComponent } from './features/apothecary/apothecary.component';
 import { GoblinApprenticeComponent } from './features/goblin-apprentice/goblin-apprentice.component';
+import { GardenComponent } from './features/garden/garden.component';
 import { DevConsoleComponent } from './features/dev-console/dev-console.component';
 import { GameStateService } from './core/services/game-state.service';
 import { WindowStates } from './core/models/game.interfaces';
@@ -35,7 +36,7 @@ import { MobileOverlayComponent } from './core/components/mobile-overlay/mobile-
     BestiaryComponent, ChronicleComponent, SettingsComponent,
     DiscoveriesComponent, ArmoryComponent, EquipmentComponent, AlchemyComponent,
     LaboratoryComponent, ApothecaryComponent, GoblinApprenticeComponent,
-    DevConsoleComponent, MobileOverlayComponent
+    GardenComponent, DevConsoleComponent, MobileOverlayComponent
   ],
   template: `
     <app-mobile-overlay></app-mobile-overlay>
@@ -119,6 +120,9 @@ import { MobileOverlayComponent } from './core/components/mobile-overlay/mobile-
         @if (windows().goblinApprentice.unlocked && windows().goblinApprentice.visible) {
           <app-goblin-apprentice (closed)="closeWindow('goblinApprentice')"></app-goblin-apprentice>
         }
+        @if (windows().garden.unlocked && windows().garden.visible) {
+          <app-garden (closed)="closeWindow('garden')"></app-garden>
+        }
         @if (showDevConsole()) {
           <app-dev-console (closed)="showDevConsole.set(false)"></app-dev-console>
         }
@@ -173,6 +177,7 @@ export class App {
       stats: '[#]', bestiary: '[M]', chronicle: '[L]', settings: '[=]',
       discoveries: '[*]', armory: '[E]', equipment: '[+]', alchemy: '[~]',
       laboratory: '[%]', apothecary: '[♥]', goblinApprentice: '[g]',
+      garden: '[P]',
     };
     return icons[id] || '[?]';
   }
@@ -184,6 +189,7 @@ export class App {
       stats: 'Stats', bestiary: 'Bestiary', chronicle: 'Chronicle', settings: 'Settings',
       discoveries: 'Discoveries', armory: 'Armory', equipment: 'Equipment', alchemy: 'Alembic',
       laboratory: 'Laboratory', apothecary: 'Potions', goblinApprentice: 'Goblin',
+      garden: 'Garden',
     };
     return labels[id] || id;
   }

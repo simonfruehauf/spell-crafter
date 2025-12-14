@@ -273,6 +273,21 @@ export const POTIONS: Potion[] = [
         manaCost: 45,
         symbol: '[8]'
     },
+
+    // =========================================================================
+    // GARDEN ELIXIRS
+    // =========================================================================
+    {
+        id: 'herbal_tea',
+        name: 'Herbal Tea',
+        description: 'A soothing brew.',
+        effects: [
+            { type: 'healFlat', value: 5 }
+        ],
+        craftCost: [{ resourceId: 'mint_plant', amount: 3 }],
+        manaCost: 5,
+        symbol: '[t]'
+    },
 ];
 
 // Lookup map for quick access

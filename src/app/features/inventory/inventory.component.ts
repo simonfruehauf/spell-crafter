@@ -107,7 +107,7 @@ export class InventoryComponent {
     { id: 'reagent', name: 'Reagents' },
     { id: 'gem', name: 'Gems' },
     { id: 'metal', name: 'Metals' },
-    { id: 'herb', name: 'Herbs' },
+    { id: 'herb', name: 'mint_plant' },
     { id: 'creature', name: 'Creature Parts' },
     { id: 'enchanted', name: 'Enchanted Items' },
     { id: 'rune_mat', name: 'Rune Materials' },

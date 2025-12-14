@@ -73,6 +73,7 @@ export const ALL_RESOURCES: ResourceDef[] = [
     // =========================================================================
     // HERBS (12) - Magical plants
     // =========================================================================
+    { id: 'mint_plant', name: 'Mint', category: 'herb', description: 'Common garden herbs.', rarity: 'common' },
     { id: 'healing_moss', name: 'Healing Moss', category: 'herb', description: 'Restorative plant.', rarity: 'common' },
     { id: 'mana_blossom', name: 'Mana Blossom', category: 'herb', description: 'Magical flower.', rarity: 'common' },
     { id: 'fireweed', name: 'Fireweed', category: 'herb', description: 'Burns to touch.', rarity: 'common' },
