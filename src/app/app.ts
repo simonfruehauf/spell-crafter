@@ -54,7 +54,7 @@ import { MobileOverlayComponent } from './core/components/mobile-overlay/mobile-
       </div>
 
       <!-- Desktop Icons -->
-      <div class="absolute top-[40px] right-[16px] flex flex-col gap-[12px] z-[1] max-h-[calc(100vh-60px)] overflow-y-auto">
+      <div class="absolute top-[40px] right-[16px] flex flex-col-reverse flex-wrap-reverse gap-[12px] z-[1] max-h-[calc(100vh-60px)] content-end select-none">
         @for (windowId of closedWindows(); track windowId) {
           <div class="flex flex-col items-center cursor-pointer p-1 w-[64px] hover:bg-[#000080]/30 active:bg-[#000080]/50" (dblclick)="openWindow(windowId)">
             <div class="font-mono text-[16px] font-bold text-white drop-shadow-[1px_1px_0_#000] bg-win95-blue p-[3px_6px] border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray">{{ getWindowIcon(windowId) }}</div>
