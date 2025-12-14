@@ -39,11 +39,11 @@
 | **Ice Wraith** | Ice Essence, Frostleaf | Wraith Essence, Sapphire |
 | **Storm Elemental** | Lightning Essence, Wind Essence | Elemental Core, Topaz |
 | **Forest Guardian** | Life Essence, Mana Blossom | Sunpetal, Shadowcap, Dragon Lily |
-| **Earth Golem** | Earth Essence, Iron Ore | Golem Heart, Runestone, Gold Ore |
-| **Alchemist Golem** | Mana Crystal, Enchanted Scroll | Inscription Dust, Binding Rune, Amethyst |
+| **Earth Golem** | Earth Essence, Iron Ore | Golem Heart, Runestone, Runed Stone, Gold Ore |
+| **Alchemist Golem** | Mana Crystal, Enchanted Scroll | Inscription Dust, Binding Rune, Spell Parchment, Amethyst |
 | **Void Shade** | Void Essence, Shadow Thread | Onyx, Obsidian, Soulstone |
-| **Dream Weaver** | Arcane Essence, Dreamweed | Moonstone Powder, Starlight Shard, Enchanted Ink |
-| **Lesser Phoenix** | Fire Essence | Phoenix Feather, Phoenix Ash |
+| **Dream Weaver** | Arcane Essence, Dreamweed | Moonstone Powder, Starlight Shard, Spell Parchment, Magic Candle, Enchanted Ink |
+| **Lesser Phoenix** | Fire Essence | Phoenix Feather, Phoenix Ash, Arcane Ash, Temporal Sand |
 | **Corrupted Angel** | Holy Essence | Angel Feather, Arcane Token, Spell Catalyst |
 | **Lesser Demon** | Dark Essence | Demon Claw, Bloodstone, Ethereal Chain |
 | **Stone Titan** | Earth Essence | Titan Bone, Titan Marrow, Mithril Ore |

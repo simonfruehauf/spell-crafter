@@ -25,3 +25,13 @@ Transmute simpler resources into powerful essences.
 | :--- | :--- | :--- | :--- |
 | **Distill Arcane Essence** | Extract pure arcane essence from magical reagents.<br>_Time: 30s_ | 5x Mana Crystal<br>3x Arcane Ash | 2x Arcane Essence |
 | **Distill Void Essence** | Transmute dark essence into void essence.<br>_Time: 40s_ | 3x Dark Essence<br>1x Soul Shard | 1x Void Essence |
+
+## Herb Transmutations
+| Name | Description | Reagents | Yield |
+| :--- | :--- | :--- | :--- |
+| **Ghostly Transmutation** | Convert ghostcap into wraith essence.<br>_Time: 20s_ | 3x Ghostcap<br>1x Dark Essence | 2x Wraith Essence |
+| **Dream Distillation** | Extract arcane essence from dreamweed.<br>_Time: 25s_ | 4x Dreamweed<br>2x Moonstone Powder | 2x Arcane Essence |
+| **Draconic Infusion** | Concentrate dragon lily into primal fire.<br>_Time: 35s_ | 2x Dragon Lily<br>3x Fire Essence | 1x Phoenix Ash |
+| **Venomous Extraction** | Extract poison from thornroot.<br>_Time: 20s_ | 5x Thornroot<br>2x Spider Silk | 2x Dark Essence |
+| **Void Crystallization** | Crystallize voidbloom into pure void.<br>_Time: 45s_ | 1x Voidbloom<br>2x Void Essence | 1x Dimensional Shard |
+

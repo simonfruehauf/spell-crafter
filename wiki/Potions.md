@@ -43,3 +43,20 @@
 | **Elixir of Ascension** | The ultimate enhancement. +2 to all stats for 3 turns. | `Buff: +2 All Stats (3 turns)` | 60 |
 | **Soul Ambrosia** | Divine nectar. Heals 50% HP and grants 40 shield. | `Heal: 50%`<br>`Shield: 40 (5 turns)` | 55 |
 | **Chaos Catalyst** | Embrace destruction. +40% damage, +20% crit for 2 turns. | `Buff: +40% DMG (2 turns)`<br>`Buff: +20% Crit (2 turns)` | 45 |
+
+## Rare Herb Elixirs
+| Name | Description | Effects | Mana Cost |
+| :--- | :--- | :--- | :--- |
+| **Spectral Shroud** | Ghostly protection. Dodge the next attack. | `Shield: 999 (1 turn)` | 30 |
+| **Prophetic Draught** | Visions of the future. +20% crit chance for 3 turns. | `Buff: +20% Crit (3 turns)` | 28 |
+| **Dragonfire Elixir** | Draconic fury. +35% spell damage for 2 turns. | `Buff: +35% DMG (2 turns)` | 40 |
+| **Venomous Tincture** | Coat your spells in poison. +15% damage for 4 turns. | `Buff: +15% DMG (4 turns)` | 22 |
+| **Frostbite Brew** | Chilling power. +3 SPD for 4 turns. | `Buff: +3 SPD (4 turns)` | 24 |
+| **Radiant Cordial** | Blessed light. Heal 20 HP and cleanse debuffs. | `Heal: 20`<br>`Cleanse` | 30 |
+| **Voidbloom Extract** | The rarest elixir. +50% all damage for 2 turns. | `Buff: +50% DMG (2 turns)` | 60 |
+
+## Garden Elixirs
+| Name | Description | Effects | Mana Cost |
+| :--- | :--- | :--- | :--- |
+| **Herbal Tea** | A soothing brew. | `Heal: 5` | 5 |
+
