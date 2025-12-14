@@ -845,6 +845,12 @@ export const INITIAL_UPGRADES: Upgrade[] = [
         cost: [{ resourceId: 'goblin_tooth', amount: 20 }, { resourceId: 'goblin_skull', amount: 1 }],
         costMultiplier: 1.0, effect: { type: 'unlockFeature', feature: 'goblinApprentice' }, unlocked: true
     },
+    {
+        id: 'spellbook', name: 'Spellbook', description: 'Automate combat with a queue of spells cast in sequence.',
+        category: 'special', level: 0, maxLevel: 1,
+        cost: [{ resourceId: 'spell_parchment', amount: 10 }, { resourceId: 'enchanted_ink', amount: 5 }],
+        costMultiplier: 1.0, effect: { type: 'unlockFeature', feature: 'spellbook' }, unlocked: true
+    },
 
     // GARDEN
     {

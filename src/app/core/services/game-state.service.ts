@@ -131,6 +131,7 @@ export class GameStateService implements OnDestroy {
             unlockPassiveManaRegen: () => this.unlockPassiveManaRegen(),
             unlockUsePotions: () => this.unlockUsePotions(),
             unlockGoblinApprentice: () => this.unlockGoblinApprentice(),
+            unlockSpellbook: () => this.unlockSpellbook(),
             increaseMaxMana: (amount) => this.resourceService.increaseMaxMana(amount),
             canAffordResources: (costs) => this.resourceService.canAffordResources(costs),
             spendCraftingResources: (costs) => this.resourceService.spendCraftingResources(costs),
@@ -320,11 +321,49 @@ export class GameStateService implements OnDestroy {
     unlockGoblinApprentice(): void {
         this._idle.update(i => ({ ...i, goblinApprenticeUnlocked: true }));
     }
+    unlockSpellbook(): void {
+        this._idle.update(i => ({ ...i, spellbookUnlocked: true }));
+    }
     setCombatSpeed(ms: number): void {
         this._idle.update(i => ({ ...i, combatTickMs: ms }));
         this._combat.update(c => ({ ...c, combatSpeed: ms }));
     }
     setSelectedSpell(id: string): void { this.combatService.setSelectedSpell(id); }
+
+    // SPELL QUEUE MANAGEMENT
+    addToSpellQueue(spellId: string): void {
+        this._combat.update(c => ({
+            ...c,
+            spellQueue: [...c.spellQueue, spellId]
+        }));
+    }
+
+    removeFromSpellQueue(index: number): void {
+        this._combat.update(c => ({
+            ...c,
+            spellQueue: c.spellQueue.filter((_, i) => i !== index),
+            spellQueueIndex: c.spellQueueIndex >= c.spellQueue.length - 1
+                ? Math.max(0, c.spellQueueIndex - 1)
+                : c.spellQueueIndex
+        }));
+    }
+
+    reorderSpellQueue(fromIndex: number, toIndex: number): void {
+        this._combat.update(c => {
+            const queue = [...c.spellQueue];
+            const [moved] = queue.splice(fromIndex, 1);
+            queue.splice(toIndex, 0, moved);
+            return { ...c, spellQueue: queue };
+        });
+    }
+
+    clearSpellQueue(): void {
+        this._combat.update(c => ({
+            ...c,
+            spellQueue: [],
+            spellQueueIndex: 0
+        }));
+    }
 
     // RESEARCH (delegated to research service)
     canResearch(id: string): boolean {
@@ -902,6 +941,7 @@ export class GameStateService implements OnDestroy {
             apothecary: { unlocked: false, visible: false },
             goblinApprentice: { unlocked: false, visible: false },
             garden: { unlocked: false, visible: false },
+            spellbook: { unlocked: false, visible: false },
         };
     }
 
@@ -924,6 +964,7 @@ export class GameStateService implements OnDestroy {
             passiveManaRegenUnlocked: false,
             usePotionUnlocked: false,
             goblinApprenticeUnlocked: false,
+            spellbookUnlocked: false,
         };
     }
 

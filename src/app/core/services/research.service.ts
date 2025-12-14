@@ -18,6 +18,7 @@ export interface ResearchCallbacks {
     unlockPassiveManaRegen: () => void;
     unlockUsePotions: () => void;
     unlockGoblinApprentice: () => void;
+    unlockSpellbook: () => void;
     increaseMaxMana: (amount: number) => void;
     canAffordResources: (costs: ResourceCost[]) => boolean;
     spendCraftingResources: (costs: ResourceCost[]) => boolean;
@@ -218,12 +219,18 @@ export class ResearchService {
         } else if (effect.type === 'maxMana') {
             this.callbacks.increaseMaxMana(effect.valuePerLevel);
         } else if (effect.type === 'unlockFeature') {
-            // Handle feature unlocks (like goblin apprentice)
+            // Handle feature unlocks (like goblin apprentice, spellbook)
             if (effect.feature === 'goblinApprentice') {
                 this.callbacks.unlockGoblinApprentice();
                 this.signals.windows.update(w => ({
                     ...w,
                     goblinApprentice: { ...w.goblinApprentice, unlocked: true, visible: true }
+                }));
+            } else if (effect.feature === 'spellbook') {
+                this.callbacks.unlockSpellbook();
+                this.signals.windows.update(w => ({
+                    ...w,
+                    spellbook: { ...w.spellbook, unlocked: true, visible: true }
                 }));
             }
         }

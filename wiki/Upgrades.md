@@ -63,6 +63,13 @@
 | **Void Attunement** | +8% spell damage per level. | `Spell Damage: +8%` | 1x Voidbloom<br>3x Void Essence |
 | **Divine Protection** | +12% all defenses per level. | `All Defenses: +12%` | 1x Divine Mark<br>3x Holy Essence |
 
+### Special
+| Name | Description | Effects | Cost |
+| :--- | :--- | :--- | :--- |
+| **Goblin Apprentice** | A goblin apprentice that meditates for you! | `Passive Mana` | 20x Goblin Tooth<br>1x Goblin Skull |
+| **Spellbook** | Automate combat with a queue of spells cast in sequence. | `Spell Queue` | 10x Spell Parchment<br>5x Enchanted Ink |
+| **Garden Expansion** | Add a new plot to the garden. | `Garden Plots: +1` | 5x Mint<br>3x Healing Moss |
+
 ---
 
 ## Equipment

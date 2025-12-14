@@ -190,6 +190,7 @@ export interface WindowStates {
   apothecary: WindowState;
   goblinApprentice: WindowState;
   garden: WindowState;
+  spellbook: WindowState;
 }
 
 /**
@@ -477,6 +478,8 @@ export interface CombatState {
   enemyDefeats: Record<string, number>;
   deathLockoutUntil: number;  // Timestamp when lockout ends
   victoryFlash: boolean;      // Show victory message briefly
+  spellQueue: string[];       // Ordered list of spell IDs for auto-combat
+  spellQueueIndex: number;    // Current position in spell queue
 }
 
 /**
@@ -492,6 +495,7 @@ export interface IdleSettings {
   passiveManaRegenUnlocked: boolean;
   usePotionUnlocked: boolean;
   goblinApprenticeUnlocked: boolean;
+  spellbookUnlocked: boolean;
 }
 
 /**

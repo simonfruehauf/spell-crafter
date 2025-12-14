@@ -49,7 +49,9 @@ export class CombatService {
             enemiesDefeated: 0,
             enemyDefeats: {},
             deathLockoutUntil: 0,
-            victoryFlash: false
+            victoryFlash: false,
+            spellQueue: [],
+            spellQueueIndex: 0
         };
     }
 
@@ -79,6 +81,8 @@ export class CombatService {
             playerEffects: [],
             enemyEffects: [],
             selectedSpellId: c.selectedSpellId || (spells[0]?.id ?? null),
+            spellQueue: c.spellQueue,
+            spellQueueIndex: 0,  // Reset queue index when combat starts
         }));
         this.addCombatLog(`A ${enemy.name} appears!`, 'info');
     }
@@ -701,6 +705,23 @@ export class CombatService {
         const combat = this.signals.combat();
         if (!combat.inCombat || !combat.currentEnemy || !combat.playerTurn) return;
 
+        const idle = this.signals.idle();
+
+        // If spellbook is unlocked and queue has spells, use it
+        if (idle.spellbookUnlocked && combat.spellQueue.length > 0) {
+            const spellId = combat.spellQueue[combat.spellQueueIndex];
+            const spell = this.signals.craftedSpells().find(s => s.id === spellId);
+
+            if (spell) {
+                // Advance the queue index (cycle back to 0 at end)
+                const nextIndex = (combat.spellQueueIndex + 1) % combat.spellQueue.length;
+                this.signals.combat.update(c => ({ ...c, spellQueueIndex: nextIndex }));
+                this.castSpell(spell);
+                return;
+            }
+        }
+
+        // Fallback: use single selected spell
         const spell = this.getSelectedSpell();
         if (spell) {
             this.castSpell(spell);

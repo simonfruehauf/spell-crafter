@@ -129,11 +129,12 @@ export class WorkshopComponent {
   readonly showCraftableOnly = signal(false);
 
   readonly categories = [
+    { id: 'special', name: 'Special' },
     { id: 'stats', name: 'Statistics' },
     { id: 'combat', name: 'Combat' },
     { id: 'idle', name: 'Idle' },
     { id: 'crafting', name: 'Crafting' },
-    { id: 'special', name: 'Special' },
+
   ];
 
   getUpgradesByCategory(cat: string): Upgrade[] {
