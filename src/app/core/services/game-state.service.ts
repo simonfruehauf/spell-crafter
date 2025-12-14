@@ -352,6 +352,39 @@ export class GameStateService implements OnDestroy {
         this._craftedSpells.update(s => s.filter(x => x.id !== id && !x.isDefault));
     }
 
+    uncraftSpell(id: string): boolean {
+        const spells = this._craftedSpells();
+        const spell = spells.find(s => s.id === id);
+
+        if (!spell || spell.isDefault) return false;
+
+        // Calculate refund (50% rounded down)
+        const refund: { resourceId: string; amount: number }[] = [];
+        for (const cost of spell.craftCost) {
+            const amount = Math.floor(cost.amount * 0.5);
+            if (amount > 0) {
+                refund.push({ resourceId: cost.resourceId, amount });
+            }
+        }
+
+        // Add refunded resources
+        for (const item of refund) {
+            this.resourceService.addCraftingResource(item.resourceId, item.amount);
+        }
+
+        // Log refund
+        if (refund.length > 0) {
+            const refundText = refund.map(r => `${r.amount} ${RESOURCE_NAMES[r.resourceId] || r.resourceId}`).join(', ');
+            this.combatService.addCombatLog(`Uncrafted ${spell.name}. Refunded: ${refundText}`, 'info');
+        } else {
+            this.combatService.addCombatLog(`Uncrafted ${spell.name}. No resources salvaged.`, 'info');
+        }
+
+        // Delete spell
+        this.deleteSpell(id);
+        return true;
+    }
+
     // POTIONS
     startBrewing(potionId: string): boolean {
         const brewing = this._brewing();

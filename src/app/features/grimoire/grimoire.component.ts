@@ -1,12 +1,13 @@
-import { Component, inject, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, output, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
+import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal.component';
 import { GameStateService } from '../../core/services/game-state.service';
 
 @Component({
   selector: 'app-grimoire',
   standalone: true,
-  imports: [CommonModule, WindowComponent],
+  imports: [CommonModule, WindowComponent, ConfirmationModalComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-window 
@@ -16,6 +17,8 @@ import { GameStateService } from '../../core/services/game-state.service';
       [initialY]="40" 
       [width]="320"
       (closed)="onClose()">
+      
+      <!-- Content -->
       <div class="grimoire-content">
         <div class="grimoire-description">
           <p>Your bound spells and their mastery.</p>
@@ -28,6 +31,9 @@ import { GameStateService } from '../../core/services/game-state.service';
                 <span class="spell-symbol">{{ spell.symbol }}</span>
                 <span class="spell-name">{{ spell.name }}</span>
                 <span class="spell-level">Lv.{{ spell.level }}</span>
+                @if (!spell.isDefault) {
+                  <button class="uncraft-btn" (click)="onUncraftClick(spell, $event)" title="Uncraft Spell (Recover 50% resources)">[x]</button>
+                }
               </div>
               <div class="spell-xp-bar">
                 <div class="xp-fill" [style.width.%]="getXpPercent(spell)"></div>
@@ -52,6 +58,18 @@ import { GameStateService } from '../../core/services/game-state.service';
           }
         </div>
       </div>
+
+      <!-- Modal -->
+      @if (uncraftTarget()) {
+        <app-confirmation-modal
+          title="Uncraft Spell"
+          [message]="'Are you sure you want to uncraft ' + uncraftTarget()!.name + '? You will recover roughly 50% of the materials used.'"
+          confirmText="Uncraft"
+          cancelText="Cancel"
+          (confirm)="confirmUncraft()"
+          (cancel)="cancelUncraft()">
+        </app-confirmation-modal>
+      }
     </app-window>
   `,
   styles: [`
@@ -85,6 +103,15 @@ import { GameStateService } from '../../core/services/game-state.service';
       font-weight: bold;
       .spell-symbol { color: #000080; }
       .spell-level { margin-left: auto; font-size: 10px; color: #606060; }
+      .uncraft-btn {
+        background: none;
+        border: none;
+        color: #cc0000;
+        cursor: pointer;
+        font-size: 10px;
+        padding: 0 2px;
+        &:hover { font-weight: bold; }
+      }
     }
     .spell-xp-bar {
       position: relative;
@@ -133,6 +160,9 @@ export class GrimoireComponent {
   readonly craftedSpells = this.gameState.craftedSpells;
   readonly player = this.gameState.player;
 
+  // State for modal
+  readonly uncraftTarget = signal<{ id: string; name: string } | null>(null);
+
   getXpPercent(spell: { experience: number; level: number }): number {
     const xpToLevel = spell.level * 50;
     return Math.min(100, (spell.experience / xpToLevel) * 100);
@@ -148,4 +178,21 @@ export class GrimoireComponent {
   }
 
   onClose(): void { this.closed.emit(); }
+
+  onUncraftClick(spell: { id: string; name: string }, event: Event): void {
+    event.stopPropagation();
+    this.uncraftTarget.set(spell);
+  }
+
+  confirmUncraft(): void {
+    const target = this.uncraftTarget();
+    if (target) {
+      this.gameState.uncraftSpell(target.id);
+      this.uncraftTarget.set(null);
+    }
+  }
+
+  cancelUncraft(): void {
+    this.uncraftTarget.set(null);
+  }
 }
