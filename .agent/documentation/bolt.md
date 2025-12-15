@@ -22,3 +22,21 @@
 
 **Optimization:** ✅ Applied to game-state.service.ts initialization and reset (2024-12-13).
 
+## 2024-12-15 - Template Methods → Computed Signals
+
+**Learning:** Template methods that read from signals (e.g., `getAmount(id)`, `hasResourcesInCategory()`) are called on every change detection cycle even when OnPush is enabled. In nested loops this creates O(n×m) function calls per cycle.
+
+**Action:** Replace template methods with computed signals that pre-compute the entire display data structure. The pattern:
+```typescript
+readonly displayData = computed(() => {
+  const source = this.sourceSignal();
+  return this.categories.map(cat => ({
+    ...cat,
+    items: getItems(cat.id).filter(i => source[i.id] > 0).map(i => ({ ...i, value: source[i.id] }))
+  })).filter(cat => cat.items.length > 0);
+});
+```
+
+**Optimization:** ✅ Applied to InventoryComponent (2024-12-15): Eliminated ~200+ function calls per CD cycle by replacing `getAmount()`, `hasResourcesInCategory()`, `getCategoryCount()`, `getTotalResources()` with `categoryData` and `totalResources` computed signals.
+
+

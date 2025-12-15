@@ -1,9 +1,18 @@
-import { Component, inject, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, output, ChangeDetectionStrategy, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
-import { ALL_RESOURCES, RESOURCE_DEFS, getResourcesByCategory } from '../../core/models/resources.data';
-import { ResourceCategory } from '../../core/models/game.interfaces';
+import { getResourcesByCategory } from '../../core/models/resources.data';
+import { ResourceCategory, ResourceDef } from '../../core/models/game.interfaces';
+
+/** Pre-computed category display data with resource amounts */
+interface CategoryDisplayData {
+  id: ResourceCategory;
+  name: string;
+  resources: (ResourceDef & { amount: number })[];
+  count: number;
+  hasResources: boolean;
+}
 
 @Component({
   selector: 'app-inventory',
@@ -29,24 +38,21 @@ import { ResourceCategory } from '../../core/models/game.interfaces';
         </div>
 
         <div class="resources-section mt-1">
-          @for (cat of categories; track cat.id) {
-            @if (hasResourcesInCategory(cat.id)) {
-              <fieldset>
-                <legend>{{ cat.name }} ({{ getCategoryCount(cat.id) }})</legend>
-                @for (res of getResourcesByCategory(cat.id); track res.id) {
-                  @if (getAmount(res.id) > 0) {
-                    <div class="resource-row" [class.rarity]="res.rarity">
-                      <span class="resource-name" [class]="res.rarity">{{ res.name }}</span>
-                      <span class="resource-amount">{{ getAmount(res.id) }}</span>
-                    </div>
-                  }
-                }
-              </fieldset>
-            }
+          <!-- ⚡ Uses pre-computed categoryData signal - no function calls in template -->
+          @for (cat of categoryData(); track cat.id) {
+            <fieldset>
+              <legend>{{ cat.name }} ({{ cat.count }})</legend>
+              @for (res of cat.resources; track res.id) {
+                <div class="resource-row" [class.rarity]="res.rarity">
+                  <span class="resource-name" [class]="res.rarity">{{ res.name }}</span>
+                  <span class="resource-amount">{{ res.amount }}</span>
+                </div>
+              }
+            </fieldset>
           }
         </div>
 
-        @if (getTotalResources() === 0) {
+        @if (totalResources() === 0) {
           <div class="empty-msg">No resources collected yet...</div>
         }
       </div>
@@ -103,12 +109,13 @@ export class InventoryComponent {
   private gameState = inject(GameStateService);
   readonly resources = this.gameState.resources;
 
-  readonly categories: { id: ResourceCategory; name: string }[] = [
+  /** Static category metadata */
+  private readonly categories: { id: ResourceCategory; name: string }[] = [
     { id: 'essence', name: 'Essences' },
     { id: 'reagent', name: 'Reagents' },
     { id: 'gem', name: 'Gems' },
     { id: 'metal', name: 'Metals' },
-    { id: 'herb', name: 'mint_plant' },
+    { id: 'herb', name: 'Herbs' },
     { id: 'creature', name: 'Creature Parts' },
     { id: 'enchanted', name: 'Enchanted Items' },
     { id: 'rune_mat', name: 'Rune Materials' },
@@ -116,25 +123,36 @@ export class InventoryComponent {
     { id: 'currency', name: 'Currencies' },
   ];
 
-  getResourcesByCategory(catId: ResourceCategory) {
-    return getResourcesByCategory(catId);
-  }
+  /**
+   * ⚡ COMPUTED SIGNAL: Pre-computes all category display data.
+   * Only recalculates when resources().crafting changes.
+   * Eliminates: getAmount(), hasResourcesInCategory(), getCategoryCount() calls in template.
+   */
+  readonly categoryData = computed<CategoryDisplayData[]>(() => {
+    const crafting = this.resources().crafting;
+    return this.categories
+      .map(cat => {
+        const resourcesInCat = getResourcesByCategory(cat.id);
+        const resourcesWithAmount = resourcesInCat
+          .filter(r => (crafting[r.id] || 0) > 0)
+          .map(r => ({ ...r, amount: crafting[r.id] || 0 }));
+        return {
+          ...cat,
+          resources: resourcesWithAmount,
+          count: resourcesWithAmount.length,
+          hasResources: resourcesWithAmount.length > 0
+        };
+      })
+      .filter(cat => cat.hasResources);
+  });
 
-  getAmount(id: string): number {
-    return this.resources().crafting[id] || 0;
-  }
-
-  hasResourcesInCategory(catId: ResourceCategory): boolean {
-    return getResourcesByCategory(catId).some(r => this.getAmount(r.id) > 0);
-  }
-
-  getCategoryCount(catId: ResourceCategory): number {
-    return getResourcesByCategory(catId).filter(r => this.getAmount(r.id) > 0).length;
-  }
-
-  getTotalResources(): number {
+  /**
+   * ⚡ COMPUTED SIGNAL: Total resource count for empty state check.
+   * Only recalculates when resources().crafting changes.
+   */
+  readonly totalResources = computed(() => {
     return Object.values(this.resources().crafting).reduce((s, v) => s + v, 0);
-  }
+  });
 
   onClose(): void { this.closed.emit(); }
 }
