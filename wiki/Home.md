@@ -10,7 +10,7 @@
 | :--- | :--- | :--- |
 | 💎 **[[Resources]]**<br>Essences, Reagents, and Materials | 🔧 **[[Upgrades]]**<br>Equipment and Stats | 📔 **[[Runes]]**<br>Magic and Spell Crafting |
 | 🧪 **[[Alchemy]]**<br>Essence Transmutation | 🍷 **[[Potions]]**<br>Combat Elixirs | ⚔️ **[[Combat]]**<br>Bestiary and Battle Mechanics |
-| 📜 **[[Research]]**<br>The Study's Research Tree | 🎒 **[[Getting Started]]**<br>Begin your journey | |
+| 📜 **[[Research]]**<br>The Study's Research Tree | 🔬 **[[Laboratory]]**<br>Deconstruction and Progression | 🎒 **[[Getting Started]]**<br>Begin your journey |
 
 ## 📚 Essential Guides
 * [[Getting Started]] - Read this first.

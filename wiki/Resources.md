@@ -68,6 +68,7 @@
 ## Herbs
 | Name | Description | Effects | Tags |
 | :--- | :--- | :--- | :--- |
+| **Mint** | Common garden herbs. | `Rarity: Common` | Herb, Garden |
 | **Healing Moss** | Restorative plant. | `Rarity: Common` | Herb, Healing |
 | **Mana Blossom** | Magical flower. | `Rarity: Common` | Herb, Magic |
 | **Fireweed** | Burns to touch. | `Rarity: Common` | Herb, Fire |

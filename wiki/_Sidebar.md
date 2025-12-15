@@ -1,6 +1,7 @@
 ### 🧭 Navigation
 * [[Home]]
 * [[About]]
+* [[Getting Started]]
 
 ### 🗃️ Database
 * 💎 [[Resources]]
@@ -13,6 +14,3 @@
 * ⚔️ [[Combat]]
 * 🔬 [[Laboratory]]
 * 📜 [[Research]]
-
-### 📚 Guides
-* [[Getting Started]]
