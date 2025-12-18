@@ -937,7 +937,7 @@ export class GameStateService implements OnDestroy {
     // GARDEN SYSTEM (delegated to garden service)
     private createInitialGardenState(): GardenState { return this.gardenService.createInitialGardenState(); }
     getUnlockedPlotCount(): number { return this.gardenService.getUnlockedPlotCount(); }
-    plantHerb(plotId: number, herbId: string = 'mint_plant'): boolean { return this.gardenService.plantHerb(plotId, herbId); }
+    plantHerb(plotId: number, herbId = 'mint_plant'): boolean { return this.gardenService.plantHerb(plotId, herbId); }
     harvestPlot(plotId: number): boolean { return this.gardenService.harvestPlot(plotId); }
     isPlotReady(plotId: number): boolean { return this.gardenService.isPlotReady(plotId); }
     getPlotProgress(plotId: number): number { return this.gardenService.getPlotProgress(plotId); }

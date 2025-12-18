@@ -185,7 +185,7 @@ export class CombatService {
         return Math.max(this.MIN_COMBAT_TICK_MS, baseCombatMs - upgradeReduction - spdReduction);
     }
 
-    private applyRuneEffect(rune: Rune, player: Player, enemy: Enemy, dmgMult: number, spellLevel: number = 1): void {
+    private applyRuneEffect(rune: Rune, player: Player, enemy: Enemy, dmgMult: number, spellLevel = 1): void {
         if (!this.signals || !this.callbacks) return;
 
         const effect = rune.effect;
@@ -201,7 +201,7 @@ export class CombatService {
         const isCrit = Math.random() < critChance;
 
         // Helper to apply damage with optional armor penetration
-        const applyDamage = (baseDmg: number, ignoreArmorPercent: number = 0): number => {
+        const applyDamage = (baseDmg: number, ignoreArmorPercent = 0): number => {
             const armorReduction = Math.floor(enemy.BAR * 0.5 * (1 - ignoreArmorPercent));
             return Math.max(1, baseDmg - armorReduction);
         };
@@ -291,7 +291,7 @@ export class CombatService {
                 break;
             }
             case 'lifesteal': {
-                let d = Math.floor(effect.value * arc * dmgMult);
+                const d = Math.floor(effect.value * arc * dmgMult);
                 const actual = applyDamage(d);
                 const heal = Math.floor(actual * (effect.secondaryValue || 0.5));
                 dealDamageToEnemy(actual);
@@ -419,7 +419,7 @@ export class CombatService {
                 // In a single-target game, splash adds bonus damage
                 // secondaryValue = splash multiplier (e.g., 0.5 = +50% as splash)
                 const splashMult = effect.secondaryValue || 0.5;
-                let d = Math.floor(effect.value * arc * dmgMult);
+                const d = Math.floor(effect.value * arc * dmgMult);
                 const splashDmg = Math.floor(d * splashMult);
                 const totalDmg = d + splashDmg;
 
@@ -537,7 +537,7 @@ export class CombatService {
 
         const enemy = combat.currentEnemy;
         const player = this.signals.player();
-        let shield = combat.playerEffects
+        const shield = combat.playerEffects
             .filter(e => e.type === 'shield')
             .reduce((s, e) => s + e.value, 0);
         const baseDmg = enemy.ARC * 2;

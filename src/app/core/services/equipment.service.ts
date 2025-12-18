@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed, Signal } from '@angular/core';
 import { EquipmentItem, EquipmentRecipe, EquippedItems, EquipmentSlot, PlayerStats, ResourceCost } from '../models/game.interfaces';
 import { INITIAL_EQUIPMENT_RECIPES } from '../models/equipment.data';
 import { deepClone } from '../../shared/utils/clone.utils';
@@ -14,13 +14,46 @@ export interface EquipmentCallbacks {
     spendCraftingResources: (costs: ResourceCost[]) => boolean;
 }
 
+// Precomputed bonus cache for O(1) lookups
+interface EquipmentBonusCache {
+    stats: Record<string, number>;
+    other: Record<string, number>;
+}
+
 @Injectable({ providedIn: 'root' })
 export class EquipmentService {
     private signals: EquipmentSignals | null = null;
     private callbacks: EquipmentCallbacks | null = null;
+    private bonusCache: Signal<EquipmentBonusCache> | null = null;
 
-    registerSignals(signals: EquipmentSignals): void { this.signals = signals; }
+    registerSignals(signals: EquipmentSignals): void {
+        this.signals = signals;
+        this.bonusCache = computed(() => this.computeAllBonuses(signals.equippedItems()));
+    }
+
     registerCallbacks(callbacks: EquipmentCallbacks): void { this.callbacks = callbacks; }
+
+    private computeAllBonuses(equipped: EquippedItems): EquipmentBonusCache {
+        const cache: EquipmentBonusCache = {
+            stats: { WIS: 0, ARC: 0, VIT: 0, BAR: 0, LCK: 0, SPD: 0, CHA: 0 },
+            other: { maxHP: 0, maxMana: 0, damagePercent: 0, critChance: 0, critDamage: 0, lootChance: 0, lootQuantity: 0 }
+        };
+
+        for (const slot of Object.keys(equipped) as EquipmentSlot[]) {
+            const item = equipped[slot];
+            if (!item) continue;
+
+            for (const bonus of item.bonuses) {
+                if (bonus.type === 'stat' && bonus.stat) {
+                    cache.stats[bonus.stat] = (cache.stats[bonus.stat] || 0) + bonus.value;
+                } else if (bonus.type !== 'stat') {
+                    cache.other[bonus.type] = (cache.other[bonus.type] || 0) + bonus.value;
+                }
+            }
+        }
+
+        return cache;
+    }
 
     createInitialEquippedItems(): EquippedItems {
         return { head: null, face: null, accessory: null, body: null, handL: null, handR: null, relic: null };
@@ -63,20 +96,18 @@ export class EquipmentService {
         return true;
     }
 
+    // O(1) lookup using precomputed cache
     getEquipmentBonus(bonusType: string, stat?: keyof PlayerStats): number {
-        if (!this.signals) return 0;
-        const equipped = this.signals.equippedItems();
-        let total = 0;
-        for (const slot of Object.keys(equipped) as EquipmentSlot[]) {
-            const item = equipped[slot];
-            if (!item) continue;
-            for (const bonus of item.bonuses) {
-                if (bonus.type === bonusType) {
-                    if (bonusType === 'stat' && stat && bonus.stat === stat) total += bonus.value;
-                    else if (bonusType !== 'stat') total += bonus.value;
-                }
-            }
+        if (!this.bonusCache) return 0;
+
+        const cache = this.bonusCache();
+
+        if (bonusType === 'stat' && stat) {
+            return cache.stats[stat] || 0;
+        } else if (bonusType !== 'stat') {
+            return cache.other[bonusType] || 0;
         }
-        return total;
+
+        return 0;
     }
 }

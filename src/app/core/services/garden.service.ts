@@ -39,7 +39,7 @@ export class GardenService {
         return this.callbacks ? 1 + this.callbacks.getUpgradeBonus('gardenPlot') : 1;
     }
 
-    plantHerb(plotId: number, herbId: string = 'mint_plant'): boolean {
+    plantHerb(plotId: number, herbId = 'mint_plant'): boolean {
         if (!this.signals || !this.callbacks) return false;
         const garden = this.signals.garden();
         const plot = garden.plots.find(p => p.id === plotId);

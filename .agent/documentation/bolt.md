@@ -39,4 +39,11 @@ readonly displayData = computed(() => {
 
 **Optimization:** ✅ Applied to InventoryComponent (2024-12-15): Eliminated ~200+ function calls per CD cycle by replacing `getAmount()`, `hasResourcesInCategory()`, `getCategoryCount()`, `getTotalResources()` with `categoryData` and `totalResources` computed signals.
 
+## 2024-12-18 - Equipment Bonus Caching
+
+**Learning:** `getEquipmentBonus()` was called 31+ times per combat action (for stats, damage, crit, loot bonuses, etc.), each call iterating through 7 equipment slots and their bonuses. This O(n×m) per-call pattern was wasteful since equipment rarely changes.
+
+**Action:** Add a computed signal that precomputes ALL equipment bonuses once when equipment changes. The `getEquipmentBonus()` method now does O(1) lookups from the cache instead of O(n×m) iterations.
+
+**Optimization:** ✅ Applied to EquipmentService (2024-12-18): Reduced ~650+ bonus iterations per combat action to 1 recomputation when equipment changes.
 
