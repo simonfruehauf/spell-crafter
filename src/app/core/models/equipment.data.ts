@@ -115,7 +115,7 @@ export const EQUIPMENT_ITEMS: Record<string, EquipmentItem> = {
         description: 'Reinforced robes for combat mages.',
         slot: 'body',
         bonuses: [
-            { type: 'stat', stat: 'BAR', value: 2 },
+            { type: 'stat', stat: 'BAR', value: 5 },
             { type: 'maxHP', value: 20 },
         ],
         rarity: 'elevated',
@@ -372,8 +372,8 @@ export const EQUIPMENT_ITEMS: Record<string, EquipmentItem> = {
         description: 'Forged from the bones of giants.',
         slot: 'handL',
         bonuses: [
-            { type: 'stat', stat: 'BAR', value: 6 },
-            { type: 'maxHP', value: 60 },
+            { type: 'stat', stat: 'BAR', value: 15 },
+            { type: 'maxHP', value: 30 },
             { type: 'stat', stat: 'VIT', value: 2 },
         ],
         rarity: 'primal',

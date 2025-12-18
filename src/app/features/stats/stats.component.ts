@@ -56,7 +56,7 @@ const STAT_INFO: Record<string, StatInfo> = {
           <div class="stat-row">
             <button class="stat-btn" [class.active]="selectedStat()?.name === 'WIS'" (click)="toggleStatInfo('WIS')">WIS</button>
             <div class="stat-value-group">
-              <span class="stat-value">{{ player().WIS }}</span>
+              <span class="stat-value">{{ player().WIS }}@if (equipBonusWIS() > 0) {<span class="equip-bonus">(+{{ equipBonusWIS() }})</span>}</span>
               @if (player().attributePoints > 0) {
                 <button class="add-btn" (click)="spendPoint('WIS'); $event.stopPropagation()">[+]</button>
               }
@@ -65,7 +65,7 @@ const STAT_INFO: Record<string, StatInfo> = {
           <div class="stat-row">
             <button class="stat-btn" [class.active]="selectedStat()?.name === 'ARC'" (click)="toggleStatInfo('ARC')">ARC</button>
             <div class="stat-value-group">
-              <span class="stat-value">{{ player().ARC }}</span>
+              <span class="stat-value">{{ player().ARC }}@if (equipBonusARC() > 0) {<span class="equip-bonus">(+{{ equipBonusARC() }})</span>}</span>
               @if (player().attributePoints > 0) {
                 <button class="add-btn" (click)="spendPoint('ARC'); $event.stopPropagation()">[+]</button>
               }
@@ -74,7 +74,7 @@ const STAT_INFO: Record<string, StatInfo> = {
           <div class="stat-row">
             <button class="stat-btn" [class.active]="selectedStat()?.name === 'VIT'" (click)="toggleStatInfo('VIT')">VIT</button>
             <div class="stat-value-group">
-              <span class="stat-value">{{ player().VIT }}</span>
+              <span class="stat-value">{{ player().VIT }}@if (equipBonusVIT() > 0) {<span class="equip-bonus">(+{{ equipBonusVIT() }})</span>}</span>
               @if (player().attributePoints > 0) {
                 <button class="add-btn" (click)="spendPoint('VIT'); $event.stopPropagation()">[+]</button>
               }
@@ -83,7 +83,7 @@ const STAT_INFO: Record<string, StatInfo> = {
           <div class="stat-row">
             <button class="stat-btn" [class.active]="selectedStat()?.name === 'BAR'" (click)="toggleStatInfo('BAR')">BAR</button>
             <div class="stat-value-group">
-              <span class="stat-value">{{ player().BAR }}</span>
+              <span class="stat-value">{{ player().BAR }}@if (equipBonusBAR() > 0) {<span class="equip-bonus">(+{{ equipBonusBAR() }})</span>}</span>
               @if (player().attributePoints > 0) {
                 <button class="add-btn" (click)="spendPoint('BAR'); $event.stopPropagation()">[+]</button>
               }
@@ -92,7 +92,7 @@ const STAT_INFO: Record<string, StatInfo> = {
           <div class="stat-row">
             <button class="stat-btn" [class.active]="selectedStat()?.name === 'LCK'" (click)="toggleStatInfo('LCK')">LCK</button>
             <div class="stat-value-group">
-              <span class="stat-value">{{ player().LCK }}</span>
+              <span class="stat-value">{{ player().LCK }}@if (equipBonusLCK() > 0) {<span class="equip-bonus">(+{{ equipBonusLCK() }})</span>}</span>
               @if (player().attributePoints > 0) {
                 <button class="add-btn" (click)="spendPoint('LCK'); $event.stopPropagation()">[+]</button>
               }
@@ -101,7 +101,7 @@ const STAT_INFO: Record<string, StatInfo> = {
           <div class="stat-row">
             <button class="stat-btn" [class.active]="selectedStat()?.name === 'SPD'" (click)="toggleStatInfo('SPD')">SPD</button>
             <div class="stat-value-group">
-              <span class="stat-value">{{ player().SPD }}</span>
+              <span class="stat-value">{{ player().SPD }}@if (equipBonusSPD() > 0) {<span class="equip-bonus">(+{{ equipBonusSPD() }})</span>}</span>
               @if (player().attributePoints > 0) {
                 <button class="add-btn" (click)="spendPoint('SPD'); $event.stopPropagation()">[+]</button>
               }
@@ -120,11 +120,11 @@ const STAT_INFO: Record<string, StatInfo> = {
           <legend>Resources</legend>
           <div class="stat-row">
             <span class="stat-name">HP</span>
-            <span class="stat-value">{{ player().currentHP | number:'1.0-0' }}/{{ player().maxHP }}</span>
+            <span class="stat-value">{{ player().currentHP | number:'1.0-0' }}/{{ effectiveMaxHP() }}@if (equipMaxHPBonus() > 0) {<span class="equip-bonus">(+{{ equipMaxHPBonus() }})</span>}</span>
           </div>
           <div class="stat-row">
             <span class="stat-name">Mana</span>
-            <span class="stat-value">{{ resources().mana | number:'1.0-0' }}/{{ resources().maxMana }}</span>
+            <span class="stat-value">{{ resources().mana | number:'1.0-0' }}/{{ effectiveMaxMana() }}@if (equipMaxManaBonus() > 0) {<span class="equip-bonus">(+{{ equipMaxManaBonus() }})</span>}</span>
           </div>
           <div class="stat-row">
             <span class="stat-name">Gold</span>
@@ -237,6 +237,11 @@ const STAT_INFO: Record<string, StatInfo> = {
       color: #006600;
       font-weight: bold;
     }
+    .equip-bonus {
+      color: #666666;
+      font-size: 10px;
+      margin-left: 2px;
+    }
     .mt-1 { margin-top: 8px; }
   `]
 })
@@ -246,6 +251,18 @@ export class StatsComponent {
   readonly player = this.gameState.player;
   readonly resources = this.gameState.resources;
   readonly combat = this.gameState.combat;
+
+  // Equipment bonus signals
+  readonly equipBonusWIS = this.gameState.equipStatBonusWIS;
+  readonly equipBonusARC = this.gameState.equipStatBonusARC;
+  readonly equipBonusVIT = this.gameState.equipStatBonusVIT;
+  readonly equipBonusBAR = this.gameState.equipStatBonusBAR;
+  readonly equipBonusLCK = this.gameState.equipStatBonusLCK;
+  readonly equipBonusSPD = this.gameState.equipStatBonusSPD;
+  readonly effectiveMaxHP = this.gameState.effectiveMaxHP;
+  readonly effectiveMaxMana = this.gameState.effectiveMaxMana;
+  readonly equipMaxHPBonus = this.gameState.equipMaxHPBonus;
+  readonly equipMaxManaBonus = this.gameState.equipMaxManaBonus;
 
   readonly selectedStat = signal<StatInfo | null>(null);
 

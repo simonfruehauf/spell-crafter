@@ -19,6 +19,7 @@ export interface CombatCallbacks {
     addGold: (amount: number) => void;
     addCraftingResource: (id: string, amount: number) => void;
     getUpgradeBonus: (type: string) => number;
+    getEquipmentBonus: (type: string, stat?: string) => number;
     addSpellExperience: (spellId: string, xp: number) => void;
 }
 
@@ -153,19 +154,24 @@ export class CombatService {
     private readonly SPD_TICK_REDUCTION_PER_POINT = 15; // Each SPD reduces tick by 15ms
 
     /**
-     * Calculate effective crit chance including LCK bonus (capped)
+     * Calculate effective crit chance including LCK bonus and equipment (capped)
      */
     getEffectiveCritChance(player: Player): number {
         const baseCrit = this.callbacks?.getUpgradeBonus('critChance') ?? 0;
-        const lckBonus = Math.min(player.LCK * 0.02, this.MAX_LCK_CRIT_BONUS); // 2% per LCK, max 25%
-        return Math.min((baseCrit / 100) + lckBonus, this.MAX_CRIT_CHANCE);
+        const equipCrit = this.callbacks?.getEquipmentBonus('critChance') ?? 0;
+        const equipLCK = this.callbacks?.getEquipmentBonus('stat', 'LCK') ?? 0;
+        const effectiveLCK = player.LCK + equipLCK;
+        const lckBonus = Math.min(effectiveLCK * 0.02, this.MAX_LCK_CRIT_BONUS); // 2% per LCK, max 25%
+        return Math.min((baseCrit / 100) + (equipCrit / 100) + lckBonus, this.MAX_CRIT_CHANCE);
     }
 
     /**
      * Calculate effective loot bonus from LCK (capped)
      */
     getEffectiveLootBonus(player: Player): number {
-        return Math.min(player.LCK * 0.03, this.MAX_LCK_LOOT_BONUS); // 3% per LCK, max 50%
+        const equipLCK = this.callbacks?.getEquipmentBonus('stat', 'LCK') ?? 0;
+        const effectiveLCK = player.LCK + equipLCK;
+        return Math.min(effectiveLCK * 0.03, this.MAX_LCK_LOOT_BONUS); // 3% per LCK, max 50%
     }
 
     /**
@@ -173,7 +179,9 @@ export class CombatService {
      */
     getEffectiveCombatSpeed(player: Player, baseCombatMs: number): number {
         const upgradeReduction = this.callbacks?.getUpgradeBonus('combatSpeed') ?? 0;
-        const spdReduction = player.SPD * this.SPD_TICK_REDUCTION_PER_POINT;
+        const equipSPD = this.callbacks?.getEquipmentBonus('stat', 'SPD') ?? 0;
+        const effectiveSPD = player.SPD + equipSPD;
+        const spdReduction = effectiveSPD * this.SPD_TICK_REDUCTION_PER_POINT;
         return Math.max(this.MIN_COMBAT_TICK_MS, baseCombatMs - upgradeReduction - spdReduction);
     }
 
@@ -182,9 +190,14 @@ export class CombatService {
 
         const effect = rune.effect;
         const spellLevelMult = 1 + (spellLevel - 1) * 0.1; // +10% per level above 1
-        const arc = (1 + player.ARC * 0.1 + this.callbacks.getUpgradeBonus('damage') / 100) * spellLevelMult;
+        const upgradeDmgBonus = this.callbacks.getUpgradeBonus('damage') / 100;
+        const equipDmgBonus = this.callbacks.getEquipmentBonus('damagePercent') / 100;
+        const equipARC = this.callbacks.getEquipmentBonus('stat', 'ARC');
+        const effectiveARC = player.ARC + equipARC;
+        const arc = (1 + effectiveARC * 0.1 + upgradeDmgBonus + equipDmgBonus) * spellLevelMult;
         const critChance = this.getEffectiveCritChance(player);
-        const critDmg = 1.5 + this.callbacks.getUpgradeBonus('critDamage') / 100;
+        const equipCritDmg = this.callbacks.getEquipmentBonus('critDamage') / 100;
+        const critDmg = 1.5 + this.callbacks.getUpgradeBonus('critDamage') / 100 + equipCritDmg;
         const isCrit = Math.random() < critChance;
 
         // Helper to apply damage with optional armor penetration
@@ -504,11 +517,12 @@ export class CombatService {
 
         // Process player effects
         const remaining: ActiveEffect[] = [];
+        const equipMaxHP = this.callbacks?.getEquipmentBonus('maxHP') ?? 0;
         for (const e of combat.playerEffects) {
             if (e.type === 'hot') {
                 this.signals.player.update(p => ({
                     ...p,
-                    currentHP: Math.min(p.maxHP, p.currentHP + e.value)
+                    currentHP: Math.min(p.maxHP + equipMaxHP, p.currentHP + e.value)
                 }));
                 this.addCombatLog(`  ${e.name} heals ${e.value}!`, 'heal');
             }
@@ -527,7 +541,9 @@ export class CombatService {
             .filter(e => e.type === 'shield')
             .reduce((s, e) => s + e.value, 0);
         const baseDmg = enemy.ARC * 2;
-        let dmg = Math.max(1, baseDmg - Math.floor(player.BAR * 0.5));
+        const equipBAR = this.callbacks?.getEquipmentBonus('stat', 'BAR') ?? 0;
+        const effectiveBAR = player.BAR + equipBAR;
+        let dmg = Math.max(1, baseDmg - Math.floor(effectiveBAR * 0.5));
 
         if (shield > 0) {
             const absorbed = Math.min(shield, dmg);
@@ -657,10 +673,12 @@ export class CombatService {
 
         const player = this.signals.player();
         const lckLootBonus = this.getEffectiveLootBonus(player);
+        const equipLootChance = this.callbacks.getEquipmentBonus('lootChance') / 100;
+        const equipLootQty = this.callbacks.getEquipmentBonus('lootQuantity') / 100;
 
-        // LCK affects both chance and quantity
-        const lootMult = 1 + this.callbacks.getUpgradeBonus('lootChance') / 100 + lckLootBonus;
-        const qtyMult = 1 + this.callbacks.getUpgradeBonus('lootQuantity') / 100 + (lckLootBonus * 0.5);
+        // LCK + upgrades + equipment affect both chance and quantity
+        const lootMult = 1 + this.callbacks.getUpgradeBonus('lootChance') / 100 + lckLootBonus + equipLootChance;
+        const qtyMult = 1 + this.callbacks.getUpgradeBonus('lootQuantity') / 100 + (lckLootBonus * 0.5) + equipLootQty;
 
         for (const drop of table) {
             if (Math.random() < drop.chance * lootMult) {

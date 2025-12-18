@@ -98,6 +98,28 @@ export class GameStateService implements OnDestroy {
         return (1 + Math.exp(-cha * 0.05)) / 2;
     });
 
+    // Effective stats (base + equipment bonuses)
+    readonly effectiveWIS = computed(() => this._player().WIS + this.equipmentService.getEquipmentBonus('stat', 'WIS'));
+    readonly effectiveARC = computed(() => this._player().ARC + this.equipmentService.getEquipmentBonus('stat', 'ARC'));
+    readonly effectiveVIT = computed(() => this._player().VIT + this.equipmentService.getEquipmentBonus('stat', 'VIT'));
+    readonly effectiveBAR = computed(() => this._player().BAR + this.equipmentService.getEquipmentBonus('stat', 'BAR'));
+    readonly effectiveLCK = computed(() => this._player().LCK + this.equipmentService.getEquipmentBonus('stat', 'LCK'));
+    readonly effectiveSPD = computed(() => this._player().SPD + this.equipmentService.getEquipmentBonus('stat', 'SPD'));
+    readonly effectiveCHA = computed(() => this._player().CHA + this.equipmentService.getEquipmentBonus('stat', 'CHA'));
+    readonly effectiveMaxHP = computed(() => this._player().maxHP + this.equipmentService.getEquipmentBonus('maxHP'));
+    readonly effectiveMaxMana = computed(() => this._resources().maxMana + this.equipmentService.getEquipmentBonus('maxMana'));
+
+    // Equipment stat bonuses (for display purposes)
+    readonly equipStatBonusWIS = computed(() => this.equipmentService.getEquipmentBonus('stat', 'WIS'));
+    readonly equipStatBonusARC = computed(() => this.equipmentService.getEquipmentBonus('stat', 'ARC'));
+    readonly equipStatBonusVIT = computed(() => this.equipmentService.getEquipmentBonus('stat', 'VIT'));
+    readonly equipStatBonusBAR = computed(() => this.equipmentService.getEquipmentBonus('stat', 'BAR'));
+    readonly equipStatBonusLCK = computed(() => this.equipmentService.getEquipmentBonus('stat', 'LCK'));
+    readonly equipStatBonusSPD = computed(() => this.equipmentService.getEquipmentBonus('stat', 'SPD'));
+    readonly equipStatBonusCHA = computed(() => this.equipmentService.getEquipmentBonus('stat', 'CHA'));
+    readonly equipMaxHPBonus = computed(() => this.equipmentService.getEquipmentBonus('maxHP'));
+    readonly equipMaxManaBonus = computed(() => this.equipmentService.getEquipmentBonus('maxMana'));
+
     // Computed
     readonly availableResearch = computed(() =>
         this._researchTree().filter(node => node.unlocked && !node.researched));
@@ -182,6 +204,7 @@ export class GameStateService implements OnDestroy {
             addGold: (amount) => this.addGold(amount),
             addCraftingResource: (id, amount) => this.addCraftingResource(id, amount),
             getUpgradeBonus: (type) => this.getUpgradeBonus(type),
+            getEquipmentBonus: (type, stat) => this.getEquipmentBonus(type, stat as keyof PlayerStats),
             addSpellExperience: (spellId, xp) => this.addSpellExperience(spellId, xp),
         });
 

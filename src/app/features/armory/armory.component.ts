@@ -60,9 +60,9 @@ import { EQUIPMENT_SLOT_NAMES, EQUIPMENT_BONUS_NAMES } from '../../core/models/e
                   </div>
                   <button 
                     class="btn btn-craft"
-                    [disabled]="!canCraft(recipe)"
+                    [disabled]="!canCraft(recipe) || hasCrafted(recipe)"
                     (click)="craft(recipe.id)">
-                    [+] Forge
+                    {{ hasCrafted(recipe) ? '[✓] Forged' : '[+] Forge' }}
                   </button>
                 </div>
               }
