@@ -58,7 +58,8 @@ import { ResourceDef } from '../../core/models/game.interfaces';
             
             <div class="deconstruct-inner">
               <!-- Defragmentation Overlay/Display -->
-              <div class="defrag-overlay" *ngIf="deconstructState() === 'processing' || deconstructState() === 'complete'">
+              @if (deconstructState() === 'processing' || deconstructState() === 'complete') {
+              <div class="defrag-overlay">
                 
                 <!-- Status Bar -->
                 <div class="defrag-status">
@@ -91,6 +92,7 @@ import { ResourceDef } from '../../core/models/game.interfaces';
                    <div class="legend-item"><div class="legend-swatch raw"></div>Raw</div>
                 </div>
               </div>
+              }
 
               @if (deconstructState() === 'idle') {
                 @if (selectedItem(); as item) {

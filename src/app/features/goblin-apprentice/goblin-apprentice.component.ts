@@ -64,7 +64,7 @@ export class GoblinApprenticeComponent implements OnInit, OnDestroy {
   private gameState = inject(GameStateService);
 
   readonly eyes = signal<string>('o o');
-  private blinkTimer: any;
+  private blinkTimer: ReturnType<typeof setTimeout> | undefined;
 
   ngOnInit() {
     this.scheduleBlink();

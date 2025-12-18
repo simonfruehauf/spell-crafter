@@ -67,7 +67,7 @@ import { GameStateService } from '../../core/services/game-state.service';
           confirmText="Uncraft"
           cancelText="Cancel"
           (confirm)="confirmUncraft()"
-          (cancel)="cancelUncraft()">
+          (closed)="cancelUncraft()">
         </app-confirmation-modal>
       }
     </app-window>

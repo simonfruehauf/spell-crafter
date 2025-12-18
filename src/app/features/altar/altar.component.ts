@@ -143,7 +143,7 @@ export class AltarComponent implements OnInit, OnDestroy {
   readonly upgrades = this.gameState.upgrades;
 
   readonly eyes = signal<string>('::');
-  private blinkTimer: any;
+  private blinkTimer: ReturnType<typeof setTimeout> | undefined;
   private isBlinking = false;
 
   readonly manaPerClick = computed(() => {

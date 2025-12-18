@@ -3,11 +3,11 @@ import { Component, input, output, ChangeDetectionStrategy } from '@angular/core
 import { CommonModule } from '@angular/common';
 
 @Component({
-    selector: 'app-confirmation-modal',
-    standalone: true,
-    imports: [CommonModule],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    template: `
+  selector: 'app-confirmation-modal',
+  standalone: true,
+  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
     <div class="modal-overlay" (click)="onCancel($event)">
       <div class="modal-window" (click)="$event.stopPropagation()">
         <div class="modal-header">
@@ -24,7 +24,7 @@ import { CommonModule } from '@angular/common';
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .modal-overlay {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -98,21 +98,21 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class ConfirmationModalComponent {
-    title = input('');
-    message = input('');
-    confirmText = input('Yes');
-    cancelText = input('No');
+  title = input('');
+  message = input('');
+  confirmText = input('Yes');
+  cancelText = input('No');
 
-    confirm = output<void>();
-    cancel = output<void>();
+  confirm = output<void>();
+  closed = output<void>();
 
-    onConfirm(event: Event): void {
-        event.stopPropagation();
-        this.confirm.emit();
-    }
+  onConfirm(event: Event): void {
+    event.stopPropagation();
+    this.confirm.emit();
+  }
 
-    onCancel(event: Event): void {
-        event.stopPropagation();
-        this.cancel.emit();
-    }
+  onCancel(event: Event): void {
+    event.stopPropagation();
+    this.closed.emit();
+  }
 }

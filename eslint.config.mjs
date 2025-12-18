@@ -132,6 +132,12 @@ export default defineConfig([
             angular.configs.templateRecommended,
             angular.configs.templateAccessibility,
         ],
-        rules: {},
+        rules: {
+            // Disable accessibility rules as this is a mouse-only game
+            "@angular-eslint/template/click-events-have-key-events": "off",
+            "@angular-eslint/template/interactive-supports-focus": "off",
+            "@angular-eslint/template/label-has-associated-control": "off",
+            "@angular-eslint/template/mouse-events-have-key-events": "off",
+        },
     }
 ]);

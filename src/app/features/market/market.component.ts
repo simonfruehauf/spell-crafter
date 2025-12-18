@@ -35,99 +35,115 @@ import { SELL_PRICES, BUY_MULTIPLIERS, THEMES } from '../../core/models/market.d
 
         <!-- Tabs -->
         <div class="tabs">
-            <button 
-                *ngFor="let tab of tabs" 
-                class="tab-btn" 
-                [class.active]="activeTab() === tab.id"
-                (click)="activeTab.set(tab.id)">
-                {{ tab.label }}
-            </button>
+            @for (tab of tabs; track tab.id) {
+                <button 
+                    class="tab-btn" 
+                    [class.active]="activeTab() === tab.id"
+                    (click)="activeTab.set(tab.id)">
+                    {{ tab.label }}
+                </button>
+            }
         </div>
 
         <!-- SELL TAB -->
-        <div *ngIf="activeTab() === 'sell'" class="tab-pane">
-            <div class="section-header">Sell Resources</div>
-            <div class="resource-list">
-                <div *ngFor="let item of sellableItems(); trackBy: trackByItemId" class="market-item">
-                    <div class="item-info">
-                        <span class="item-name" [class]="item.rarity">{{ item.name }}</span>
-                        <span class="item-stock">Owned: {{ item.owned }}</span>
-                    </div>
-                    <div class="item-actions">
-                        <span class="price">Value: {{ item.sellPrice }}g</span>
-                        <div class="sell-controls">
-                            <!-- Helper buttons for quick amounts -->
-                            <button class="btn btn-small" (click)="sell(item.id, 1)" [disabled]="item.owned < 1">1</button>
-                            <button class="btn btn-small" (click)="sell(item.id, 10)" [disabled]="item.owned < 10">10</button>
-                            <button class="btn btn-small" (click)="sell(item.id, item.owned)" [disabled]="item.owned < 1">All</button>
+        @if (activeTab() === 'sell') {
+            <div class="tab-pane">
+                <div class="section-header">Sell Resources</div>
+                <div class="resource-list">
+                    @for (item of sellableItems(); track item.id) {
+                        <div class="market-item">
+                            <div class="item-info">
+                                <span class="item-name" [class]="item.rarity">{{ item.name }}</span>
+                                <span class="item-stock">Owned: {{ item.owned }}</span>
+                            </div>
+                            <div class="item-actions">
+                                <span class="price">Value: {{ item.sellPrice }}g</span>
+                                <div class="sell-controls">
+                                    <!-- Helper buttons for quick amounts -->
+                                    <button class="btn btn-small" (click)="sell(item.id, 1)" [disabled]="item.owned < 1">1</button>
+                                    <button class="btn btn-small" (click)="sell(item.id, 10)" [disabled]="item.owned < 10">10</button>
+                                    <button class="btn btn-small" (click)="sell(item.id, item.owned)" [disabled]="item.owned < 1">All</button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div *ngIf="sellableItems().length === 0" class="empty-msg">
-                    No sellable items found.
+                    }
+                    @if (sellableItems().length === 0) {
+                        <div class="empty-msg">
+                            No sellable items found.
+                        </div>
+                    }
                 </div>
             </div>
-        </div>
+        }
 
         <!-- BUY TAB -->
-        <div *ngIf="activeTab() === 'buy'" class="tab-pane">
-             <div class="section-header">Buy Common Goods</div>
-             <div class="resource-list">
-                <div *ngFor="let item of buyableItems(); trackBy: trackByItemId" class="market-item">
-                    <div class="item-info">
-                        <span class="item-name" [class]="item.rarity">{{ item.name }}</span>
-                        <span class="item-stock">Owned: {{ item.owned }}</span>
-                    </div>
-                    <div class="item-actions">
-                        <span class="price cost">Cost: {{ item.buyPrice }}g</span>
-                        <button class="btn btn-buy" (click)="buy(item.id)" [disabled]="gold() < item.buyPrice">
-                            Buy 1
-                        </button>
-                    </div>
+        @if (activeTab() === 'buy') {
+            <div class="tab-pane">
+                 <div class="section-header">Buy Common Goods</div>
+                 <div class="resource-list">
+                    @for (item of buyableItems(); track item.id) {
+                        <div class="market-item">
+                            <div class="item-info">
+                                <span class="item-name" [class]="item.rarity">{{ item.name }}</span>
+                                <span class="item-stock">Owned: {{ item.owned }}</span>
+                            </div>
+                            <div class="item-actions">
+                                <span class="price cost">Cost: {{ item.buyPrice }}g</span>
+                                <button class="btn btn-buy" (click)="buy(item.id)" [disabled]="gold() < item.buyPrice">
+                                    Buy 1
+                                </button>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
-        </div>
+        }
 
         <!-- THEMES TAB -->
-        <div *ngIf="activeTab() === 'themes'" class="tab-pane">
-            <div class="section-header">Visual Themes</div>
-            <div class="theme-list">
-                <div *ngFor="let theme of themesList" class="theme-item" [class.active-theme]="activeTheme() === theme.id">
-                    <div class="theme-info">
-                        <span class="theme-name">{{ theme.name }}</span>
-                        <span class="theme-desc">{{ theme.description }}</span>
-                    </div>
-                    <div class="theme-actions">
-                        <ng-container *ngIf="isThemeUnlocked(theme.id); else lockedTheme">
-                            <button 
-                                class="btn btn-equip" 
-                                [class.equipped]="activeTheme() === theme.id"
-                                (click)="equipTheme(theme.id)"
-                                [disabled]="activeTheme() === theme.id">
-                                {{ activeTheme() === theme.id ? 'Active' : 'Equip' }}
-                            </button>
-                        </ng-container>
-                        <ng-template #lockedTheme>
-                            <button class="btn btn-buy" (click)="buyTheme(theme.id)" [disabled]="gold() < theme.cost">
-                                Buy ({{ theme.cost }}g)
-                            </button>
-                        </ng-template>
-                    </div>
+        @if (activeTab() === 'themes') {
+            <div class="tab-pane">
+                <div class="section-header">Visual Themes</div>
+                <div class="theme-list">
+                    @for (theme of themesList; track theme.id) {
+                        <div class="theme-item" [class.active-theme]="activeTheme() === theme.id">
+                            <div class="theme-info">
+                                <span class="theme-name">{{ theme.name }}</span>
+                                <span class="theme-desc">{{ theme.description }}</span>
+                            </div>
+                            <div class="theme-actions">
+                                @if (isThemeUnlocked(theme.id)) {
+                                    <button 
+                                        class="btn btn-equip" 
+                                        [class.equipped]="activeTheme() === theme.id"
+                                        (click)="equipTheme(theme.id)"
+                                        [disabled]="activeTheme() === theme.id">
+                                        {{ activeTheme() === theme.id ? 'Active' : 'Equip' }}
+                                    </button>
+                                } @else {
+                                    <button class="btn btn-buy" (click)="buyTheme(theme.id)" [disabled]="gold() < theme.cost">
+                                        Buy ({{ theme.cost }}g)
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
-        </div>
+        }
 
         <!-- SERVICES TAB -->
-        <div *ngIf="activeTab() === 'services'" class="tab-pane services-tab">
-            <div class="service-box">
-                <div class="service-title">Stat Respec</div>
-                <p>Reset all your attribute points. Cost increases with level.</p>
-                <div class="cost-display">Cost: <span class="gold">{{ respecCost() }} gold</span></div>
-                <button class="btn btn-danger" (click)="respec()" [disabled]="gold() < respecCost()">
-                    Respec Stats
-                </button>
+        @if (activeTab() === 'services') {
+            <div class="tab-pane services-tab">
+                <div class="service-box">
+                    <div class="service-title">Stat Respec</div>
+                    <p>Reset all your attribute points. Cost increases with level.</p>
+                    <div class="cost-display">Cost: <span class="gold">{{ respecCost() }} gold</span></div>
+                    <button class="btn btn-danger" (click)="respec()" [disabled]="gold() < respecCost()">
+                        Respec Stats
+                    </button>
+                </div>
             </div>
-        </div>
+        }
 
       </div>
     </app-window>
@@ -312,7 +328,7 @@ export class MarketComponent {
 
     // State
     activeTab = signal<'sell' | 'buy' | 'themes' | 'services'>('sell');
-    tabs: { id: any, label: string }[] = [
+    tabs: { id: 'sell' | 'buy' | 'themes' | 'services', label: string }[] = [
         { id: 'sell', label: 'Sell' },
         { id: 'buy', label: 'Buy' },
         { id: 'themes', label: 'Themes' },
@@ -325,7 +341,7 @@ export class MarketComponent {
     // Computed Lists
     sellableItems = computed(() => {
         const crafting = this.resources().crafting;
-        const sellable: any[] = [];
+        const sellable: { id: string, name: string, rarity: string, owned: number, sellPrice: number }[] = [];
 
         // We only sell things that have a defined price (common-legendary)
         // And currently only focusing on 'herb' and 'creature' categories as per plan?
@@ -366,7 +382,7 @@ export class MarketComponent {
 
     buyableItems = computed(() => {
         // Only common items
-        const buyable: any[] = [];
+        const buyable: { id: string, name: string, rarity: string, buyPrice: number, owned: number }[] = [];
         const discount = this.buyDiscount();
         const discovered = this.discoveredResources();
 
@@ -460,7 +476,7 @@ export class MarketComponent {
         }
     }
 
-    trackByItemId(index: number, item: any): string {
+    trackByItemId(index: number, item: { id: string }): string {
         return item.id;
     }
 }
