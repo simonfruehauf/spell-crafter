@@ -21,6 +21,12 @@ import { SaveService } from './save.service';
 import { ResourceService } from './resource.service';
 import { ResearchService } from './research.service';
 import { CombatService } from './combat.service';
+import { WindowService } from './window.service';
+import { SpellService } from './spell.service';
+import { PlayerService } from './player.service';
+import { EquipmentService } from './equipment.service';
+import { GardenService } from './garden.service';
+import { MarketService } from './market.service';
 
 @Injectable({ providedIn: 'root' })
 export class GameStateService implements OnDestroy {
@@ -29,6 +35,12 @@ export class GameStateService implements OnDestroy {
     private resourceService = inject(ResourceService);
     private researchService = inject(ResearchService);
     private combatService = inject(CombatService);
+    private windowService = inject(WindowService);
+    private spellService = inject(SpellService);
+    private playerService = inject(PlayerService);
+    private equipmentService = inject(EquipmentService);
+    private gardenService = inject(GardenService);
+    private marketService = inject(MarketService);
 
     // SIGNALS
     private readonly _player = signal<Player>(this.createInitialPlayer());
@@ -172,6 +184,58 @@ export class GameStateService implements OnDestroy {
             getUpgradeBonus: (type) => this.getUpgradeBonus(type),
             addSpellExperience: (spellId, xp) => this.addSpellExperience(spellId, xp),
         });
+
+        // Register window service
+        this.windowService.registerSignals({ windows: this._windows });
+
+        // Register spell service
+        this.spellService.registerSignals({ craftedSpells: this._craftedSpells });
+        this.spellService.registerCallbacks({
+            spendCraftingResources: (costs) => this.resourceService.spendCraftingResources(costs),
+            addCraftingResource: (id, amount) => this.resourceService.addCraftingResource(id, amount),
+            getUpgradeBonus: (type) => this.getUpgradeBonus(type),
+            getPlayerARC: () => this._player().ARC,
+            addCombatLog: (msg, type) => this.combatService.addCombatLog(msg, type),
+        });
+
+        // Register player service
+        this.playerService.registerSignals({ player: this._player });
+        this.playerService.registerCallbacks({
+            addGold: (amount) => this.addGold(amount),
+            getResourceGold: () => this._resources().gold,
+            addCombatLog: (msg, type) => this.combatService.addCombatLog(msg, type),
+        });
+
+        // Register equipment service
+        this.equipmentService.registerSignals({
+            equippedItems: this._equippedItems,
+            craftedEquipment: this._craftedEquipment,
+            equipmentRecipes: this._equipmentRecipes,
+        });
+        this.equipmentService.registerCallbacks({
+            canAffordResources: (costs) => this.resourceService.canAffordResources(costs),
+            spendCraftingResources: (costs) => this.resourceService.spendCraftingResources(costs),
+        });
+
+        // Register garden service
+        this.gardenService.registerSignals({ garden: this._garden });
+        this.gardenService.registerCallbacks({
+            getResourceAmount: (id) => this._resources().crafting[id] || 0,
+            spendCraftingResources: (costs) => this.resourceService.spendCraftingResources(costs),
+            addCraftingResource: (id, amount) => this.resourceService.addCraftingResource(id, amount),
+            getUpgradeBonus: (type) => this.getUpgradeBonus(type),
+        });
+
+        // Register market service
+        this.marketService.registerSignals({
+            player: this._player,
+            resources: this._resources,
+            themes: this._themes,
+        });
+        this.marketService.registerCallbacks({
+            addGold: (amount) => this.addGold(amount),
+            addCraftingResource: (id, amount) => this.addCraftingResource(id, amount),
+        });
     }
 
     private startGameLoop(): void {
@@ -270,44 +334,14 @@ export class GameStateService implements OnDestroy {
         this._themes.set({ active: 'default', unlocked: ['default'] });
     }
 
-    // WINDOW
-    openWindow(id: keyof WindowStates): void {
-        this._windows.update(w => ({ ...w, [id]: { ...w[id], visible: true } }));
-    }
-    closeWindow(id: keyof WindowStates): void {
-        this._windows.update(w => ({ ...w, [id]: { ...w[id], visible: false } }));
-    }
-    toggleWindow(id: keyof WindowStates): void {
-        const c = this._windows()[id];
-        if (c.unlocked) this._windows.update(w => ({ ...w, [id]: { ...w[id], visible: !w[id].visible } }));
-    }
-    updateWindowPosition(id: keyof WindowStates, x: number, y: number): void {
-        this._windows.update(w => ({ ...w, [id]: { ...w[id], x, y } }));
-    }
-    getWindowPosition(id: keyof WindowStates): { x?: number; y?: number } {
-        const w = this._windows()[id];
-        return { x: w?.x, y: w?.y };
-    }
-    resetAllWindowPositions(): void {
-        this._windows.update(windows => {
-            const updated = { ...windows };
-            for (const key of Object.keys(updated) as (keyof WindowStates)[]) {
-                updated[key] = { ...updated[key], x: undefined, y: undefined };
-            }
-            return updated;
-        });
-    }
-    closeAllWindows(): void {
-        this._windows.update(windows => {
-            const updated = { ...windows };
-            for (const key of Object.keys(updated) as (keyof WindowStates)[]) {
-                if (updated[key].unlocked) {
-                    updated[key] = { ...updated[key], visible: false };
-                }
-            }
-            return updated;
-        });
-    }
+    // WINDOW (delegated to window service)
+    openWindow(id: keyof WindowStates): void { this.windowService.openWindow(id); }
+    closeWindow(id: keyof WindowStates): void { this.windowService.closeWindow(id); }
+    toggleWindow(id: keyof WindowStates): void { this.windowService.toggleWindow(id); }
+    updateWindowPosition(id: keyof WindowStates, x: number, y: number): void { this.windowService.updateWindowPosition(id, x, y); }
+    getWindowPosition(id: keyof WindowStates): { x?: number; y?: number } { return this.windowService.getWindowPosition(id); }
+    resetAllWindowPositions(): void { this.windowService.resetAllWindowPositions(); }
+    closeAllWindows(): void { this.windowService.closeAllWindows(); }
 
     // RESOURCES (delegated to resource service)
     addMana(amount: number): void { this.resourceService.addMana(amount); }
@@ -415,75 +449,13 @@ export class GameStateService implements OnDestroy {
         return this.researchService.purchaseUpgrade(id);
     }
 
-    // SPELL CRAFTING
+    // SPELL CRAFTING (delegated to spell service)
     craftSpell(name: string, runes: Rune[], materialCost: ResourceCost[], customSymbol?: string): Spell | null {
-        if (runes.length === 0) return null;
-        if (!this.spendCraftingResources(materialCost)) return null;
-        const totalMana = runes.reduce((s, r) => s + r.manaCost, 0);
-        const baseDmg = runes.reduce((s, r) => s + r.baseDamage, 0);
-        const dmgMult = 1 + this._player().ARC * 0.1 + this.getUpgradeBonus('damage') / 100;
-        const dmgTypes = [...new Set(runes.map(r => r.damageType))];
-        const spell: Spell = {
-            id: `spell-${Date.now()}`, name, runes: [...runes],
-            totalManaCost: totalMana, calculatedDamage: Math.floor(baseDmg * dmgMult),
-            description: `Woven from ${runes.map(r => r.name).join(', ')}.`,
-            symbol: customSymbol || runes[0]?.symbol || '[*]', damageTypes: dmgTypes, craftCost: materialCost,
-            experience: 0, level: 1,
-        };
-        this._craftedSpells.update(s => [...s, spell]);
-        return spell;
+        return this.spellService.craftSpell(name, runes, materialCost, customSymbol);
     }
-
-    addSpellExperience(spellId: string, xp: number): void {
-        this._craftedSpells.update(spells => spells.map(s => {
-            if (s.id !== spellId) return s;
-            let newXp = s.experience + xp;
-            let newLevel = s.level;
-            const xpToLevel = s.level * 50;
-            while (newXp >= xpToLevel && newLevel < 10) {
-                newXp -= xpToLevel;
-                newLevel++;
-            }
-            return { ...s, experience: newXp, level: newLevel };
-        }));
-    }
-
-    deleteSpell(id: string): void {
-        this._craftedSpells.update(s => s.filter(x => x.id !== id && !x.isDefault));
-    }
-
-    uncraftSpell(id: string): boolean {
-        const spells = this._craftedSpells();
-        const spell = spells.find(s => s.id === id);
-
-        if (!spell || spell.isDefault) return false;
-
-        // Calculate refund (50% rounded down)
-        const refund: { resourceId: string; amount: number }[] = [];
-        for (const cost of spell.craftCost) {
-            const amount = Math.floor(cost.amount * 0.5);
-            if (amount > 0) {
-                refund.push({ resourceId: cost.resourceId, amount });
-            }
-        }
-
-        // Add refunded resources
-        for (const item of refund) {
-            this.resourceService.addCraftingResource(item.resourceId, item.amount);
-        }
-
-        // Log refund
-        if (refund.length > 0) {
-            const refundText = refund.map(r => `${r.amount} ${RESOURCE_NAMES[r.resourceId] || r.resourceId}`).join(', ');
-            this.combatService.addCombatLog(`Uncrafted ${spell.name}. Refunded: ${refundText}`, 'info');
-        } else {
-            this.combatService.addCombatLog(`Uncrafted ${spell.name}. No resources salvaged.`, 'info');
-        }
-
-        // Delete spell
-        this.deleteSpell(id);
-        return true;
-    }
+    addSpellExperience(spellId: string, xp: number): void { this.spellService.addSpellExperience(spellId, xp); }
+    deleteSpell(id: string): void { this.spellService.deleteSpell(id); }
+    uncraftSpell(id: string): boolean { return this.spellService.uncraftSpell(id); }
 
     // POTIONS
     startBrewing(potionId: string): boolean {
@@ -782,72 +754,11 @@ export class GameStateService implements OnDestroy {
         return true;
     }
 
-    // EQUIPMENT SYSTEM
-    craftEquipment(recipeId: string): boolean {
-        const recipe = this._equipmentRecipes().find(r => r.id === recipeId);
-        if (!recipe || !recipe.unlocked) return false;
-        if (!this.resourceService.canAffordResources(recipe.cost)) return false;
-        if (!this.resourceService.spendCraftingResources(recipe.cost)) return false;
-
-        // Add item to crafted equipment inventory
-        this._craftedEquipment.update(items => [...items, { ...recipe.resultItem }]);
-        return true;
-    }
-
-    equipItem(itemId: string): boolean {
-        const items = this._craftedEquipment();
-        const itemIndex = items.findIndex(i => i.id === itemId);
-        if (itemIndex === -1) return false;
-
-        const item = items[itemIndex];
-        const currentEquipped = this._equippedItems()[item.slot];
-
-        // Remove item from inventory
-        this._craftedEquipment.update(inv => inv.filter((_, idx) => idx !== itemIndex));
-
-        // If something is already equipped in that slot, put it back in inventory
-        if (currentEquipped) {
-            this._craftedEquipment.update(inv => [...inv, currentEquipped]);
-        }
-
-        // Equip the new item
-        this._equippedItems.update(eq => ({ ...eq, [item.slot]: item }));
-        return true;
-    }
-
-    unequipItem(slot: EquipmentSlot): boolean {
-        const equipped = this._equippedItems()[slot];
-        if (!equipped) return false;
-
-        // Put item back in inventory
-        this._craftedEquipment.update(inv => [...inv, equipped]);
-
-        // Clear the slot
-        this._equippedItems.update(eq => ({ ...eq, [slot]: null }));
-        return true;
-    }
-
-    getEquipmentBonus(bonusType: string, stat?: keyof PlayerStats): number {
-        const equipped = this._equippedItems();
-        let total = 0;
-
-        for (const slot of Object.keys(equipped) as EquipmentSlot[]) {
-            const item = equipped[slot];
-            if (!item) continue;
-
-            for (const bonus of item.bonuses) {
-                if (bonus.type === bonusType) {
-                    if (bonusType === 'stat' && stat && bonus.stat === stat) {
-                        total += bonus.value;
-                    } else if (bonusType !== 'stat') {
-                        total += bonus.value;
-                    }
-                }
-            }
-        }
-
-        return total;
-    }
+    // EQUIPMENT SYSTEM (delegated to equipment service)
+    craftEquipment(recipeId: string): boolean { return this.equipmentService.craftEquipment(recipeId); }
+    equipItem(itemId: string): boolean { return this.equipmentService.equipItem(itemId); }
+    unequipItem(slot: EquipmentSlot): boolean { return this.equipmentService.unequipItem(slot); }
+    getEquipmentBonus(bonusType: string, stat?: keyof PlayerStats): number { return this.equipmentService.getEquipmentBonus(bonusType, stat); }
 
     // ALCHEMY SYSTEM
     startAlchemy(recipeId: string): boolean {
@@ -1000,187 +911,19 @@ export class GameStateService implements OnDestroy {
         };
     }
 
-    // GARDEN SYSTEM
-    private createInitialGardenState(): GardenState {
-        return {
-            plots: [
-                { id: 0, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: true },
-                { id: 1, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
-                { id: 2, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
-                { id: 3, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
-                { id: 4, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
-                { id: 5, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
-            ],
-            maxPlots: 6,
-        };
-    }
+    // GARDEN SYSTEM (delegated to garden service)
+    private createInitialGardenState(): GardenState { return this.gardenService.createInitialGardenState(); }
+    getUnlockedPlotCount(): number { return this.gardenService.getUnlockedPlotCount(); }
+    plantHerb(plotId: number, herbId: string = 'mint_plant'): boolean { return this.gardenService.plantHerb(plotId, herbId); }
+    harvestPlot(plotId: number): boolean { return this.gardenService.harvestPlot(plotId); }
+    isPlotReady(plotId: number): boolean { return this.gardenService.isPlotReady(plotId); }
+    getPlotProgress(plotId: number): number { return this.gardenService.getPlotProgress(plotId); }
 
-    getUnlockedPlotCount(): number {
-        // Base plot (1) + upgrade levels
-        return 1 + this.getUpgradeBonus('gardenPlot');
-    }
-
-    plantHerb(plotId: number, herbId: string = 'mint_plant'): boolean {
-        const garden = this._garden();
-        const plot = garden.plots.find(p => p.id === plotId);
-        if (!plot) return false;
-
-        // Check if plot is unlocked (based on upgrade)
-        if (plotId >= this.getUnlockedPlotCount()) return false;
-
-        // Check if already planted
-        if (plot.plantedHerbId !== null) return false;
-
-        // For non-basic herbs, check and spend seed
-        // Basic 'mint_plant' can always be planted for free
-        if (herbId !== 'mint_plant') {
-            const resources = this._resources();
-            if ((resources.crafting[herbId] || 0) < 1) return false;
-            // Spend 1 of the herb as seed
-            this.resourceService.spendCraftingResources([{ resourceId: herbId, amount: 1 }]);
-        }
-
-        // Determine growth time based on rarity
-        const herbDef = RESOURCE_DEFS[herbId];
-        let growthDurationMs = 10000; // default: common = 10s
-        if (herbDef) {
-            switch (herbDef.rarity) {
-                case 'common': growthDurationMs = 10000; break;    // 10s
-                case 'uncommon': growthDurationMs = 15000; break;  // 15s
-                case 'rare': growthDurationMs = 25000; break;      // 25s
-                case 'epic':
-                case 'legendary': growthDurationMs = 30000; break; // 30s
-            }
-        }
-
-        // Plant the herb
-        this._garden.update(g => ({
-            ...g,
-            plots: g.plots.map(p =>
-                p.id === plotId
-                    ? { ...p, plantedHerbId: herbId, plantedAt: Date.now(), growthDurationMs }
-                    : p
-            )
-        }));
-        return true;
-    }
-
-    harvestPlot(plotId: number): boolean {
-        const garden = this._garden();
-        const plot = garden.plots.find(p => p.id === plotId);
-        if (!plot) return false;
-
-        // Check if planted
-        if (plot.plantedHerbId === null) return false;
-
-        // Check if fully grown
-        const growthComplete = Date.now() >= plot.plantedAt + plot.growthDurationMs;
-        if (!growthComplete) return false;
-
-        // Harvest - add 2 of the planted herb (1 seed + 1 grown)
-        this.resourceService.addCraftingResource(plot.plantedHerbId, 2);
-
-        // Clear the plot
-        this._garden.update(g => ({
-            ...g,
-            plots: g.plots.map(p =>
-                p.id === plotId
-                    ? { ...p, plantedHerbId: null, plantedAt: 0 }
-                    : p
-            )
-        }));
-        return true;
-    }
-
-    isPlotReady(plotId: number): boolean {
-        const garden = this._garden();
-        const plot = garden.plots.find(p => p.id === plotId);
-        if (!plot || plot.plantedHerbId === null) return false;
-        return Date.now() >= plot.plantedAt + plot.growthDurationMs;
-    }
-
-    getPlotProgress(plotId: number): number {
-        const garden = this._garden();
-        const plot = garden.plots.find(p => p.id === plotId);
-        if (!plot || plot.plantedHerbId === null) return 0;
-        const elapsed = Date.now() - plot.plantedAt;
-        return Math.min(100, (elapsed / plot.growthDurationMs) * 100);
-    }
-
-    // MARKET ACTIONS
-    sellResource(resourceId: string, amount: number): boolean {
-        amount = Math.floor(amount);
-        if (amount <= 0) return false;
-
-        const current = this._resources().crafting[resourceId] || 0;
-        if (current < amount) return false;
-
-        const def = RESOURCE_DEFS[resourceId];
-        if (!def) return false;
-
-        const basePrice = SELL_PRICES[def.rarity] || 1;
-        // Sell Formula: Base * (1 + CHA_BONUS)
-        const pricePerUnit = basePrice * (1 + this.chaBonus());
-        const totalGold = Math.floor(pricePerUnit * amount);
-
-        if (totalGold <= 0) return false;
-
-        // Remove resource
-        this.addCraftingResource(resourceId, -amount);
-        // Add gold
-        this.addGold(totalGold);
-
-        return true;
-    }
-
-    buyResource(resourceId: string, amount: number): boolean {
-        const def = RESOURCE_DEFS[resourceId];
-        if (!def) return false;
-
-        // Determine base multiplier
-        const multiplier = BUY_MULTIPLIERS[def.rarity] || 50;
-        const basePrice = (SELL_PRICES[def.rarity] || 1);
-        const baseBuyPrice = basePrice * multiplier;
-
-        // Apply CHA discount
-        // Final Price = BaseBuy * DiscountFactor
-        // DiscountFactor goes from 1.0 (CHA 0) -> 0.5 (High CHA)
-        const discountedPrice = baseBuyPrice * this.buyDiscount();
-        const finalPrice = Math.max(1, Math.floor(discountedPrice));
-        const totalCost = finalPrice * amount;
-
-        if (this._resources().gold < totalCost) return false;
-
-        this.addGold(-totalCost);
-        this.addCraftingResource(resourceId, amount);
-        return true;
-    }
-
-    buyTheme(themeId: string): boolean {
-        const theme = THEMES.find(t => t.id === themeId);
-        if (!theme) return false;
-
-        // Check if already unlocked
-        if (this._themes().unlocked.includes(themeId)) return false;
-
-        if (this._resources().gold < theme.cost) return false;
-
-        this.addGold(-theme.cost);
-        this._themes.update(t => ({
-            ...t,
-            unlocked: [...t.unlocked, themeId]
-        }));
-        return true;
-    }
-
-    equipTheme(themeId: string): void {
-        const theme = THEMES.find(t => t.id === themeId);
-        if (!theme) return;
-
-        if (this._themes().unlocked.includes(themeId)) {
-            this._themes.update(t => ({ ...t, active: themeId }));
-        }
-    }
+    // MARKET ACTIONS (delegated to market service)
+    sellResource(resourceId: string, amount: number): boolean { return this.marketService.sellResource(resourceId, amount); }
+    buyResource(resourceId: string, amount: number): boolean { return this.marketService.buyResource(resourceId, amount); }
+    buyTheme(themeId: string): boolean { return this.marketService.buyTheme(themeId); }
+    equipTheme(themeId: string): void { this.marketService.equipTheme(themeId); }
 
     respecStats(): boolean {
         const p = this._player();
