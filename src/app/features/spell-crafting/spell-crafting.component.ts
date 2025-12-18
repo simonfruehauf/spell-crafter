@@ -191,7 +191,7 @@ export class SpellCraftingComponent {
 
   calculatedDamage(): number {
     const runes = this.selectedRunes();
-    if (!runes.length) return 0;
+    if (runes.length === 0) return 0;
     const base = runes.reduce((s, r) => s + r.baseDamage, 0);
     return Math.floor(base * (1 + this.player().ARC * 0.1));
   }
@@ -202,7 +202,7 @@ export class SpellCraftingComponent {
 
   calculatedHealing(): number {
     const runes = this.selectedRunes();
-    if (!runes.length) return 0;
+    if (runes.length === 0) return 0;
     let healing = 0;
     for (const rune of runes) {
       if (rune.effect.type === 'heal' || rune.effect.type === 'hot' || rune.effect.type === 'lifesteal') {
@@ -223,12 +223,18 @@ export class SpellCraftingComponent {
     const effects: string[] = [];
     for (const rune of this.selectedRunes()) {
       switch (rune.effect.type) {
-        case 'buff': effects.push(`+${rune.effect.value} ${rune.effect.targetStat || 'stat'}`); break;
-        case 'debuff': effects.push(`-${rune.effect.value} enemy stat`); break;
-        case 'shield': effects.push(`${rune.effect.value} shield`); break;
-        case 'stun': effects.push(`${rune.effect.duration || 1}t stun`); break;
-        case 'dot': effects.push(`${rune.effect.value}/t for ${rune.effect.duration || 3}t`); break;
-        case 'hot': effects.push(`+${rune.effect.value} HP/t for ${rune.effect.duration || 3}t`); break;
+        case 'buff': { effects.push(`+${rune.effect.value} ${rune.effect.targetStat || 'stat'}`); break;
+        }
+        case 'debuff': { effects.push(`-${rune.effect.value} enemy stat`); break;
+        }
+        case 'shield': { effects.push(`${rune.effect.value} shield`); break;
+        }
+        case 'stun': { effects.push(`${rune.effect.duration || 1}t stun`); break;
+        }
+        case 'dot': { effects.push(`${rune.effect.value}/t for ${rune.effect.duration || 3}t`); break;
+        }
+        case 'hot': { effects.push(`+${rune.effect.value} HP/t for ${rune.effect.duration || 3}t`); break;
+        }
       }
     }
     return effects;
@@ -276,7 +282,7 @@ export class SpellCraftingComponent {
   }
 
   canCraft(): boolean {
-    if (!this.selectedRunes().length || !this.spellName.trim()) return false;
+    if (this.selectedRunes().length === 0 || !this.spellName.trim()) return false;
     return this.aggregateMaterialCost().every(c => this.canAfford(c));
   }
 

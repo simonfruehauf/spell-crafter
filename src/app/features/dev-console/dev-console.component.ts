@@ -208,40 +208,50 @@ export class DevConsoleComponent {
         const args = parts.slice(1);
 
         switch (command) {
-            case 'help':
+            case 'help': {
                 this.showHelp();
                 break;
-            case 'give':
+            }
+            case 'give': {
                 this.handleGiveCommand(args);
                 break;
-            case 'unlock':
+            }
+            case 'unlock': {
                 this.handleUnlockCommand(args);
                 break;
-            case 'research':
+            }
+            case 'research': {
                 this.handleResearchCommand(args);
                 break;
-            case 'level':
-                const levels = parseInt(args[0]) || 1;
+            }
+            case 'level': {
+                const levels = Number.parseInt(args[0]) || 1;
                 for (let i = 0; i < levels; i++) this.levelUp();
                 break;
-            case 'heal':
+            }
+            case 'heal': {
                 this.healPlayer();
                 break;
-            case 'noclip':
+            }
+            case 'noclip': {
                 this.unlockAllWindows();
                 break;
-            case 'iddqd':
+            }
+            case 'iddqd': {
                 this.maxStats();
                 this.giveAllResources();
                 this.log('God mode activated!', 'success');
                 break;
-            case 'idkfa':
+            }
+            case 'idkfa': {
                 this.unlockAllResearch();
                 this.unlockAllRecipes();
                 this.log('Full unlock activated!', 'success');
                 break;
-            default:
+            }
+            default: {
                 this.log(`Unknown command: ${command}`, 'error');
+            }
         }
     }
 
@@ -258,22 +268,32 @@ export class DevConsoleComponent {
 
     private handleGiveCommand(args: string[]): void {
         const target = args[0];
-        const amount = parseInt(args[1]) || 100;
+        const amount = Number.parseInt(args[1]) || 100;
 
         if (!target) {
             this.log('Usage: give <resource|gold|mana|all> [amount]', 'error');
             return;
         }
 
-        if (target === 'gold') {
+        switch (target) {
+        case 'gold': {
             this.gameState.addGold(amount);
             this.log(`Added ${amount} gold.`, 'success');
-        } else if (target === 'mana') {
+        
+        break;
+        }
+        case 'mana': {
             this.gameState.addMana(amount);
             this.log(`Added ${amount} mana.`, 'success');
-        } else if (target === 'all') {
+        
+        break;
+        }
+        case 'all': {
             this.giveAllResources(amount);
-        } else {
+        
+        break;
+        }
+        default: {
             // Try to find resource by id or name
             const resourceId = this.findResourceId(target);
             if (resourceId) {
@@ -282,6 +302,7 @@ export class DevConsoleComponent {
             } else {
                 this.log(`Unknown resource: ${target}`, 'error');
             }
+        }
         }
     }
 
@@ -294,23 +315,28 @@ export class DevConsoleComponent {
         }
 
         switch (target) {
-            case 'research':
+            case 'research': {
                 this.unlockAllResearch();
                 break;
-            case 'recipes':
+            }
+            case 'recipes': {
                 this.unlockAllRecipes();
                 break;
-            case 'windows':
+            }
+            case 'windows': {
                 this.unlockAllWindows();
                 break;
-            case 'all':
+            }
+            case 'all': {
                 this.unlockAllResearch();
                 this.unlockAllRecipes();
                 this.unlockAllWindows();
                 this.log('Everything unlocked!', 'success');
                 break;
-            default:
+            }
+            default: {
                 this.log(`Unknown unlock target: ${target}`, 'error');
+            }
         }
     }
 

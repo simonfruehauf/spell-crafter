@@ -42,7 +42,7 @@ export class ResearchService {
     }
 
     createInitialUpgrades(): Upgrade[] {
-        return JSON.parse(JSON.stringify(INITIAL_UPGRADES));
+        return structuredClone(INITIAL_UPGRADES);
     }
 
     // Research methods
@@ -89,7 +89,7 @@ export class ResearchService {
         const effect = node.unlockEffect;
 
         switch (effect.type) {
-            case 'window':
+            case 'window': {
                 this.signals.windows.update(w => ({
                     ...w,
                     [effect.windowId]: { unlocked: true, visible: true }
@@ -102,30 +102,35 @@ export class ResearchService {
                     }));
                 }
                 break;
+            }
 
-            case 'rune':
+            case 'rune': {
                 if (RUNES[effect.runeId]) {
                     this.signals.knownRunes.update(r => [...r, RUNES[effect.runeId]]);
                 }
                 break;
+            }
 
-            case 'stat':
+            case 'stat': {
                 this.signals.player.update(p => ({
                     ...p,
                     [effect.stat]: p[effect.stat] + effect.value
                 }));
                 break;
+            }
 
-            case 'idle':
+            case 'idle': {
                 if (effect.idleId === 'autoMeditate') { /* Removed */ }
                 if (effect.idleId === 'autoCombat') this.callbacks.unlockAutoCombat();
                 if (effect.idleId === 'passiveManaRegen') this.callbacks.unlockPassiveManaRegen();
                 if (effect.idleId === 'usePotionUnlocked') this.callbacks.unlockUsePotions();
                 break;
+            }
 
-            case 'maxMana':
+            case 'maxMana': {
                 this.callbacks.increaseMaxMana(effect.value);
                 break;
+            }
         }
     }
 
@@ -211,28 +216,39 @@ export class ResearchService {
 
         // Apply effect
         const effect = upgrade.effect;
-        if (effect.type === 'stat') {
-            this.signals.player.update(p => ({
-                ...p,
-                [effect.stat]: p[effect.stat] + effect.valuePerLevel
-            }));
-        } else if (effect.type === 'maxMana') {
-            this.callbacks.increaseMaxMana(effect.valuePerLevel);
-        } else if (effect.type === 'unlockFeature') {
-            // Handle feature unlocks (like goblin apprentice, spellbook)
-            if (effect.feature === 'goblinApprentice') {
-                this.callbacks.unlockGoblinApprentice();
-                this.signals.windows.update(w => ({
-                    ...w,
-                    goblinApprentice: { ...w.goblinApprentice, unlocked: true, visible: true }
+        switch (effect.type) {
+            case 'stat': {
+                this.signals.player.update(p => ({
+                    ...p,
+                    [effect.stat]: p[effect.stat] + effect.valuePerLevel
                 }));
-            } else if (effect.feature === 'spellbook') {
-                this.callbacks.unlockSpellbook();
-                this.signals.windows.update(w => ({
-                    ...w,
-                    spellbook: { ...w.spellbook, unlocked: true, visible: true }
-                }));
+
+                break;
             }
+            case 'maxMana': {
+                this.callbacks.increaseMaxMana(effect.valuePerLevel);
+
+                break;
+            }
+            case 'unlockFeature': {
+                // Handle feature unlocks (like goblin apprentice, spellbook)
+                if (effect.feature === 'goblinApprentice') {
+                    this.callbacks.unlockGoblinApprentice();
+                    this.signals.windows.update(w => ({
+                        ...w,
+                        goblinApprentice: { ...w.goblinApprentice, unlocked: true, visible: true }
+                    }));
+                } else if (effect.feature === 'spellbook') {
+                    this.callbacks.unlockSpellbook();
+                    this.signals.windows.update(w => ({
+                        ...w,
+                        spellbook: { ...w.spellbook, unlocked: true, visible: true }
+                    }));
+                }
+
+                break;
+            }
+            // No default
         }
 
         // Increment level

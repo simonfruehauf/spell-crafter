@@ -1,5 +1,4 @@
 import { Rune, ResearchNode, Enemy, Spell, Upgrade, AlchemyRecipe } from './game.interfaces';
-import { RESOURCE_NAMES, INITIAL_CRAFTING_RESOURCES } from './resources.data';
 
 // Re-export for convenience
 export { ALL_RESOURCES, RESOURCE_NAMES, INITIAL_CRAFTING_RESOURCES, RESOURCE_DEFS, getResourcesByCategory } from './resources.data';
@@ -10,11 +9,11 @@ export { ALL_RESOURCES, RESOURCE_NAMES, INITIAL_CRAFTING_RESOURCES, RESOURCE_DEF
 
 export const ASCII_ART = {
     player: `
-  /\
- /  \
+  /\\
+ /  \\
 -------
 |O  O|
- \__/`,
+ \\__/`,
     goblin: `  ,
  /&\\
 (o o)
@@ -650,7 +649,7 @@ export const INITIAL_UPGRADES: Upgrade[] = [
         id: 'faster_combat', name: 'Swift Combat', description: 'Reduce combat tick by 50ms per level.',
         category: 'idle', level: 0, maxLevel: 10,
         cost: [{ resourceId: 'wind_essence', amount: 5 }, { resourceId: 'temporal_sand', amount: 1 }],
-        costMultiplier: 2.0, effect: { type: 'combatSpeed', msReductionPerLevel: 50 }, unlocked: true
+        costMultiplier: 2, effect: { type: 'combatSpeed', msReductionPerLevel: 50 }, unlocked: true
     },
 
     // CRAFTING
@@ -670,7 +669,7 @@ export const INITIAL_UPGRADES: Upgrade[] = [
         id: 'max_runes', name: 'Spell Complexity', description: 'Increase max runes per spell by 1 per level. (Base: 3)',
         category: 'crafting', level: 0, maxLevel: 7,
         cost: [{ resourceId: 'master_rune', amount: 1 }, { resourceId: 'spell_parchment', amount: 5 }],
-        costMultiplier: 2.0, effect: { type: 'maxRunes', valuePerLevel: 1 }, unlocked: true
+        costMultiplier: 2, effect: { type: 'maxRunes', valuePerLevel: 1 }, unlocked: true
     },
 
     // NEW UPGRADES - Using previously unused resources
@@ -801,25 +800,25 @@ export const INITIAL_UPGRADES: Upgrade[] = [
         id: 'primordial_power', name: 'Primordial Power', description: 'Unlock true power. All effects +10% per level.',
         category: 'crafting', level: 0, maxLevel: 3,
         cost: [{ resourceId: 'primordial_ore', amount: 1 }, { resourceId: 'elder_rune', amount: 1 }],
-        costMultiplier: 3.0, effect: { type: 'allEffects', percentPerLevel: 10 }, unlocked: false, prerequisite: 'rune_power'
+        costMultiplier: 3, effect: { type: 'allEffects', percentPerLevel: 10 }, unlocked: false, prerequisite: 'rune_power'
     },
     {
         id: 'ethereal_binding', name: 'Ethereal Binding', description: 'Spells chain to additional targets.',
         category: 'combat', level: 0, maxLevel: 3,
         cost: [{ resourceId: 'ethereal_chain', amount: 2 }, { resourceId: 'angel_feather', amount: 1 }],
-        costMultiplier: 2.0, effect: { type: 'spellChain', valuePerLevel: 1 }, unlocked: false, prerequisite: 'spell_power'
+        costMultiplier: 2, effect: { type: 'spellChain', valuePerLevel: 1 }, unlocked: false, prerequisite: 'spell_power'
     },
     {
         id: 'reality_warp', name: 'Reality Warp', description: 'Chance to double spell effects.',
         category: 'crafting', level: 0, maxLevel: 5,
         cost: [{ resourceId: 'void_prism', amount: 1 }, { resourceId: 'worldtree_leaf', amount: 1 }],
-        costMultiplier: 2.0, effect: { type: 'doubleEffect', percentPerLevel: 5 }, unlocked: false, prerequisite: 'rune_power'
+        costMultiplier: 2, effect: { type: 'doubleEffect', percentPerLevel: 5 }, unlocked: false, prerequisite: 'rune_power'
     },
     {
         id: 'infinite_potential', name: 'Infinite Potential', description: 'Unlock endless growth. +2% to all gains per level.',
         category: 'idle', level: 0, maxLevel: 5,
         cost: [{ resourceId: 'infinity_loop', amount: 1 }, { resourceId: 'genesis_spark', amount: 1 }],
-        costMultiplier: 3.0, effect: { type: 'allGains', percentPerLevel: 2 }, unlocked: false, prerequisite: 'primordial_power'
+        costMultiplier: 3, effect: { type: 'allGains', percentPerLevel: 2 }, unlocked: false, prerequisite: 'primordial_power'
     },
 
     // CURRENCY-BASED UPGRADES
@@ -827,7 +826,7 @@ export const INITIAL_UPGRADES: Upgrade[] = [
         id: 'soul_investment', name: 'Soul Investment', description: 'Permanent +5% gold and exp per level.',
         category: 'idle', level: 0, maxLevel: 5,
         cost: [{ resourceId: 'soul_coin', amount: 1 }, { resourceId: 'soulstone', amount: 1 }],
-        costMultiplier: 2.0, effect: { type: 'soulBonus', percentPerLevel: 5 }, unlocked: false, prerequisite: 'gold_boost'
+        costMultiplier: 2, effect: { type: 'soulBonus', percentPerLevel: 5 }, unlocked: false, prerequisite: 'gold_boost'
     },
     {
         id: 'divine_blessing', name: 'Divine Blessing', description: 'Divine protection. +10% all defenses per level.',
@@ -849,13 +848,13 @@ export const INITIAL_UPGRADES: Upgrade[] = [
         id: 'goblin_apprentice', name: 'Goblin Apprentice', description: 'A goblin apprentice that meditates for you!',
         category: 'special', level: 0, maxLevel: 1,
         cost: [{ resourceId: 'goblin_tooth', amount: 20 }, { resourceId: 'goblin_skull', amount: 1 }],
-        costMultiplier: 1.0, effect: { type: 'unlockFeature', feature: 'goblinApprentice' }, unlocked: true
+        costMultiplier: 1, effect: { type: 'unlockFeature', feature: 'goblinApprentice' }, unlocked: true
     },
     {
         id: 'spellbook', name: 'Spellbook', description: 'Automate combat with a queue of spells cast in sequence.',
         category: 'special', level: 0, maxLevel: 1,
         cost: [{ resourceId: 'spell_parchment', amount: 10 }, { resourceId: 'enchanted_ink', amount: 5 }],
-        costMultiplier: 1.0, effect: { type: 'unlockFeature', feature: 'spellbook' }, unlocked: true
+        costMultiplier: 1, effect: { type: 'unlockFeature', feature: 'spellbook' }, unlocked: true
     },
 
     // GARDEN
@@ -871,13 +870,13 @@ export const INITIAL_UPGRADES: Upgrade[] = [
         id: 'void_attunement', name: 'Void Attunement', description: '+8% spell damage per level.',
         category: 'combat', level: 0, maxLevel: 3,
         cost: [{ resourceId: 'voidbloom', amount: 1 }, { resourceId: 'void_essence', amount: 3 }],
-        costMultiplier: 2.0, effect: { type: 'damage', percentPerLevel: 8 }, unlocked: false, prerequisite: 'spell_power'
+        costMultiplier: 2, effect: { type: 'damage', percentPerLevel: 8 }, unlocked: false, prerequisite: 'spell_power'
     },
     {
         id: 'worldtree_blessing', name: 'Worldtree Blessing', description: '+2 HP regen per 5s per level.',
         category: 'idle', level: 0, maxLevel: 3,
         cost: [{ resourceId: 'worldtree_leaf', amount: 2 }, { resourceId: 'life_essence', amount: 5 }],
-        costMultiplier: 2.0, effect: { type: 'hpRegen', valuePerLevel: 2 }, unlocked: false, prerequisite: 'hp_regen'
+        costMultiplier: 2, effect: { type: 'hpRegen', valuePerLevel: 2 }, unlocked: false, prerequisite: 'hp_regen'
     },
     {
         id: 'herbal_mastery', name: 'Herbal Mastery', description: '+5% potion effectiveness per level.',
@@ -917,49 +916,49 @@ export const INITIAL_ALCHEMY_RECIPES: AlchemyRecipe[] = [
             { outputs: [{ resourceId: 'earth_essence', amount: 1 }], chance: 0.25 },
             { outputs: [{ resourceId: 'water_essence', amount: 1 }], chance: 0.25 },
         ],
-        craftTimeMs: 15000, unlocked: true,
+        craftTimeMs: 15_000, unlocked: true,
     },
     {
         id: 'distill-fire', name: 'Distill Fire Essence',
         description: 'Extract fire essence from imp horns and fireweed.',
         inputs: [{ resourceId: 'imp_horn', amount: 3 }, { resourceId: 'fireweed', amount: 2 }],
         outputs: [{ resourceId: 'fire_essence', amount: 3 }],
-        craftTimeMs: 20000, unlocked: true,
+        craftTimeMs: 20_000, unlocked: true,
     },
     {
         id: 'distill-ice', name: 'Distill Ice Essence',
         description: 'Extract ice essence from wraith remains and frostleaf.',
         inputs: [{ resourceId: 'wraith_essence', amount: 3 }, { resourceId: 'frostleaf', amount: 2 }],
         outputs: [{ resourceId: 'ice_essence', amount: 3 }],
-        craftTimeMs: 20000, unlocked: true,
+        craftTimeMs: 20_000, unlocked: true,
     },
     {
         id: 'distill-lightning', name: 'Distill Lightning Essence',
         description: 'Extract lightning essence from elemental cores.',
         inputs: [{ resourceId: 'elemental_core', amount: 2 }, { resourceId: 'spirit_dust', amount: 2 }],
         outputs: [{ resourceId: 'lightning_essence', amount: 3 }],
-        craftTimeMs: 25000, unlocked: true,
+        craftTimeMs: 25_000, unlocked: true,
     },
     {
         id: 'distill-earth', name: 'Distill Earth Essence',
         description: 'Extract earth essence from bones and thornroot.',
         inputs: [{ resourceId: 'skeleton_bone', amount: 5 }, { resourceId: 'thornroot', amount: 2 }],
         outputs: [{ resourceId: 'earth_essence', amount: 3 }],
-        craftTimeMs: 20000, unlocked: true,
+        craftTimeMs: 20_000, unlocked: true,
     },
     {
         id: 'distill-water', name: 'Distill Water Essence',
         description: 'Extract water essence from spider silk and frostleaf.',
         inputs: [{ resourceId: 'spider_silk', amount: 3 }, { resourceId: 'frostleaf', amount: 3 }],
         outputs: [{ resourceId: 'water_essence', amount: 3 }],
-        craftTimeMs: 20000, unlocked: true,
+        craftTimeMs: 20_000, unlocked: true,
     },
     {
         id: 'distill-wind', name: 'Distill Wind Essence',
         description: 'Extract wind essence from pelts and moss.',
         inputs: [{ resourceId: 'wolf_leather', amount: 3 }, { resourceId: 'healing_moss', amount: 3 }],
         outputs: [{ resourceId: 'wind_essence', amount: 3 }],
-        craftTimeMs: 20000, unlocked: true,
+        craftTimeMs: 20_000, unlocked: true,
     },
     // Uncommon essences (30s craft time)
     {
@@ -967,21 +966,21 @@ export const INITIAL_ALCHEMY_RECIPES: AlchemyRecipe[] = [
         description: 'Extract dark essence from shadow materials.',
         inputs: [{ resourceId: 'shadow_thread', amount: 4 }, { resourceId: 'shadowcap', amount: 2 }],
         outputs: [{ resourceId: 'dark_essence', amount: 2 }],
-        craftTimeMs: 30000, unlocked: true,
+        craftTimeMs: 30_000, unlocked: true,
     },
     {
         id: 'distill-holy', name: 'Distill Holy Essence',
         description: 'Extract holy essence from angelic remnants.',
         inputs: [{ resourceId: 'angel_feather', amount: 2 }, { resourceId: 'sunpetal', amount: 3 }],
         outputs: [{ resourceId: 'holy_essence', amount: 2 }],
-        craftTimeMs: 30000, unlocked: true,
+        craftTimeMs: 30_000, unlocked: true,
     },
     {
         id: 'distill-life', name: 'Distill Life Essence',
         description: 'Extract life essence from healing materials.',
         inputs: [{ resourceId: 'healing_moss', amount: 5 }, { resourceId: 'mana_blossom', amount: 3 }],
         outputs: [{ resourceId: 'life_essence', amount: 2 }],
-        craftTimeMs: 25000, unlocked: true,
+        craftTimeMs: 25_000, unlocked: true,
     },
     // Rare essences (30-40s craft time)
     {
@@ -989,14 +988,14 @@ export const INITIAL_ALCHEMY_RECIPES: AlchemyRecipe[] = [
         description: 'Extract pure arcane essence from magical reagents.',
         inputs: [{ resourceId: 'mana_crystal', amount: 5 }, { resourceId: 'arcane_ash', amount: 3 }],
         outputs: [{ resourceId: 'arcane_essence', amount: 2 }],
-        craftTimeMs: 30000, unlocked: true,
+        craftTimeMs: 30_000, unlocked: true,
     },
     {
         id: 'distill-void', name: 'Distill Void Essence',
         description: 'Transmute dark essence into void essence.',
         inputs: [{ resourceId: 'dark_essence', amount: 3 }, { resourceId: 'soul_shard', amount: 1 }],
         outputs: [{ resourceId: 'void_essence', amount: 1 }],
-        craftTimeMs: 40000, unlocked: true,
+        craftTimeMs: 40_000, unlocked: true,
     },
     // Herb-based transmutations
     {
@@ -1004,35 +1003,35 @@ export const INITIAL_ALCHEMY_RECIPES: AlchemyRecipe[] = [
         description: 'Convert ghostcap into wraith essence.',
         inputs: [{ resourceId: 'ghostcap', amount: 3 }, { resourceId: 'dark_essence', amount: 1 }],
         outputs: [{ resourceId: 'wraith_essence', amount: 2 }],
-        craftTimeMs: 20000, unlocked: true,
+        craftTimeMs: 20_000, unlocked: true,
     },
     {
         id: 'transmute-dreamweed', name: 'Dream Distillation',
         description: 'Extract arcane essence from dreamweed.',
         inputs: [{ resourceId: 'dreamweed', amount: 4 }, { resourceId: 'moonstone_powder', amount: 2 }],
         outputs: [{ resourceId: 'arcane_essence', amount: 2 }],
-        craftTimeMs: 25000, unlocked: true,
+        craftTimeMs: 25_000, unlocked: true,
     },
     {
         id: 'transmute-dragonlily', name: 'Draconic Infusion',
         description: 'Concentrate dragon lily into primal fire.',
         inputs: [{ resourceId: 'dragonlily', amount: 2 }, { resourceId: 'fire_essence', amount: 3 }],
         outputs: [{ resourceId: 'phoenix_ash', amount: 1 }],
-        craftTimeMs: 35000, unlocked: true,
+        craftTimeMs: 35_000, unlocked: true,
     },
     {
         id: 'transmute-thornroot', name: 'Venomous Extraction',
         description: 'Extract poison from thornroot.',
         inputs: [{ resourceId: 'thornroot', amount: 5 }, { resourceId: 'spider_silk', amount: 2 }],
         outputs: [{ resourceId: 'dark_essence', amount: 2 }],
-        craftTimeMs: 20000, unlocked: true,
+        craftTimeMs: 20_000, unlocked: true,
     },
     {
         id: 'transmute-voidbloom', name: 'Void Crystallization',
         description: 'Crystallize voidbloom into pure void.',
         inputs: [{ resourceId: 'voidbloom', amount: 1 }, { resourceId: 'void_essence', amount: 2 }],
         outputs: [{ resourceId: 'dimensional_shard', amount: 1 }],
-        craftTimeMs: 45000, unlocked: true,
+        craftTimeMs: 45_000, unlocked: true,
     },
 ];
 

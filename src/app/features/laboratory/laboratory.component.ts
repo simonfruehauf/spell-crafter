@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
-import { RESOURCE_NAMES, RESOURCE_DEFS } from '../../core/models/resources.data';
+import { RESOURCE_DEFS } from '../../core/models/resources.data';
 import { ResourceDef } from '../../core/models/game.interfaces';
 
 @Component({
@@ -362,41 +362,77 @@ export class LaboratoryComponent {
 
   getBlockColor(type: number): string {
     switch (type) {
-      case 0: return '#000000'; // Empty
-      case 1: return '#0000aa'; // Fragmented (Blue)
-      case 2: return '#0066cc'; // Optimized (Mana) 
-      case 3: return '#00aaaa'; // Reading (Cyan)
-      case 4: return '#00aa00'; // Writing (Green)
-      default: return '#000000';
+      case 0: {
+        return '#000000';
+      } // Empty
+      case 1: {
+        return '#0000aa';
+      } // Fragmented (Blue)
+      case 2: {
+        return '#0066cc';
+      } // Optimized (Mana) 
+      case 3: {
+        return '#00aaaa';
+      } // Reading (Cyan)
+      case 4: {
+        return '#00aa00';
+      } // Writing (Green)
+      default: {
+        return '#000000';
+      }
     }
   }
 
   getYieldName(item: ResourceDef): string {
     switch (item.rarity) {
-      case 'common': return 'Knowledge';
-      case 'uncommon': return 'Knowledge';
-      case 'rare': return 'Insight';
-      case 'epic': return 'Insight';
-      case 'legendary': return 'Percipience';
-      default: return 'Knowledge';
+      case 'common': {
+        return 'Knowledge';
+      }
+      case 'uncommon': {
+        return 'Knowledge';
+      }
+      case 'rare': {
+        return 'Insight';
+      }
+      case 'epic': {
+        return 'Insight';
+      }
+      case 'legendary': {
+        return 'Percipience';
+      }
+      default: {
+        return 'Knowledge';
+      }
     }
   }
 
   getYieldAmount(item: ResourceDef): number {
     switch (item.rarity) {
-      case 'common': return 1;
-      case 'uncommon': return 5;
-      case 'rare': return 1;
-      case 'epic': return 5;
-      case 'legendary': return 1;
-      default: return 1;
+      case 'common': {
+        return 1;
+      }
+      case 'uncommon': {
+        return 5;
+      }
+      case 'rare': {
+        return 1;
+      }
+      case 'epic': {
+        return 5;
+      }
+      case 'legendary': {
+        return 1;
+      }
+      default: {
+        return 1;
+      }
     }
   }
 
   deconstructState = signal<'idle' | 'processing' | 'complete'>('idle');
   resultMessage = signal<string>('');
   // 0: Empty, 1: Fragmented (Blue), 2: Optimized (Cyan), 3: Reading (Yellow), 4: Writing (Green)
-  blockGrid = signal<number[]>(Array(240).fill(0));
+  blockGrid = signal<number[]>(new Array<number>(240).fill(0));
   currentSector = signal<number>(-1);
 
   deconstruct() {
@@ -410,7 +446,7 @@ export class LaboratoryComponent {
 
     // Initialize Grid with "Fragmented" data
     // Create a random distribution of "used sectors"
-    const newGrid = Array(240).fill(0).map(() => Math.random() > 0.6 ? 0 : 1);
+    const newGrid = new Array<number>(240).fill(0).map(() => Math.random() > 0.6 ? 0 : 1);
     this.blockGrid.set(newGrid);
 
     // Animation Logic
@@ -419,7 +455,7 @@ export class LaboratoryComponent {
     const totalBlocks = 240;
 
     // Calculate speed to fit in 14-24 seconds
-    const duration = 12000 + Math.random() * 12000;
+    const duration = 12_000 + Math.random() * 12_000;
     const intervalTime = duration / totalBlocks;
 
     const intervalId = setInterval(() => {

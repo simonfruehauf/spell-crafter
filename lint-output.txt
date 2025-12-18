@@ -1,0 +1,141 @@
+﻿
+> spell-crafter@0.0.0 lint
+> ng lint
+
+
+Linting "spell-crafter"...
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\app.ts
+  49:9   error  click must be accompanied by either keyup, keydown or keypress event for accessibility  @angular-eslint/template/click-events-have-key-events
+  49:9   error  Elements with interaction handlers must be focusable                                    @angular-eslint/template/interactive-supports-focus
+  67:29  error  click must be accompanied by either keyup, keydown or keypress event for accessibility  @angular-eslint/template/click-events-have-key-events
+  67:29  error  Elements with interaction handlers must be focusable                                    @angular-eslint/template/interactive-supports-focus
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\core\services\game-state.service.ts
+    5:5   error  'GameState' is defined but never used               @typescript-eslint/no-unused-vars
+    5:49  error  'WindowState' is defined but never used             @typescript-eslint/no-unused-vars
+    6:32  error  'CombatLogEntry' is defined but never used          @typescript-eslint/no-unused-vars
+    7:5   error  'ActiveEffect' is defined but never used            @typescript-eslint/no-unused-vars
+    7:19  error  'LootDrop' is defined but never used                @typescript-eslint/no-unused-vars
+    7:52  error  'DamageType' is defined but never used              @typescript-eslint/no-unused-vars
+   10:18  error  'GardenPlot' is defined but never used              @typescript-eslint/no-unused-vars
+   12:10  error  'INITIAL_RESEARCH_TREE' is defined but never used   @typescript-eslint/no-unused-vars
+   12:33  error  'RUNES' is defined but never used                   @typescript-eslint/no-unused-vars
+   12:55  error  'ENEMIES' is defined but never used                 @typescript-eslint/no-unused-vars
+   12:64  error  'INITIAL_UPGRADES' is defined but never used        @typescript-eslint/no-unused-vars
+   13:38  error  'RESOURCE_NAMES' is defined but never used          @typescript-eslint/no-unused-vars
+   13:54  error  'RESOURCE_DEFS' is defined but never used           @typescript-eslint/no-unused-vars
+   14:10  error  'SELL_PRICES' is defined but never used             @typescript-eslint/no-unused-vars
+   14:23  error  'BUY_MULTIPLIERS' is defined but never used         @typescript-eslint/no-unused-vars
+   14:40  error  'THEMES' is defined but never used                  @typescript-eslint/no-unused-vars
+   15:37  error  'INITIAL_EQUIPPED_ITEMS' is defined but never used  @typescript-eslint/no-unused-vars
+   15:61  error  'EQUIPMENT_ITEMS' is defined but never used         @typescript-eslint/no-unused-vars
+   16:10  error  'POTIONS' is defined but never used                 @typescript-eslint/no-unused-vars
+  128:43  error  '_' is defined but never used                       @typescript-eslint/no-unused-vars
+  132:43  error  '_' is defined but never used                       @typescript-eslint/no-unused-vars
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\features\altar\altar.component.ts
+  146:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\features\bestiary\bestiary.component.ts
+  6:10  error  'Enemy' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\features\combat\combat.component.ts
+    8:19  error  'POTIONS_MAP' is defined but never used                                                 @typescript-eslint/no-unused-vars
+   46:21  error  click must be accompanied by either keyup, keydown or keypress event for accessibility  @angular-eslint/template/click-events-have-key-events
+   46:21  error  Elements with interaction handlers must be focusable                                    @angular-eslint/template/interactive-supports-focus
+  148:25  error  click must be accompanied by either keyup, keydown or keypress event for accessibility  @angular-eslint/template/click-events-have-key-events
+  148:25  error  Elements with interaction handlers must be focusable                                    @angular-eslint/template/interactive-supports-focus
+  168:25  error  click must be accompanied by either keyup, keydown or keypress event for accessibility  @angular-eslint/template/click-events-have-key-events
+  168:25  error  Elements with interaction handlers must be focusable                                    @angular-eslint/template/interactive-supports-focus
+  211:21  error  A label component must be associated with a form element                                @angular-eslint/template/label-has-associated-control
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\features\dev-console\dev-console.component.ts
+    7:10  error  'RUNES' is defined but never used                         @typescript-eslint/no-unused-vars
+    7:17  error  'INITIAL_RESEARCH_TREE' is defined but never used         @typescript-eslint/no-unused-vars
+    7:40  error  'INITIAL_ALCHEMY_RECIPES' is defined but never used       @typescript-eslint/no-unused-vars
+    8:10  error  'INITIAL_EQUIPMENT_RECIPES' is defined but never used     @typescript-eslint/no-unused-vars
+  429:15  error  'needed' is assigned a value but never used               @typescript-eslint/no-unused-vars
+   28:25  error  A label component must be associated with a form element  @angular-eslint/template/label-has-associated-control
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\features\equipment\equipment.component.ts
+  28:13  error  click must be accompanied by either keyup, keydown or keypress event for accessibility  @angular-eslint/template/click-events-have-key-events
+  28:13  error  Elements with interaction handlers must be focusable                                    @angular-eslint/template/interactive-supports-focus
+  67:19  error  click must be accompanied by either keyup, keydown or keypress event for accessibility  @angular-eslint/template/click-events-have-key-events
+  67:19  error  Elements with interaction handlers must be focusable                                    @angular-eslint/template/interactive-supports-focus
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\features\goblin-apprentice\goblin-apprentice.component.ts
+  67:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\features\laboratory\laboratory.component.ts
+  435:32  error  `new Array()` is unclear in intent; use either `[x]` or `Array.from({length: x})`       unicorn/no-new-array
+  449:21  error  `new Array()` is unclear in intent; use either `[x]` or `Array.from({length: x})`       unicorn/no-new-array
+   42:17  error  click must be accompanied by either keyup, keydown or keypress event for accessibility  @angular-eslint/template/click-events-have-key-events
+   42:17  error  Elements with interaction handlers must be focusable                                    @angular-eslint/template/interactive-supports-focus
+   61:44  error  Use built-in control flow instead of directive ngIf                                     @angular-eslint/template/prefer-control-flow
+  109:22  error  A label component must be associated with a form element                                @angular-eslint/template/label-has-associated-control
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\features\market\market.component.ts
+    7:10  error  'PotionInventory' is defined but never used             @typescript-eslint/no-unused-vars
+    7:27  error  'ResourceDef' is defined but never used                 @typescript-eslint/no-unused-vars
+  315:17  error  Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  328:25  error  Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  369:24  error  Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  457:40  error  Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+   39:33  error  Use built-in control flow instead of directive ngForOf  @angular-eslint/template/prefer-control-flow
+   48:15  error  Use built-in control flow instead of directive ngIf     @angular-eslint/template/prefer-control-flow
+   51:39  error  Use built-in control flow instead of directive ngForOf  @angular-eslint/template/prefer-control-flow
+   66:23  error  Use built-in control flow instead of directive ngIf     @angular-eslint/template/prefer-control-flow
+   73:15  error  Use built-in control flow instead of directive ngIf     @angular-eslint/template/prefer-control-flow
+   76:39  error  Use built-in control flow instead of directive ngForOf  @angular-eslint/template/prefer-control-flow
+   92:15  error  Use built-in control flow instead of directive ngIf     @angular-eslint/template/prefer-control-flow
+   95:40  error  Use built-in control flow instead of directive ngForOf  @angular-eslint/template/prefer-control-flow
+  101:40  error  Use built-in control flow instead of directive ngIf     @angular-eslint/template/prefer-control-flow
+  121:15  error  Use built-in control flow instead of directive ngIf     @angular-eslint/template/prefer-control-flow
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\features\research\research.component.ts
+  66:13  error  click must be accompanied by either keyup, keydown or keypress event for accessibility  @angular-eslint/template/click-events-have-key-events
+  66:13  error  Elements with interaction handlers must be focusable                                    @angular-eslint/template/interactive-supports-focus
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\features\settings\settings.component.ts
+  43:13  error  A label component must be associated with a form element  @angular-eslint/template/label-has-associated-control
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\features\spell-crafting\spell-crafting.component.ts
+   33:17  error  click must be accompanied by either keyup, keydown or keypress event for accessibility  @angular-eslint/template/click-events-have-key-events
+   33:17  error  Elements with interaction handlers must be focusable                                    @angular-eslint/template/interactive-supports-focus
+   51:17  error  click must be accompanied by either keyup, keydown or keypress event for accessibility  @angular-eslint/template/click-events-have-key-events
+   51:17  error  Elements with interaction handlers must be focusable                                    @angular-eslint/template/interactive-supports-focus
+  103:11  error  A label component must be associated with a form element                                @angular-eslint/template/label-has-associated-control
+  105:11  error  A label component must be associated with a form element                                @angular-eslint/template/label-has-associated-control
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\shared\components\confirmation-modal\confirmation-modal.component.ts
+  107:5  error  Output bindings, including aliases, should not be named as standard DOM events          @angular-eslint/no-output-native
+   11:5  error  click must be accompanied by either keyup, keydown or keypress event for accessibility  @angular-eslint/template/click-events-have-key-events
+   11:5  error  Elements with interaction handlers must be focusable                                    @angular-eslint/template/interactive-supports-focus
+   12:7  error  click must be accompanied by either keyup, keydown or keypress event for accessibility  @angular-eslint/template/click-events-have-key-events
+   12:7  error  Elements with interaction handlers must be focusable                                    @angular-eslint/template/interactive-supports-focus
+
+C:\Users\Fruehaufs\Documents\GitHub\spell-crafter\src\app\shared\utils\clone.utils.ts
+  18:1  error  The filename `clone.utils.ts` should be named `clone.utilities.ts`. A more descriptive name will do too  unicorn/prevent-abbreviations
+
+Ô£û 83 problems (83 errors, 0 warnings)
+  2 errors and 0 warnings potentially fixable with the `--fix` option.
+
+node.exe : [1m[31mLint errors 
+found in the listed files.
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo          : No 
+   tSpecified: ([1m[31mLint e  
+  ...e listed files.:String) [   
+ ], RemoteException
+    + FullyQualifiedErrorId : Na 
+   tiveCommandError
+ 
+[39m[22m

@@ -439,12 +439,18 @@ export class MarketComponent {
 
     private getRarityValue(rarity: string): number {
         switch (rarity) {
-            case 'common': return 1;
-            case 'uncommon': return 2;
-            case 'rare': return 3;
-            case 'epic': return 4;
-            case 'legendary': return 5;
-            default: return 0;
+            case 'common': { return 1;
+            }
+            case 'uncommon': { return 2;
+            }
+            case 'rare': { return 3;
+            }
+            case 'epic': { return 4;
+            }
+            case 'legendary': { return 5;
+            }
+            default: { return 0;
+            }
         }
     }
 

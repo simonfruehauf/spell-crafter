@@ -139,17 +139,17 @@ export class CombatService {
 
         this.signals.combat.update(c => ({ ...c, playerTurn: false }));
 
-        if (!this.signals.idle().autoCombat) {
-            setTimeout(() => this.enemyTurn(), 500);
-        } else {
+        if (this.signals.idle().autoCombat) {
             this.enemyTurn();
+        } else {
+            setTimeout(() => this.enemyTurn(), 500);
         }
     }
 
     // Stat caps
-    private readonly MAX_CRIT_CHANCE = 0.50; // 50% max crit chance
+    private readonly MAX_CRIT_CHANCE = 0.5; // 50% max crit chance
     private readonly MAX_LCK_CRIT_BONUS = 0.25; // LCK can add up to 25% crit
-    private readonly MAX_LCK_LOOT_BONUS = 0.50; // LCK can add up to 50% loot bonus
+    private readonly MAX_LCK_LOOT_BONUS = 0.5; // LCK can add up to 50% loot bonus
     private readonly MIN_COMBAT_TICK_MS = 200; // Minimum combat speed (fastest)
     private readonly SPD_TICK_REDUCTION_PER_POINT = 15; // Each SPD reduces tick by 15ms
 
@@ -653,7 +653,7 @@ export class CombatService {
             }));
             this.signals.combat.update(x => ({
                 ...x,
-                deathLockoutUntil: Date.now() + 30000
+                deathLockoutUntil: Date.now() + 30_000
             }));
         }
 

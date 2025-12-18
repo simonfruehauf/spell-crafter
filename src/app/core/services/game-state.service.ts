@@ -304,7 +304,7 @@ export class GameStateService implements OnDestroy {
 
         // Auto-save
         this.autoSaveCounter += this.TICK_RATE;
-        if (this.autoSaveCounter >= 10000) {
+        if (this.autoSaveCounter >= 10_000) {
             this.autoSaveCounter = 0;
             this.saveGame();
         }
@@ -555,10 +555,10 @@ export class GameStateService implements OnDestroy {
 
             // End player turn and trigger enemy turn
             this._combat.update(c => ({ ...c, playerTurn: false }));
-            if (!this._idle().autoCombat) {
-                setTimeout(() => this.combatService.enemyTurn(), 500);
-            } else {
+            if (this._idle().autoCombat) {
                 this.combatService.enemyTurn();
+            } else {
+                setTimeout(() => this.combatService.enemyTurn(), 500);
             }
         } else {
             // Out of combat: only healing/mana effects work
@@ -602,9 +602,10 @@ export class GameStateService implements OnDestroy {
                 // Buff effects don't work outside combat
                 case 'buffStat':
                 case 'shield':
-                case 'damageBoost':
+                case 'damageBoost': {
                     // These only work in combat
                     break;
+                }
             }
         }
     }
@@ -636,10 +637,10 @@ export class GameStateService implements OnDestroy {
         this._combat.update(c => ({ ...c, playerTurn: false }));
 
         // Trigger enemy turn after a short delay (like castSpell)
-        if (!this._idle().autoCombat) {
-            setTimeout(() => this.combatService.enemyTurn(), 500);
-        } else {
+        if (this._idle().autoCombat) {
             this.combatService.enemyTurn();
+        } else {
+            setTimeout(() => this.combatService.enemyTurn(), 500);
         }
 
         return true;

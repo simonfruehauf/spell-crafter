@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { WindowStates, WindowState } from '../models/game.interfaces';
+import { WindowStates } from '../models/game.interfaces';
 
 export interface WindowSignals {
     windows: ReturnType<typeof signal<WindowStates>>;

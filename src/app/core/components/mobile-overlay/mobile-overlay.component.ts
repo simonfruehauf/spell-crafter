@@ -128,4 +128,4 @@ import { CommonModule } from '@angular/common';
     }
   `]
 })
-export class MobileOverlayComponent { }
+export class MobileOverlayComponent {}

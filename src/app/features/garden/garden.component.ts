@@ -2,7 +2,7 @@ import { Component, inject, output, computed, signal, OnDestroy, ChangeDetection
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
-import { GardenPlot, ResourceDef } from '../../core/models/game.interfaces';
+import { GardenPlot } from '../../core/models/game.interfaces';
 import { getResourcesByCategory, RESOURCE_NAMES } from '../../core/models/resources.data';
 
 @Component({
@@ -218,7 +218,7 @@ export class GardenComponent implements OnDestroy {
       herb.id === 'mint_plant' || (crafting[herb.id] || 0) >= 1
     );
     // Put 'mint_plant' first
-    return owned.sort((a, b) => a.id === 'mint_plant' ? -1 : b.id === 'mint_plant' ? 1 : 0);
+    return owned.sort((a, b) => a.id === 'mint_plant' ? -1 : (b.id === 'mint_plant' ? 1 : 0));
   });
 
   constructor() {

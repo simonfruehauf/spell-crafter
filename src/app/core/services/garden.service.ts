@@ -24,12 +24,12 @@ export class GardenService {
     createInitialGardenState(): GardenState {
         return {
             plots: [
-                { id: 0, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: true },
-                { id: 1, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
-                { id: 2, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
-                { id: 3, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
-                { id: 4, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
-                { id: 5, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30000, unlocked: false },
+                { id: 0, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30_000, unlocked: true },
+                { id: 1, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30_000, unlocked: false },
+                { id: 2, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30_000, unlocked: false },
+                { id: 3, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30_000, unlocked: false },
+                { id: 4, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30_000, unlocked: false },
+                { id: 5, plantedHerbId: null, plantedAt: 0, growthDurationMs: 30_000, unlocked: false },
             ],
             maxPlots: 6,
         };
@@ -51,13 +51,17 @@ export class GardenService {
         }
 
         const herbDef = RESOURCE_DEFS[herbId];
-        let growthDurationMs = 10000;
+        let growthDurationMs = 10_000;
         if (herbDef) {
             switch (herbDef.rarity) {
-                case 'common': growthDurationMs = 10000; break;
-                case 'uncommon': growthDurationMs = 15000; break;
-                case 'rare': growthDurationMs = 25000; break;
-                case 'epic': case 'legendary': growthDurationMs = 30000; break;
+                case 'common': { growthDurationMs = 10_000; break;
+                }
+                case 'uncommon': { growthDurationMs = 15_000; break;
+                }
+                case 'rare': { growthDurationMs = 25_000; break;
+                }
+                case 'epic': case 'legendary': { growthDurationMs = 30_000; break;
+ }
             }
         }
 

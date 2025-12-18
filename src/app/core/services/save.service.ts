@@ -168,7 +168,7 @@ export class SaveService {
 
             // === UPGRADES: Merge with defaults (handles new upgrades) ===
             this.signals.upgrades.set(
-                state.upgrades || JSON.parse(JSON.stringify(INITIAL_UPGRADES))
+                state.upgrades || structuredClone(INITIAL_UPGRADES)
             );
 
             // === IDLE: Merge with defaults (handles new idle flags) ===
@@ -209,7 +209,7 @@ export class SaveService {
 
             // === POTIONS: Merge with defaults (handles new potions) ===
             const defaultPotions = { ...INITIAL_POTION_INVENTORY };
-            this.signals.potions.set({ ...defaultPotions, ...(state.potions || {}) });
+            this.signals.potions.set({ ...defaultPotions, ...state.potions });
 
             // === GARDEN: Merge with current defaults (handles new plots) ===
             if (state.garden) {
@@ -230,13 +230,13 @@ export class SaveService {
 
             // === THEMES ===
             this.signals.themes.set({
-                ...{ active: 'default', unlocked: ['default'] },
-                ...(state.themes || {})
+                active: 'default', unlocked: ['default'],
+                ...state.themes
             });
 
             return true;
-        } catch (e) {
-            console.error('Failed to load save:', e);
+        } catch (error) {
+            console.error('Failed to load save:', error);
             return false;
         }
     }
@@ -265,8 +265,8 @@ export class SaveService {
 
             localStorage.setItem(SAVE_KEY, JSON.stringify(state));
             return this.loadGame();
-        } catch (e) {
-            console.error('Failed to import save:', e);
+        } catch (error) {
+            console.error('Failed to import save:', error);
             return false;
         }
     }
