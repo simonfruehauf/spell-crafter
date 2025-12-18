@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
 import { ENEMIES } from '../../core/models/game.data';
-import { Enemy } from '../../core/models/game.interfaces';
+
 
 @Component({
   selector: 'app-bestiary',

@@ -2,18 +2,17 @@ import { Injectable, signal, computed, inject, OnDestroy } from '@angular/core';
 import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
-    GameState, Player, Resources, WindowStates, WindowState, Rune, Spell,
-    ResearchNode, CombatState, CombatLogEntry, Enemy, IdleSettings,
-    ActiveEffect, LootDrop, ResourceCost, Upgrade, DamageType,
-    EquipmentItem, EquipmentRecipe, EquippedItems, EquipmentSlot, PlayerStats,
-    AlchemyRecipe, AlchemyState, PotionInventory, Potion, BrewingState,
-    GardenState, GardenPlot, ThemeState
+    Player, Resources, WindowStates, Rune, Spell,
+    ResearchNode, CombatState, Enemy, IdleSettings,
+    ResourceCost, Upgrade,
+    EquipmentItem, EquipmentRecipe, EquippedItems, PlayerStats, EquipmentSlot,
+    AlchemyRecipe, AlchemyState, PotionInventory, BrewingState, Potion,
+    GardenState, ThemeState
 } from '../models/game.interfaces';
-import { INITIAL_RESEARCH_TREE, RUNES, MAGIC_MISSILE, ENEMIES, INITIAL_UPGRADES, INITIAL_ALCHEMY_RECIPES } from '../models/game.data';
-import { INITIAL_CRAFTING_RESOURCES, RESOURCE_NAMES, RESOURCE_DEFS } from '../models/resources.data';
-import { SELL_PRICES, BUY_MULTIPLIERS, THEMES } from '../models/market.data';
-import { INITIAL_EQUIPMENT_RECIPES, INITIAL_EQUIPPED_ITEMS, EQUIPMENT_ITEMS } from '../models/equipment.data';
-import { POTIONS, POTIONS_MAP, INITIAL_POTION_INVENTORY } from '../models/potions.data';
+import { MAGIC_MISSILE, INITIAL_ALCHEMY_RECIPES } from '../models/game.data';
+import { INITIAL_CRAFTING_RESOURCES } from '../models/resources.data';
+import { INITIAL_EQUIPMENT_RECIPES } from '../models/equipment.data';
+import { POTIONS_MAP, INITIAL_POTION_INVENTORY } from '../models/potions.data';
 import { deepClone } from '../../shared/utils/clone.utils';
 
 // Import extracted services
@@ -125,11 +124,11 @@ export class GameStateService implements OnDestroy {
         this._researchTree().filter(node => node.unlocked && !node.researched));
     readonly visibleWindows = computed(() => {
         const w = this._windows();
-        return Object.entries(w).filter(([_, s]) => s.unlocked && s.visible).map(([id]) => id as keyof WindowStates);
+        return Object.entries(w).filter(([, s]) => s.unlocked && s.visible).map(([id]) => id as keyof WindowStates);
     });
     readonly closedWindows = computed(() => {
         const w = this._windows();
-        return Object.entries(w).filter(([_, s]) => s.unlocked && !s.visible).map(([id]) => id as keyof WindowStates);
+        return Object.entries(w).filter(([, s]) => s.unlocked && !s.visible).map(([id]) => id as keyof WindowStates);
     });
 
     // Game loop

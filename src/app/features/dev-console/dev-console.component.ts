@@ -4,8 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
 import { RESOURCE_NAMES, RESOURCE_DEFS } from '../../core/models/resources.data';
-import { RUNES, INITIAL_RESEARCH_TREE, INITIAL_ALCHEMY_RECIPES } from '../../core/models/game.data';
-import { INITIAL_EQUIPMENT_RECIPES } from '../../core/models/equipment.data';
 
 @Component({
     selector: 'app-dev-console',
@@ -276,33 +274,33 @@ export class DevConsoleComponent {
         }
 
         switch (target) {
-        case 'gold': {
-            this.gameState.addGold(amount);
-            this.log(`Added ${amount} gold.`, 'success');
-        
-        break;
-        }
-        case 'mana': {
-            this.gameState.addMana(amount);
-            this.log(`Added ${amount} mana.`, 'success');
-        
-        break;
-        }
-        case 'all': {
-            this.giveAllResources(amount);
-        
-        break;
-        }
-        default: {
-            // Try to find resource by id or name
-            const resourceId = this.findResourceId(target);
-            if (resourceId) {
-                this.gameState.addCraftingResource(resourceId, amount);
-                this.log(`Added ${amount} ${RESOURCE_NAMES[resourceId] || resourceId}.`, 'success');
-            } else {
-                this.log(`Unknown resource: ${target}`, 'error');
+            case 'gold': {
+                this.gameState.addGold(amount);
+                this.log(`Added ${amount} gold.`, 'success');
+
+                break;
             }
-        }
+            case 'mana': {
+                this.gameState.addMana(amount);
+                this.log(`Added ${amount} mana.`, 'success');
+
+                break;
+            }
+            case 'all': {
+                this.giveAllResources(amount);
+
+                break;
+            }
+            default: {
+                // Try to find resource by id or name
+                const resourceId = this.findResourceId(target);
+                if (resourceId) {
+                    this.gameState.addCraftingResource(resourceId, amount);
+                    this.log(`Added ${amount} ${RESOURCE_NAMES[resourceId] || resourceId}.`, 'success');
+                } else {
+                    this.log(`Unknown resource: ${target}`, 'error');
+                }
+            }
         }
     }
 
@@ -351,16 +349,12 @@ export class DevConsoleComponent {
         if (target === 'all') {
             this.unlockAllResearch();
         } else {
-            // Force research specific node (uses internal service - simplified)
             this.log(`Research command noted: ${target}`, 'info');
         }
     }
 
     private findResourceId(input: string): string | null {
-        // Try exact match first
         if (RESOURCE_NAMES[input]) return input;
-
-        // Try partial match
         const lowerInput = input.toLowerCase();
         for (const [id, name] of Object.entries(RESOURCE_NAMES)) {
             if (name.toLowerCase().includes(lowerInput) || id.toLowerCase().includes(lowerInput)) {
@@ -370,7 +364,6 @@ export class DevConsoleComponent {
         return null;
     }
 
-    // Quick Action Methods
     giveAllResources(amount = 100): void {
         Object.keys(RESOURCE_NAMES).forEach(id => {
             this.gameState.addCraftingResource(id, amount);
@@ -379,11 +372,9 @@ export class DevConsoleComponent {
     }
 
     unlockAllResearch(): void {
-        // Research all nodes by iterating through and calling research
         const tree = this.gameState.researchTree();
         tree.forEach(node => {
             if (!node.researched) {
-                // Bypass mana cost by giving mana first
                 this.gameState.addMana(node.manaCost + 100);
                 this.gameState.research(node.id);
             }
@@ -392,8 +383,6 @@ export class DevConsoleComponent {
     }
 
     unlockAllRecipes(): void {
-        // This would require access to internal signals; log for now
-        // The recipes are unlocked via research nodes
         this.log('Recipes are tied to research - use unlock research.', 'info');
     }
 
@@ -406,7 +395,6 @@ export class DevConsoleComponent {
     }
 
     maxStats(): void {
-        // Add lots of attribute points and stats via leveling
         for (let i = 0; i < 50; i++) {
             this.levelUp();
         }
@@ -424,16 +412,11 @@ export class DevConsoleComponent {
     }
 
     levelUp(): void {
-        // Give enough XP to level up (approximate)
-        const player = this.gameState.player();
-        const needed = player.experienceToLevel - player.experience + 1;
         // Access combat to add experience indirectly - we'll use a workaround
-        // by giving gold which doesn't give XP, so we'll simulate via defeating enemies
         this.log(`Level up! (Manual XP injection not available - use combat)`, 'info');
     }
 
     healPlayer(): void {
-        // Player heals out of combat automatically, but let's max it
         this.gameState.addMana(1000);
         this.log('Player healed & mana restored.', 'success');
     }

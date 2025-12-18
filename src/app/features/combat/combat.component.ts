@@ -5,7 +5,7 @@ import { WindowComponent } from '../../shared/components/window/window.component
 import { GameStateService } from '../../core/services/game-state.service';
 import { Spell, Enemy, Potion } from '../../core/models/game.interfaces';
 import { ENEMIES } from '../../core/models/game.data';
-import { POTIONS, POTIONS_MAP } from '../../core/models/potions.data';
+import { POTIONS } from '../../core/models/potions.data';
 import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
 
 @Component({

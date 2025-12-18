@@ -4,7 +4,7 @@ import { WindowComponent } from '../../shared/components/window/window.component
 import { GameStateService } from '../../core/services/game-state.service';
 import { RESOURCE_DEFS, RESOURCE_NAMES } from '../../core/models/resources.data';
 import { SELL_PRICES, BUY_MULTIPLIERS, THEMES } from '../../core/models/market.data';
-import { PotionInventory, ResourceDef } from '../../core/models/game.interfaces';
+
 
 @Component({
     selector: 'app-market',
@@ -439,17 +439,23 @@ export class MarketComponent {
 
     private getRarityValue(rarity: string): number {
         switch (rarity) {
-            case 'common': { return 1;
+            case 'common': {
+                return 1;
             }
-            case 'uncommon': { return 2;
+            case 'uncommon': {
+                return 2;
             }
-            case 'rare': { return 3;
+            case 'rare': {
+                return 3;
             }
-            case 'epic': { return 4;
+            case 'epic': {
+                return 4;
             }
-            case 'legendary': { return 5;
+            case 'legendary': {
+                return 5;
             }
-            default: { return 0;
+            default: {
+                return 0;
             }
         }
     }
