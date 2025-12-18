@@ -18,96 +18,76 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
       [initialY]="40" 
       [width]="340"
       (closed)="onClose()">
-      <div class="flex flex-col max-h-[450px]">
-        <div class="p-2 border border-win95-dark-gray bg-[var(--win95-white)] mb-2 italic text-win95-black">
+      <div class="research-container">
+        <div class="research-intro">
           <p>Ancient tomes and scrolls line the walls. 
              Spend mana to uncover new arcane knowledge.</p>
         </div>
 
-        <div class="flex justify-between px-2 py-1 bg-win95-blue text-white mb-2 font-mono">
-          <span class="font-bold">Available Mana:</span>
-          <span class="font-bold">{{ resources().mana | number:'1.0-0' }}</span>
+        <div class="mana-display">
+          <span class="mana-label">Available Mana:</span>
+          <span class="mana-value">{{ resources().mana | number:'1.0-0' }}</span>
         </div>
 
         @if (completedCount() > 0) {
-          <button class="w-full p-[6px] font-mono bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray cursor-pointer hover:bg-[#d0d0d0] active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white mb-2" 
-                  (click)="openDiscoveries()">
+          <button class="discoveries-btn" (click)="openDiscoveries()">
             [*] View Discoveries ({{ completedCount() }})
           </button>
         }
 
-        <div class="flex flex-wrap gap-1 mb-2">
-          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-win95-dark-gray bg-[#e0e0e0] text-black cursor-pointer hover:bg-[#d0d0d0]" 
-                  [class.font-bold]="activeFilter() === null" 
-                  [class.border-2]="activeFilter() === null"
-                  [class.border-inset]="activeFilter() === null"
+        <div class="filter-bar">
+          <button class="filter-btn all" 
+                  [class.active]="activeFilter() === null" 
                   (click)="setFilter(null)">All</button>
           
-          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#8080cc] bg-[#ccccff] text-black cursor-pointer hover:bg-[#d0d0d0]" 
-                  [class.font-bold]="activeFilter() === 'window'"
-                  [class.border-2]="activeFilter() === 'window'"
-                  [class.border-inset]="activeFilter() === 'window'"
+          <button class="filter-btn feature" 
+                  [class.active]="activeFilter() === 'window'"
                   (click)="setFilter('window')">Feature</button>
                   
-          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#cc80cc] bg-[#ffccff] text-black cursor-pointer hover:bg-[#d0d0d0]" 
-                  [class.font-bold]="activeFilter() === 'rune'"
-                  [class.border-2]="activeFilter() === 'rune'"
-                  [class.border-inset]="activeFilter() === 'rune'"
+          <button class="filter-btn rune" 
+                  [class.active]="activeFilter() === 'rune'"
                   (click)="setFilter('rune')">Rune</button>
                   
-          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#80cc80] bg-[#ccffcc] text-black cursor-pointer hover:bg-[#d0d0d0]" 
-                  [class.font-bold]="activeFilter() === 'stat'"
-                  [class.border-2]="activeFilter() === 'stat'"
-                  [class.border-inset]="activeFilter() === 'stat'"
+          <button class="filter-btn stat" 
+                  [class.active]="activeFilter() === 'stat'"
                   (click)="setFilter('stat')">Stat</button>
                   
-          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#80cccc] bg-[#ccffff] text-black cursor-pointer hover:bg-[#d0d0d0]" 
-                  [class.font-bold]="activeFilter() === 'maxMana'"
-                  [class.border-2]="activeFilter() === 'maxMana'"
-                  [class.border-inset]="activeFilter() === 'maxMana'"
+          <button class="filter-btn mana" 
+                  [class.active]="activeFilter() === 'maxMana'"
                   (click)="setFilter('maxMana')">Mana</button>
                   
-          <button class="px-[6px] py-[2px] text-[10px] font-mono border border-[#cccc80] bg-[var(--win95-white)] text-[var(--win95-black)] cursor-pointer hover:bg-[#d0d0d0]" 
-                  [class.font-bold]="activeFilter() === 'idle'"
-                  [class.border-2]="activeFilter() === 'idle'"
-                  [class.border-inset]="activeFilter() === 'idle'"
+          <button class="filter-btn idle" 
+                  [class.active]="activeFilter() === 'idle'"
                   (click)="setFilter('idle')">Idle</button>
         </div>
 
-        <div class="flex flex-col gap-1 overflow-y-auto max-h-[350px] pr-1">
+        <div class="research-list">
           @for (node of availableResearch(); track node.id) {
             <div 
-              class="p-2 border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray bg-win95-gray cursor-pointer transition-colors duration-100"
-              [class.opacity-50]="!node.unlocked"
-              [class.cursor-not-allowed]="!node.unlocked"
-              [class.bg-[#90ee90]]="node.researched"
-              [class.cursor-default]="node.researched"
-              [class.hover:bg-[#d0d0d0]]="node.unlocked && !node.researched"
-              [class.active:border-t-win95-dark-gray]="node.unlocked && !node.researched"
-              [class.active:border-l-win95-dark-gray]="node.unlocked && !node.researched"
-              [class.active:border-r-win95-white]="node.unlocked && !node.researched"
-              [class.active:border-b-win95-white]="node.unlocked && !node.researched"
+              class="research-node"
+              [class.locked]="!node.unlocked"
+              [class.researched]="node.researched"
+              [class.clickable]="node.unlocked && !node.researched"
               (click)="attemptResearch(node)">
               
-              <div class="flex justify-between items-center mb-1">
-                <span class="font-bold text-win95-black">
+              <div class="node-header">
+                <span class="node-name">
                   {{ node.name }}
-                  <span class="text-[9px] font-normal px-[4px] py-[1px] ml-[6px] border" 
-                        [class]="getUnlockTagClass(node)">{{ getUnlockTag(node) }}</span>
+                  <span class="unlock-tag" [class]="getUnlockTagClass(node)">{{ getUnlockTag(node) }}</span>
                 </span>
                 @if (!node.unlocked) {
-                  <span class="text-[11px] font-mono text-win95-black">[--]</span>
+                  <span class="node-cost-locked">[--]</span>
                 } @else {
-                  <span class="text-[10px] font-mono text-[#606060]">{{ node.manaCost }}mp</span>
+                  <span class="node-cost">{{ node.manaCost }}mp</span>
                 }
               </div>
               
-              <div class="text-[11px] text-[#404040] mb-1">{{ node.description }}</div>
+              <div class="node-description">{{ node.description }}</div>
               
               @if (node.unlocked) {
-                <div class="text-[11px] font-bold" 
-                     [class.text-[#008000]]="canAfford(node)"
-                     [class.text-[#800000]]="!canAfford(node)">
+                <div class="node-cost-detail" 
+                     [class.affordable]="canAfford(node)"
+                     [class.unaffordable]="!canAfford(node)">
                   Cost: {{ node.manaCost }} mana
                   @if (node.resourceCost && node.resourceCost.length > 0) {
                     <span>
@@ -120,12 +100,155 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
               }
             </div>
           } @empty {
-            <div class="text-win95-dark-gray italic text-center p-5">All research complete!</div>
+            <div class="empty-message">All research complete!</div>
           }
         </div>
       </div>
     </app-window>
-  `
+  `,
+  styles: [`
+    .research-container {
+      display: flex;
+      flex-direction: column;
+      max-height: 450px;
+    }
+    .research-intro {
+      padding: 8px;
+      border: 1px solid var(--win95-dark-gray);
+      background-color: var(--win95-white);
+      margin-bottom: 8px;
+      font-style: italic;
+      color: var(--win95-black);
+    }
+    .mana-display {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 8px;
+      background-color: var(--win95-blue);
+      color: white;
+      margin-bottom: 8px;
+      font-family: var(--win95-font-mono);
+    }
+    .mana-label, .mana-value { font-weight: bold; }
+    .discoveries-btn {
+      width: 100%;
+      padding: 6px;
+      font-family: var(--win95-font-mono);
+      background-color: var(--win95-gray);
+      border: 2px solid;
+      border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
+      cursor: pointer;
+      margin-bottom: 8px;
+      &:hover { background-color: #d0d0d0; }
+      &:active {
+        border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray);
+      }
+    }
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .filter-btn {
+      padding: 2px 6px;
+      font-size: 10px;
+      font-family: var(--win95-font-mono);
+      border: 1px solid;
+      cursor: pointer;
+      &:hover { background-color: #d0d0d0; }
+      &.active {
+        font-weight: bold;
+        border-width: 2px;
+        border-style: inset;
+      }
+    }
+    .filter-btn.all { background-color: #e0e0e0; border-color: var(--win95-dark-gray); }
+    .filter-btn.feature { background-color: #ccccff; border-color: #8080cc; }
+    .filter-btn.rune { background-color: #ffccff; border-color: #cc80cc; }
+    .filter-btn.stat { background-color: #ccffcc; border-color: #80cc80; }
+    .filter-btn.mana { background-color: #ccffff; border-color: #80cccc; }
+    .filter-btn.idle { background-color: var(--win95-white); border-color: #cccc80; color: var(--win95-black); }
+    .research-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow-y: auto;
+      max-height: 350px;
+      padding-right: 4px;
+    }
+    .research-node {
+      padding: 8px;
+      border: 2px solid;
+      border-color: var(--win95-white) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-white);
+      background-color: var(--win95-gray);
+      cursor: pointer;
+      transition: background-color 0.1s;
+    }
+    .research-node.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .research-node.researched {
+      background-color: #90ee90;
+      cursor: default;
+    }
+    .research-node.clickable:hover {
+      background-color: #d0d0d0;
+    }
+    .research-node.clickable:active {
+      border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray);
+    }
+    .node-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .node-name {
+      font-weight: bold;
+      color: var(--win95-black);
+    }
+    .unlock-tag {
+      font-size: 9px;
+      font-weight: normal;
+      padding: 1px 4px;
+      margin-left: 6px;
+      border: 1px solid;
+    }
+    .unlock-tag.tag-window { background-color: #ccccff; border-color: #8080cc; color: #4040aa; }
+    .unlock-tag.tag-rune { background-color: #ffccff; border-color: #cc80cc; color: #aa40aa; }
+    .unlock-tag.tag-stat { background-color: #ccffcc; border-color: #80cc80; color: #40aa40; }
+    .unlock-tag.tag-maxMana { background-color: #ccffff; border-color: #80cccc; color: #40aaaa; }
+    .unlock-tag.tag-idle { background-color: #ffffcc; border-color: #cccc80; color: #aaaa40; }
+    .node-cost-locked {
+      font-size: 11px;
+      font-family: var(--win95-font-mono);
+      color: var(--win95-black);
+    }
+    .node-cost {
+      font-size: 10px;
+      font-family: var(--win95-font-mono);
+      color: #606060;
+    }
+    .node-description {
+      font-size: 11px;
+      color: #404040;
+      margin-bottom: 4px;
+    }
+    .node-cost-detail {
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .node-cost-detail.affordable { color: #008000; }
+    .node-cost-detail.unaffordable { color: #800000; }
+    .empty-message {
+      color: var(--win95-dark-gray);
+      font-style: italic;
+      text-align: center;
+      padding: 20px;
+    }
+  `]
 })
 export class ResearchComponent {
   closed = output<void>();
@@ -211,16 +334,16 @@ export class ResearchComponent {
   getUnlockTagClass(node: ResearchNode): string {
     // Special case for Focus Crystal
     if (node.unlockEffect.type === 'misc' && node.unlockEffect.value === 'headerMeditate') {
-      return 'bg-[#ffffcc] border-[#cccc80] text-[#aaaa40]';
+      return 'tag-idle';
     }
 
-    // Tailwind classes for tags
+    // Semantic classes for tags
     switch (node.unlockEffect.type) {
-      case 'window': return 'bg-[#ccccff] border-[#8080cc] text-[#4040aa]';
-      case 'rune': return 'bg-[#ffccff] border-[#cc80cc] text-[#aa40aa]';
-      case 'stat': return 'bg-[#ccffcc] border-[#80cc80] text-[#40aa40]';
-      case 'maxMana': return 'bg-[#ccffff] border-[#80cccc] text-[#40aaaa]';
-      case 'idle': return 'bg-[#ffffcc] border-[#cccc80] text-[#aaaa40]';
+      case 'window': return 'tag-window';
+      case 'rune': return 'tag-rune';
+      case 'stat': return 'tag-stat';
+      case 'maxMana': return 'tag-maxMana';
+      case 'idle': return 'tag-idle';
       default: return '';
     }
   }

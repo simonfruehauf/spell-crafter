@@ -16,40 +16,39 @@ import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-window title="The Arena" windowId="combat" [initialX]="480" [initialY]="40" [width]="380" (closed)="onClose()">
-        <div class="flex flex-col" @fadeSlide>
+        <div class="combat-container" @fadeSlide>
 
 
             @if (!combat().inCombat) {
             <!-- Enemy Selection -->
-            <div class="p-2 border border-win95-dark-gray bg-[var(--win95-white)] mb-2 italic text-win95-black">
+            <div class="combat-intro">
                 <p>The arena awaits. Choose your foe and test your arcane might.</p>
             </div>
             @if (combat().victoryFlash) {
-            <div class="text-center p-3 bg-[var(--win95-white)] border-2 border-[#008800] text-[#006600] font-bold mt-2" @pulse>
-                <div class="text-[16px]">[!] VICTORY! [!]</div>
+            <div class="victory-flash" @pulse>
+                <div class="victory-text">[!] VICTORY! [!]</div>
             </div>
             }
             <div class="text-center p-1">
-                <div class="relative h-[18px] p-[2px] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] bg-win95-dark-gray">
-                    <div class="h-full bg-[#00aa00] transition-[width] duration-200 ease-linear" [style.width.%]="(player().currentHP / player().maxHP) * 100">
+                <div class="hp-bar-container">
+                    <div class="hp-bar-fill hp" [style.width.%]="(player().currentHP / player().maxHP) * 100">
                     </div>
-                    <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] text-white drop-shadow-[1px_1px_0_black]">
+                    <div class="bar-text">
                         HP: {{ player().currentHP | number:'1.0-0' }} / {{ player().maxHP }}
                     </div>
                 </div>
             </div>
 
-            <div class="mt-2 text-win95-black">
-                <div class="bg-win95-blue text-white py-[2px] px-[6px] font-bold mb-1 font-mono">Choose Your Opponent</div>
-                <div class="bg-[var(--win95-white)] text-win95-black border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] overflow-y-auto p-[2px] h-[140px]">
+            <div class="section-container">
+                <div class="section-header blue">Choose Your Opponent</div>
+                <div class="list-container tall">
                     @for (enemy of enemies; track enemy.id) {
-                    <div class="flex gap-[6px] font-mono cursor-pointer p-[2px_4px] hover:bg-win95-blue hover:text-white" 
-                         [class.bg-win95-blue]="selectedEnemy()?.id === enemy.id"
-                         [class.text-white]="selectedEnemy()?.id === enemy.id"
+                    <div class="list-item" 
+                         [class.selected]="selectedEnemy()?.id === enemy.id"
                          (click)="selectEnemy(enemy)">
-                        <span class="text-[10px]" [class.text-win95-dark-gray]="selectedEnemy()?.id !== enemy.id" [class.text-white]="selectedEnemy()?.id === enemy.id">[Lv{{ enemy.level }}]</span>
+                        <span class="level-tag" [class.selected]="selectedEnemy()?.id === enemy.id">[Lv{{ enemy.level }}]</span>
                         <span>{{ enemy.name }}</span>
-                        <span class="ml-auto text-[10px]" [class.text-[#008800]]="selectedEnemy()?.id !== enemy.id" [class.text-white]="selectedEnemy()?.id === enemy.id">HP:{{ enemy.maxHP }}</span>
+                        <span class="hp-tag" [class.selected]="selectedEnemy()?.id === enemy.id">HP:{{ enemy.maxHP }}</span>
                     </div>
                     }
                 </div>
@@ -58,51 +57,51 @@ import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
 
 
             @if (isLockedOut()) {
-            <div class="text-center p-2 bg-[var(--win95-gray)] border-2 border-[#cc0000] text-[#800000] font-bold mt-2" @pulse>
-                <div class="text-[16px]">[X]</div>
-                <div class="text-[11px]">Recovery in {{ getLockoutSeconds() }}s...</div>
+            <div class="lockout-box" @pulse>
+                <div class="lockout-icon">[X]</div>
+                <div class="lockout-text">Recovery in {{ getLockoutSeconds() }}s...</div>
             </div>
             }
 
-            <div class="mt-2 flex justify-center">
-                <button class="bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray px-3 py-1 text-xs cursor-pointer font-system active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[13px] active:py-[5px] active:pb-[3px] disabled:text-win95-dark-gray disabled:cursor-not-allowed disabled:shadow-[1px_1px_0_white]"
+            <div class="action-row">
+                <button class="btn" 
                         [disabled]="!selectedEnemy() || player().currentHP <= 0 || isLockedOut()"
                         (click)="beginCombat()">
                     [>] Enter Battle
                 </button>
             </div>
 
-            <div class="text-center text-[11px] text-[#606060] mt-2">
+            <div class="stats-text">
                 <span>Enemies Defeated: {{ combat().enemiesDefeated }}</span>
             </div>
             } @else {
             <!-- Active Combat -->
-            <div class="overflow-hidden" @fadeSlide>
+            <div class="combat-active" @fadeSlide>
                 <!-- Enemy Display -->
-                <div class="text-center p-1" [@shake]="enemyShakeState()">
-                    <div class="font-bold text-xs font-mono text-win95-black">{{ combat().currentEnemy?.name }}</div>
-                    <pre class="font-mono text-[10px] m-0 leading-[1.1] text-win95-black text-left inline-block whitespace-pre">{{ combat().currentEnemy?.ascii }}</pre>
-                    <div class="relative h-[18px] p-[2px] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] bg-win95-dark-gray">
-                        <div class="h-full bg-[#00aa00] transition-[width] duration-200 ease-linear" [style.width.%]="enemyHPPercent()">
+                <div class="entity-display" [@shake]="enemyShakeState()">
+                    <div class="entity-name">{{ combat().currentEnemy?.name }}</div>
+                    <pre class="ascii-art">{{ combat().currentEnemy?.ascii }}</pre>
+                    <div class="hp-bar-container">
+                        <div class="hp-bar-fill hp" [style.width.%]="enemyHPPercent()">
                         </div>
-                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] text-white drop-shadow-[1px_1px_0_black]">
+                        <div class="bar-text">
                             HP: {{ combat().currentEnemy?.currentHP | number:'1.0-0' }} / {{ combat().currentEnemy?.maxHP }}
                         </div>
                     </div>
                     @if (combat().enemyEffects.length > 0) {
-                    <div class="flex flex-wrap gap-1 justify-center mt-1">
+                    <div class="effects-row">
                         @for (effect of combat().enemyEffects; track effect.name) {
-                        <span class="text-[9px] px-[4px] py-[1px] font-mono bg-[var(--win95-white)] border border-[#800000] text-[#660000]">[{{ effect.name }}: {{ effect.remainingTurns }}]</span>
+                        <span class="effect-badge enemy">[{{ effect.name }}: {{ effect.remainingTurns }}]</span>
                         }
                     </div>
                     }
                 </div>
 
-                <div class="text-center font-bold text-xs p-[2px] text-[#800000] font-mono">---VS---</div>
+                <div class="vs-divider">---VS---</div>
 
                 <!-- Player Display -->
-                <div class="text-center p-1" [@shake]="playerShakeState()">
-                    <pre class="font-mono text-[10px] m-0 leading-[1.1] text-black text-left inline-block whitespace-pre">
+                <div class="entity-display" [@shake]="playerShakeState()">
+                    <pre class="ascii-art">
     /\\
    /  \\
 __/____\\__
@@ -110,71 +109,68 @@ __/____\\__
    \\__/
           </pre>
                     @if (totalShield() > 0) {
-                    <div class="relative h-[18px] p-[2px] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] bg-win95-dark-gray mb-1">
-                        <div class="h-full bg-[#00b8b8] transition-[width] duration-200 ease-linear" [style.width.%]="shieldPercent()">
+                    <div class="hp-bar-container">
+                        <div class="hp-bar-fill shield" [style.width.%]="shieldPercent()">
                         </div>
-                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] text-white drop-shadow-[1px_1px_0_black]">
+                        <div class="bar-text">
                             Shield: {{ totalShield() | number:'1.0-0' }}
                         </div>
                     </div>
                     }
-                    <div class="relative h-[18px] p-[2px] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] bg-win95-dark-gray mb-1">
-                        <div class="h-full bg-[#00aa00] transition-[width] duration-200 ease-linear" [style.width.%]="(player().currentHP / player().maxHP) * 100">
+                    <div class="hp-bar-container">
+                        <div class="hp-bar-fill hp" [style.width.%]="(player().currentHP / player().maxHP) * 100">
                         </div>
-                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] text-white drop-shadow-[1px_1px_0_black]">
+                        <div class="bar-text">
                             HP: {{ player().currentHP | number:'1.0-0' }} / {{ player().maxHP }}
                         </div>
                     </div>
-                    <div class="relative h-[18px] p-[2px] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] bg-win95-dark-gray">
-                        <div class="h-full bg-[#0066cc] transition-[width] duration-200 ease-linear" [style.width.%]="(resources().mana / resources().maxMana) * 100">
+                    <div class="hp-bar-container">
+                        <div class="hp-bar-fill mp" [style.width.%]="(resources().mana / resources().maxMana) * 100">
                         </div>
-                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] text-white drop-shadow-[1px_1px_0_black]">
+                        <div class="bar-text">
                             MP: {{ resources().mana | number:'1.0-0' }} / {{ resources().maxMana }}
                         </div>
                     </div>
                     @if (nonShieldEffects().length > 0) {
-                    <div class="flex flex-wrap gap-1 justify-center mt-1">
+                    <div class="effects-row">
                         @for (effect of nonShieldEffects(); track effect.name) {
-                        <span class="text-[9px] px-[4px] py-[1px] font-mono bg-[var(--win95-white)] border border-[#006600] text-[#006600]">[{{ effect.name }}: {{ effect.remainingTurns }}]</span>
+                        <span class="effect-badge player">[{{ effect.name }}: {{ effect.remainingTurns }}]</span>
                         }
                     </div>
                     }
                 </div>
 
                 <!-- Spell Selection -->
-                <div class="mt-2 text-win95-black">
-                    <div class="bg-win95-blue text-white py-[2px] px-[6px] font-bold mb-1 font-mono">Select Spell</div>
-                    <div class="bg-[var(--win95-white)] text-win95-black border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] overflow-y-auto p-[2px] h-[80px]">
+                <div class="section-container">
+                    <div class="section-header blue">Select Spell</div>
+                    <div class="list-container">
                         @for (spell of craftedSpells(); track spell.id) {
-                        <div class="flex gap-[6px] font-mono cursor-pointer p-[2px_4px] hover:bg-win95-blue hover:text-white" 
-                             [class.bg-win95-blue]="selectedSpell()?.id === spell.id"
-                             [class.text-white]="selectedSpell()?.id === spell.id"
-                             [class.text-win95-dark-gray]="resources().mana < spell.totalManaCost && selectedSpell()?.id !== spell.id"
-                             [class.hover:text-white]="resources().mana < spell.totalManaCost"
+                        <div class="list-item" 
+                             [class.selected]="selectedSpell()?.id === spell.id"
+                             [class.disabled]="resources().mana < spell.totalManaCost && selectedSpell()?.id !== spell.id"
                              (click)="selectSpell(spell)">
-                            <span class="text-win95-blue" [class.text-white]="selectedSpell()?.id === spell.id">{{ spell.symbol }}</span>
+                            <span class="spell-symbol" [class.selected]="selectedSpell()?.id === spell.id">{{ spell.symbol }}</span>
                             <span>{{ spell.name }}</span>
-                            <span class="ml-auto text-[10px] text-[#0066cc]" [class.text-white]="selectedSpell()?.id === spell.id">({{ spell.totalManaCost }}mp)</span>
+                            <span class="mana-cost" [class.selected]="selectedSpell()?.id === spell.id">({{ spell.totalManaCost }}mp)</span>
                         </div>
                         } @empty {
-                        <div class="text-win95-dark-gray italic p-2 text-center">No spells available!</div>
+                        <div class="empty-text">No spells available!</div>
                         }
                     </div>
                 </div>
 
                 <!-- Potion Selection (if unlocked) -->
                 @if (idle().usePotionUnlocked && availablePotions().length > 0) {
-                <div class="mt-2 text-win95-black">
-                    <div class="bg-[#800080] text-white py-[2px] px-[6px] font-bold mb-1 font-mono">Use Potion</div>
-                    <div class="bg-[var(--win95-white)] text-win95-black border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] overflow-y-auto p-[2px] max-h-[60px]">
+                <div class="section-container">
+                    <div class="section-header purple">Use Potion</div>
+                    <div class="list-container short">
                         @for (potion of availablePotions(); track potion.id) {
-                        <div class="flex gap-[6px] font-mono cursor-pointer p-[2px_4px] hover:bg-[#800080] hover:text-white" 
-                             [class.bg-[#800080]]="selectedPotion()?.id === potion.id"
-                             [class.text-white]="selectedPotion()?.id === potion.id"
+                        <div class="list-item potion" 
+                             [class.selected]="selectedPotion()?.id === potion.id"
                              (click)="selectPotion(potion)">
-                            <span class="text-[#800080]" [class.text-white]="selectedPotion()?.id === potion.id">{{ potion.symbol }}</span>
+                            <span class="potion-symbol" [class.selected]="selectedPotion()?.id === potion.id">{{ potion.symbol }}</span>
                             <span>{{ potion.name }}</span>
-                            <span class="ml-auto text-[10px] text-[#008000]" [class.text-white]="selectedPotion()?.id === potion.id">x{{ getPotionCount(potion.id) }}</span>
+                            <span class="potion-count" [class.selected]="selectedPotion()?.id === potion.id">x{{ getPotionCount(potion.id) }}</span>
                         </div>
                         }
                     </div>
@@ -182,18 +178,15 @@ __/____\\__
                 }
 
                 <!-- Combat Actions -->
-                <div class="mt-2 flex gap-2 justify-between">
-                    <button class="bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray px-3 py-1 text-xs cursor-pointer font-system active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[13px] active:py-[5px] active:pb-[3px] text-[#800000]" 
-                            (click)="flee()">
+                <div class="combat-actions">
+                    <button class="btn danger" (click)="flee()">
                         [<] Flee </button>
                     @if (selectedPotion() && idle().usePotionUnlocked) {
-                        <button class="bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray px-3 py-1 text-xs cursor-pointer font-system active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[13px] active:py-[5px] active:pb-[3px] disabled:text-win95-dark-gray disabled:cursor-not-allowed disabled:shadow-[1px_1px_0_white] text-[#800080]"
-                                [disabled]="!canUsePotion()" (click)="useSelectedPotion()">
+                        <button class="btn purple" [disabled]="!canUsePotion()" (click)="useSelectedPotion()">
                             [♥] Drink!
                         </button>
                     }
-                        <button class="bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray px-3 py-1 text-xs cursor-pointer font-system active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[13px] active:py-[5px] active:pb-[3px] disabled:text-win95-dark-gray disabled:cursor-not-allowed disabled:shadow-[1px_1px_0_white]"
-                                [disabled]="!canCastSpell()" (click)="castSelectedSpell()">
+                        <button class="btn" [disabled]="!canCastSpell()" (click)="castSelectedSpell()">
                             [*] Cast!
                         </button>
                 </div>
@@ -202,24 +195,21 @@ __/____\\__
         </div>
         <!-- Idle Options (always visible when unlocked) -->
             @if (idle().autoCombatUnlocked) {
-            <fieldset class="border border-win95-dark-gray border-t-white border-l-white mb-2 p-[12px_8px_8px] relative">
-                <legend class="bg-win95-gray px-1 font-system text-xs text-win95-black">Idle Combat</legend>
-                <div class="flex items-center gap-4">
-                <label class="flex items-center gap-[6px] cursor-pointer text-win95-black">
-                    <input type="checkbox" [checked]="idle().autoCombat" (change)="toggleAutoCombat()" 
-                           class="appearance-none w-[13px] h-[13px] bg-[var(--win95-white)] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white relative checked:after:content-['✓'] checked:after:absolute checked:after:-top-[2px] checked:after:left-[1px] checked:after:text-xs checked:after:font-bold checked:after:text-win95-black active:bg-win95-gray">
+            <fieldset class="idle-fieldset">
+                <legend>Idle Combat</legend>
+                <div class="checkbox-row">
+                <label class="checkbox-label">
+                    <input type="checkbox" [checked]="idle().autoCombat" (change)="toggleAutoCombat()">
                     Auto-Combat
                 </label>
-                <label class="flex items-center gap-[6px] cursor-pointer text-win95-black" title="Advance to next enemy when victory is trivial (>50% HP remaining)">
-                    <input type="checkbox" [checked]="idle().autoProgress" (change)="toggleAutoProgress()" 
-                           class="appearance-none w-[13px] h-[13px] bg-[var(--win95-white)] border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white relative checked:after:content-['✓'] checked:after:absolute checked:after:-top-[2px] checked:after:left-[1px] checked:after:text-xs checked:after:font-bold checked:after:text-win95-black active:bg-win95-gray">
+                <label class="checkbox-label" title="Advance to next enemy when victory is trivial (>50% HP remaining)">
+                    <input type="checkbox" [checked]="idle().autoProgress" (change)="toggleAutoProgress()">
                     Auto-Progress
                 </label>
                 </div>
-                <div class="flex items-center gap-2 text-[11px] mt-1 text-win95-black">
+                <div class="speed-row">
                     <label>Speed:</label>
-                    <select [ngModel]="idle().combatTickMs" (ngModelChange)="setCombatSpeed($event)"
-                            class="bg-[var(--win95-white)] text-win95-black border-2 border-t-win95-dark-gray border-l-win95-dark-gray border-r-win95-white border-b-win95-white shadow-[inset_1px_1px_0_black] pad-[4px] font-system text-xs outline-none focus:outline-dotted focus:outline-1 focus:-outline-offset-2">
+                    <select [ngModel]="idle().combatTickMs" (ngModelChange)="setCombatSpeed($event)">
                         <option [value]="2000">Slow</option>
                         <option [value]="1000">Normal</option>
                         <option [value]="500">Fast</option>
@@ -229,7 +219,176 @@ __/____\\__
             </fieldset>
             }
     </app-window>
-  `
+  `,
+  styles: [`
+    .combat-container { display: flex; flex-direction: column; }
+    .combat-intro {
+      padding: 8px;
+      border: 1px solid var(--win95-dark-gray);
+      background-color: var(--win95-white);
+      margin-bottom: 8px;
+      font-style: italic;
+      color: var(--win95-black);
+    }
+    .victory-flash {
+      text-align: center;
+      padding: 12px;
+      background-color: var(--win95-white);
+      border: 2px solid #008800;
+      color: #006600;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+    .victory-text { font-size: 16px; }
+    .lockout-box {
+      text-align: center;
+      padding: 8px;
+      background-color: var(--win95-gray);
+      border: 2px solid #cc0000;
+      color: #800000;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+    .lockout-icon { font-size: 16px; }
+    .lockout-text { font-size: 11px; }
+    .hp-bar-container {
+      position: relative;
+      height: 18px;
+      padding: 2px;
+      border: 2px solid;
+      border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray);
+      box-shadow: inset 1px 1px 0 black;
+      background-color: var(--win95-dark-gray);
+      margin-bottom: 4px;
+    }
+    .hp-bar-fill {
+      height: 100%;
+      transition: width 0.2s ease-linear;
+    }
+    .hp-bar-fill.hp { background-color: #00aa00; }
+    .hp-bar-fill.mp { background-color: #0066cc; }
+    .hp-bar-fill.shield { background-color: #00b8b8; }
+    .bar-text {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: white;
+      text-shadow: 1px 1px 0 black;
+    }
+    .section-container { margin-top: 8px; color: var(--win95-black); }
+    .section-header {
+      padding: 2px 6px;
+      font-weight: bold;
+      margin-bottom: 4px;
+      font-family: var(--win95-font-mono);
+    }
+    .section-header.blue { background-color: var(--win95-blue); color: white; }
+    .section-header.purple { background-color: #800080; color: white; }
+    .list-container {
+      background-color: var(--win95-white);
+      color: var(--win95-black);
+      border: 2px solid;
+      border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray);
+      box-shadow: inset 1px 1px 0 black;
+      overflow-y: auto;
+      padding: 2px;
+      height: 80px;
+    }
+    .list-container.tall { height: 140px; }
+    .list-container.short { max-height: 60px; }
+    .list-item {
+      display: flex;
+      gap: 6px;
+      font-family: var(--win95-font-mono);
+      cursor: pointer;
+      padding: 2px 4px;
+      &:hover { background-color: var(--win95-blue); color: white; }
+      &.selected { background-color: var(--win95-blue); color: white; }
+      &.disabled { color: var(--win95-dark-gray); }
+      &.potion:hover { background-color: #800080; }
+      &.potion.selected { background-color: #800080; }
+    }
+    .level-tag { font-size: 10px; color: var(--win95-dark-gray); }
+    .level-tag.selected { color: white; }
+    .hp-tag { margin-left: auto; font-size: 10px; color: #008800; }
+    .hp-tag.selected { color: white; }
+    .spell-symbol { color: var(--win95-blue); }
+    .spell-symbol.selected { color: white; }
+    .mana-cost { margin-left: auto; font-size: 10px; color: #0066cc; }
+    .mana-cost.selected { color: white; }
+    .potion-symbol { color: #800080; }
+    .potion-symbol.selected { color: white; }
+    .potion-count { margin-left: auto; font-size: 10px; color: #008000; }
+    .potion-count.selected { color: white; }
+    .empty-text { color: var(--win95-dark-gray); font-style: italic; padding: 8px; text-align: center; }
+    .action-row { margin-top: 8px; display: flex; justify-content: center; }
+    .combat-actions { margin-top: 8px; display: flex; gap: 8px; justify-content: space-between; }
+    .stats-text { text-align: center; font-size: 11px; color: #606060; margin-top: 8px; }
+    .combat-active { overflow: hidden; }
+    .entity-display { text-align: center; padding: 4px; }
+    .entity-name { font-weight: bold; font-size: 12px; font-family: var(--win95-font-mono); color: var(--win95-black); }
+    .ascii-art {
+      font-family: var(--win95-font-mono);
+      font-size: 10px;
+      margin: 0;
+      line-height: 1.1;
+      color: var(--win95-black);
+      text-align: left;
+      display: inline-block;
+      white-space: pre;
+    }
+    .vs-divider { text-align: center; font-weight: bold; font-size: 12px; padding: 2px; color: #800000; font-family: var(--win95-font-mono); }
+    .effects-row { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin-top: 4px; }
+    .effect-badge {
+      font-size: 9px;
+      padding: 1px 4px;
+      font-family: var(--win95-font-mono);
+      background-color: var(--win95-white);
+      border: 1px solid;
+    }
+    .effect-badge.enemy { border-color: #800000; color: #660000; }
+    .effect-badge.player { border-color: #006600; color: #006600; }
+    .idle-fieldset {
+      border: 1px solid var(--win95-dark-gray);
+      border-top-color: white;
+      border-left-color: white;
+      margin-bottom: 8px;
+      padding: 12px 8px 8px;
+      position: relative;
+      legend {
+        background-color: var(--win95-gray);
+        padding: 0 4px;
+        font-family: var(--win95-font-system);
+        font-size: 12px;
+        color: var(--win95-black);
+      }
+    }
+    .checkbox-row { display: flex; align-items: center; gap: 16px; }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      color: var(--win95-black);
+    }
+    .speed-row { display: flex; align-items: center; gap: 8px; font-size: 11px; margin-top: 4px; color: var(--win95-black); }
+    .speed-row select {
+      background-color: var(--win95-white);
+      color: var(--win95-black);
+      border: 2px solid;
+      border-color: var(--win95-dark-gray) var(--win95-white) var(--win95-white) var(--win95-dark-gray);
+      box-shadow: inset 1px 1px 0 black;
+      padding: 4px;
+      font-family: var(--win95-font-system);
+      font-size: 12px;
+    }
+    .text-center { text-align: center; }
+    .p-1 { padding: 4px; }
+  `]
 })
 export class CombatComponent {
   closed = output<void>();

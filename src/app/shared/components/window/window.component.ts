@@ -11,7 +11,7 @@ import { WindowStates } from '../../../core/models/game.interfaces';
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [windowAnimation],
     template: `
-    <div class="absolute min-w-[150px] p-[2px] bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray shadow-[inset_1px_1px_0_#dfdfdf] font-system text-xs"
+    <div class="window"
          @windowAnimation
          [class.h-auto]="isMinimized()"
          [class.cursor-move]="isDragging()"
@@ -24,28 +24,25 @@ import { WindowStates } from '../../../core/models/game.interfaces';
          (mousedown)="onWindowClick()">
 
       <!-- Title Bar -->
-      <div class="bg-gradient-to-r from-win95-blue-start to-win95-blue-end text-white p-[3px_4px] font-bold flex items-center select-none cursor-move"
-           (mousedown)="onTitleBarMouseDown($event)">
-        <span class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{{ title() }}</span>
-        <div class="flex gap-[2px] ml-1 items-center">
+      <div class="title-bar" (mousedown)="onTitleBarMouseDown($event)">
+        <span class="title-text">{{ title() }}</span>
+        <div class="title-buttons">
           <ng-content select="[header-actions]"></ng-content>
           @if (showMinimize()) {
-          <button class="w-4 h-[14px] p-0 flex items-center justify-center bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray cursor-pointer text-[10px] leading-none active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[1px] active:pt-[1px]"
-                  (click)="toggleMinimize(); $event.stopPropagation()">
-            <span class="font-bold text-win95-black">_</span>
+          <button class="window-btn" (click)="toggleMinimize(); $event.stopPropagation()">
+            <span>_</span>
           </button>
           }
           @if (showClose()) {
-          <button class="w-4 h-[14px] p-0 flex items-center justify-center bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray cursor-pointer text-[10px] leading-none active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[1px] active:pt-[1px]"
-                  (click)="onClose(); $event.stopPropagation()">
-            <span class="font-bold text-win95-black text-[14px] -mt-[2px]">×</span>
+          <button class="window-btn close-btn" (click)="onClose(); $event.stopPropagation()">
+            <span>×</span>
           </button>
           }
         </div>
       </div>
 
       <!-- Content Area -->
-      <div class="bg-win95-gray p-2" [class.hidden]="isMinimized()">
+      <div class="window-content" [class.hidden]="isMinimized()">
         <ng-content></ng-content>
       </div>
     </div>

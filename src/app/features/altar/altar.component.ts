@@ -19,9 +19,9 @@ import { GameStateService } from '../../core/services/game-state.service';
       
       @if (showHeaderMeditate()) {
         <button header-actions 
-                class="w-20 h-[14px] p-0 flex items-center justify-center bg-win95-gray border-2 border-t-win95-white border-l-win95-white border-r-win95-dark-gray border-b-win95-dark-gray cursor-pointer text-[10px] leading-none active:border-t-win95-dark-gray active:border-l-win95-dark-gray active:border-r-win95-white active:border-b-win95-white active:px-[1px] active:pt-[1px] mr-[2px]"
+                class="window-btn meditate-btn"
                 (click)="meditate(); $event.stopPropagation()">
-          <span class="text-win95-black text-[9px]"> -~Meditate~- </span>
+          <span>~</span>
         </button>
       }
 

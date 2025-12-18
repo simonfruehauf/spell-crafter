@@ -1,8 +1,6 @@
 @use 'win95-mixins' as *;
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
 
 // =============================================================================
 // GLOBAL STYLES - Spell-Crafting Unfolding Game
@@ -188,8 +186,13 @@ input[type="checkbox"] {
         background-color: $win95-gray;
     }
 
-    &.btn-danger {
+    &.btn-danger,
+    &.danger {
         color: #800000;
+    }
+
+    &.purple {
+        color: #800080;
     }
 }
 
@@ -332,6 +335,137 @@ fieldset {
     font-family: $win95-font-mono;
 }
 
+// Display utilities (previously from Tailwind)
+.hidden {
+    display: none !important;
+}
+
+.h-auto {
+    height: auto !important;
+}
+
+.cursor-move {
+    cursor: move !important;
+}
+
+.cursor-pointer {
+    cursor: pointer !important;
+}
+
+.cursor-not-allowed {
+    cursor: not-allowed !important;
+}
+
+.cursor-default {
+    cursor: default !important;
+}
+
+.select-none {
+    user-select: none !important;
+}
+
+.opacity-50 {
+    opacity: 0.5 !important;
+}
+
+// Flexbox Tailwind-style utilities
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+// Typography utilities
+.font-bold {
+    font-weight: bold !important;
+}
+
+.font-mono {
+    font-family: var(--win95-font-mono) !important;
+}
+
+.italic {
+    font-style: italic !important;
+}
+
+.text-white {
+    color: white !important;
+}
+
+.text-black {
+    color: black !important;
+}
+
+.text-win95-black {
+    color: var(--win95-black) !important;
+}
+
+.text-win95-dark-gray {
+    color: var(--win95-dark-gray) !important;
+}
+
+// Border utilities
+.border {
+    border: 1px solid;
+}
+
+.border-2 {
+    border-width: 2px !important;
+}
+
+.border-win95-dark-gray {
+    border-color: var(--win95-dark-gray);
+}
+
+.border-inset {
+    border-style: inset !important;
+}
+
+// Background utilities
+.bg-win95-gray {
+    background-color: var(--win95-gray) !important;
+}
+
+.bg-win95-blue {
+    background-color: var(--win95-blue) !important;
+}
+
+// Transition utilities
+.transition-colors {
+    transition: background-color 0.1s, border-color 0.1s, color 0.1s;
+}
+
+.duration-100 {
+    transition-duration: 100ms;
+}
+
+// Spacing extras
+.pr-1 {
+    padding-right: 4px;
+}
+
+.overflow-y-auto {
+    overflow-y: auto;
+}
+
 // Resource display styling
 .resource-display {
     display: flex;
@@ -411,6 +545,61 @@ fieldset {
         color: $win95-white;
         text-shadow: 1px 1px 0 $win95-black;
     }
+}
+
+// =============================================================================
+// WINDOW COMPONENT
+// =============================================================================
+.window {
+    @include win95-window;
+    position: absolute;
+    min-width: 150px;
+}
+
+.title-bar {
+    @include win95-title-bar;
+    cursor: move;
+}
+
+.title-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.title-buttons {
+    display: flex;
+    gap: 2px;
+    margin-left: 4px;
+    align-items: center;
+}
+
+.window-btn {
+    @include win95-button;
+    width: 16px;
+    height: 14px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    line-height: 1;
+
+    span {
+        font-weight: bold;
+        color: $win95-black;
+    }
+
+    &.close-btn span {
+        font-size: 14px;
+        margin-top: -2px;
+    }
+}
+
+.window-content {
+    background-color: $win95-gray;
+    padding: 8px;
 }
 
 // =============================================================================
