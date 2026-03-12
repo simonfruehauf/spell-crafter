@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, Signal } from '@angular/core';
+import { Injectable, signal, computed, Signal, inject } from '@angular/core';
 import { EquipmentItem, EquipmentRecipe, EquippedItems, EquipmentSlot, PlayerStats, ResourceCost } from '../models/game.interfaces';
 import { INITIAL_EQUIPMENT_RECIPES } from '../models/equipment.data';
 import { deepClone } from '../../shared/utils/clone.utils';
@@ -9,10 +9,7 @@ export interface EquipmentSignals {
     equipmentRecipes: ReturnType<typeof signal<EquipmentRecipe[]>>;
 }
 
-export interface EquipmentCallbacks {
-    canAffordResources: (costs: ResourceCost[]) => boolean;
-    spendCraftingResources: (costs: ResourceCost[]) => boolean;
-}
+import { ResourceService } from './resource.service';
 
 // Precomputed bonus cache for O(1) lookups
 interface EquipmentBonusCache {
@@ -23,15 +20,13 @@ interface EquipmentBonusCache {
 @Injectable({ providedIn: 'root' })
 export class EquipmentService {
     private signals: EquipmentSignals | null = null;
-    private callbacks: EquipmentCallbacks | null = null;
+    private resourceService = inject(ResourceService);
     private bonusCache: Signal<EquipmentBonusCache> | null = null;
 
     registerSignals(signals: EquipmentSignals): void {
         this.signals = signals;
         this.bonusCache = computed(() => this.computeAllBonuses(signals.equippedItems()));
     }
-
-    registerCallbacks(callbacks: EquipmentCallbacks): void { this.callbacks = callbacks; }
 
     private computeAllBonuses(equipped: EquippedItems): EquipmentBonusCache {
         const cache: EquipmentBonusCache = {
@@ -64,11 +59,15 @@ export class EquipmentService {
     }
 
     craftEquipment(recipeId: string): boolean {
-        if (!this.signals || !this.callbacks) return false;
+        if (!this.signals) return false;
         const recipe = this.signals.equipmentRecipes().find(r => r.id === recipeId);
         if (!recipe || !recipe.unlocked) return false;
-        if (!this.callbacks.canAffordResources(recipe.cost)) return false;
-        if (!this.callbacks.spendCraftingResources(recipe.cost)) return false;
+        if (!this.resourceService.canAffordResources(recipe.cost)) return false;
+        
+        let success = false;
+        success = this.resourceService.spendCraftingResources(recipe.cost);
+        if (!success) return false;
+
         this.signals.craftedEquipment.update(items => [...items, { ...recipe.resultItem }]);
         return true;
     }

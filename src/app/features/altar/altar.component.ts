@@ -45,11 +45,11 @@ import { GameStateService } from '../../core/services/game-state.service';
           <div class="bar-container">
             <div 
               class="bar-fill mana" 
-              [style.width.%]="(resources().mana / resources().maxMana) * 100"> 
+              [style.width.%]="(resources().mana / effectiveMaxMana()) * 100"> 
             
             </div>
             <div class="bar-text">
-              Mana: {{ resources().mana | number:'1.0-0' }} / {{ resources().maxMana | number:'1.0-0' }}
+              Mana: {{ resources().mana | number:'1.0-0' }} / {{ effectiveMaxMana() | number:'1.0-0' }}
             </div>
             
           </div>
@@ -139,6 +139,7 @@ export class AltarComponent implements OnInit, OnDestroy {
   readonly resources = this.gameState.resources;
   readonly player = this.gameState.player;
   readonly idle = this.gameState.idle;
+  readonly effectiveMaxMana = this.gameState.effectiveMaxMana;
   // Track upgrades to ensure reactivity for regeneration bonuses
   readonly upgrades = this.gameState.upgrades;
 

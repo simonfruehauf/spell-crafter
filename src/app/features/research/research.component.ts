@@ -29,7 +29,7 @@ import { RESOURCE_NAMES } from '../../core/models/resources.data';
           <span class="mana-value">{{ resources().mana | number:'1.0-0' }}</span>
         </div>
 
-        @if (completedCount() > 0) {
+        @if (windows().discoveries.unlocked) {
           <button class="discoveries-btn" (click)="openDiscoveries()">
             [*] View Discoveries ({{ completedCount() }})
           </button>
@@ -257,6 +257,7 @@ export class ResearchComponent {
 
   readonly resources = this.gameState.resources;
   readonly researchTree = this.gameState.researchTree;
+  readonly windows = this.gameState.windows;
 
   readonly activeFilter = signal<string | null>(null);
 
@@ -315,51 +316,31 @@ export class ResearchComponent {
   }
 
   getUnlockTag(node: ResearchNode): string {
-    // Special case for Focus Crystal to show as Idle
     if (node.unlockEffect.type === 'misc' && node.unlockEffect.value === 'headerMeditate') {
       return 'Idle';
     }
-
     switch (node.unlockEffect.type) {
-      case 'window': { return 'Feature';
-      }
-      case 'rune': { return 'Rune';
-      }
-      case 'stat': { return 'Stat';
-      }
-      case 'maxMana': { return 'Mana';
-      }
-      case 'idle': { return 'Idle';
-      }
-      case 'upgrade': { return 'Upgrade';
-      }
-      default: { return '';
-      }
+      case 'window': return 'Feature';
+      case 'rune': return 'Rune';
+      case 'stat': return 'Stat';
+      case 'maxMana': return 'Mana';
+      case 'idle': return 'Idle';
+      case 'upgrade': return 'Upgrade';
+      default: return '';
     }
   }
 
   getUnlockTagClass(node: ResearchNode): string {
-    // Special case for Focus Crystal
     if (node.unlockEffect.type === 'misc' && node.unlockEffect.value === 'headerMeditate') {
       return 'tag-idle';
     }
-
-    // Semantic classes for tags
     switch (node.unlockEffect.type) {
-      case 'window': { return 'tag-window';
-      }
-      case 'rune': { return 'tag-rune';
-      }
-      case 'stat': { return 'tag-stat';
-      }
-      case 'maxMana': { return 'tag-maxMana';
-      }
-      case 'idle': { return 'tag-idle';
-      }
-      default: { return '';
-      }
+      case 'window': return 'tag-window';
+      case 'rune': return 'tag-rune';
+      case 'stat': return 'tag-stat';
+      case 'maxMana': return 'tag-maxMana';
+      case 'idle': return 'tag-idle';
+      default: return '';
     }
   }
 }
-
-

@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import {
     ResearchNode, WindowStates, Player, Rune, Upgrade, ResourceCost
 } from '../models/game.interfaces';
@@ -12,29 +12,17 @@ export interface ResearchSignals {
     upgrades: ReturnType<typeof signal<Upgrade[]>>;
 }
 
-export interface ResearchCallbacks {
-    spendMana: (amount: number) => boolean;
-    unlockAutoCombat: () => void;
-    unlockPassiveManaRegen: () => void;
-    unlockUsePotions: () => void;
-    unlockGoblinApprentice: () => void;
-    unlockSpellbook: () => void;
-    increaseMaxMana: (amount: number) => void;
-    canAffordResources: (costs: ResourceCost[]) => boolean;
-    spendCraftingResources: (costs: ResourceCost[]) => boolean;
-}
+import { ResourceService } from './resource.service';
+import { EventBusService } from './event-bus.service';
 
 @Injectable({ providedIn: 'root' })
 export class ResearchService {
     private signals: ResearchSignals | null = null;
-    private callbacks: ResearchCallbacks | null = null;
+    private resourceService = inject(ResourceService);
+    private eventBus = inject(EventBusService);
 
     registerSignals(signals: ResearchSignals): void {
         this.signals = signals;
-    }
-
-    registerCallbacks(callbacks: ResearchCallbacks): void {
-        this.callbacks = callbacks;
     }
 
     createInitialResearchTree(): ResearchNode[] {
@@ -47,18 +35,18 @@ export class ResearchService {
 
     // Research methods
     canResearch(id: string, currentMana: number): boolean {
-        if (!this.signals || !this.callbacks) return false;
+        if (!this.signals) return false;
         const node = this.signals.researchTree().find(x => x.id === id);
         if (!node || node.researched || !node.unlocked) return false;
 
         const hasMana = currentMana >= node.manaCost;
-        const hasResources = node.resourceCost ? this.callbacks.canAffordResources(node.resourceCost) : true;
+        const hasResources = node.resourceCost ? this.resourceService.canAffordResources(node.resourceCost) : true;
 
         return hasMana && hasResources;
     }
 
     research(id: string, currentMana: number): boolean {
-        if (!this.signals || !this.callbacks) return false;
+        if (!this.signals) return false;
 
         const tree = this.signals.researchTree();
         const idx = tree.findIndex(x => x.id === id);
@@ -67,9 +55,15 @@ export class ResearchService {
         const node = tree[idx];
         if (!this.canResearch(id, currentMana)) return false;
 
-        this.callbacks.spendMana(node.manaCost);
+        let manaSuccess = false;
+        this.eventBus.emit({
+            type: 'MANA_SPEND_REQUESTED',
+            payload: { amount: node.manaCost, reason: 'research', resolve: (s) => manaSuccess = s }
+        });
+        if (!manaSuccess) return false;
+
         if (node.resourceCost) {
-            this.callbacks.spendCraftingResources(node.resourceCost);
+            this.resourceService.spendCraftingResources(node.resourceCost);
         }
 
         this.signals.researchTree.update(t => {
@@ -84,7 +78,7 @@ export class ResearchService {
     }
 
     private applyResearchEffect(node: ResearchNode): void {
-        if (!this.signals || !this.callbacks) return;
+        if (!this.signals) return;
 
         const effect = node.unlockEffect;
 
@@ -121,14 +115,14 @@ export class ResearchService {
 
             case 'idle': {
                 if (effect.idleId === 'autoMeditate') { /* Removed */ }
-                if (effect.idleId === 'autoCombat') this.callbacks.unlockAutoCombat();
-                if (effect.idleId === 'passiveManaRegen') this.callbacks.unlockPassiveManaRegen();
-                if (effect.idleId === 'usePotionUnlocked') this.callbacks.unlockUsePotions();
+                if (effect.idleId === 'autoCombat') this.eventBus.emit({ type: 'FEATURE_UNLOCKED', payload: { featureId: 'autoCombat' } });
+                if (effect.idleId === 'passiveManaRegen') this.eventBus.emit({ type: 'FEATURE_UNLOCKED', payload: { featureId: 'passiveManaRegen' } });
+                if (effect.idleId === 'usePotionUnlocked') this.eventBus.emit({ type: 'FEATURE_UNLOCKED', payload: { featureId: 'usePotionUnlocked' } });
                 break;
             }
 
             case 'maxMana': {
-                this.callbacks.increaseMaxMana(effect.value);
+                this.resourceService.increaseMaxMana(effect.value);
                 break;
             }
         }
@@ -194,15 +188,15 @@ export class ResearchService {
     }
 
     canAffordUpgrade(id: string): boolean {
-        if (!this.signals || !this.callbacks) return false;
+        if (!this.signals) return false;
 
         const upgrade = this.signals.upgrades().find(x => x.id === id);
         if (!upgrade || upgrade.level >= upgrade.maxLevel || !upgrade.unlocked) return false;
-        return this.callbacks.canAffordResources(this.getUpgradeCost(upgrade));
+        return this.resourceService.canAffordResources(this.getUpgradeCost(upgrade));
     }
 
     purchaseUpgrade(id: string): boolean {
-        if (!this.signals || !this.callbacks) return false;
+        if (!this.signals) return false;
 
         const upgrades = this.signals.upgrades();
         const idx = upgrades.findIndex(x => x.id === id);
@@ -212,7 +206,7 @@ export class ResearchService {
         if (upgrade.level >= upgrade.maxLevel || !upgrade.unlocked) return false;
 
         const cost = this.getUpgradeCost(upgrade);
-        if (!this.callbacks.spendCraftingResources(cost)) return false;
+        if (!this.resourceService.spendCraftingResources(cost)) return false;
 
         // Apply effect
         const effect = upgrade.effect;
@@ -226,20 +220,20 @@ export class ResearchService {
                 break;
             }
             case 'maxMana': {
-                this.callbacks.increaseMaxMana(effect.valuePerLevel);
+                this.resourceService.increaseMaxMana(effect.valuePerLevel);
 
                 break;
             }
             case 'unlockFeature': {
                 // Handle feature unlocks (like goblin apprentice, spellbook)
                 if (effect.feature === 'goblinApprentice') {
-                    this.callbacks.unlockGoblinApprentice();
+                    this.eventBus.emit({ type: 'FEATURE_UNLOCKED', payload: { featureId: 'goblinApprentice' } });
                     this.signals.windows.update(w => ({
                         ...w,
                         goblinApprentice: { ...w.goblinApprentice, unlocked: true, visible: true }
                     }));
                 } else if (effect.feature === 'spellbook') {
-                    this.callbacks.unlockSpellbook();
+                    this.eventBus.emit({ type: 'FEATURE_UNLOCKED', payload: { featureId: 'spellbook' } });
                     this.signals.windows.update(w => ({
                         ...w,
                         spellbook: { ...w.spellbook, unlocked: true, visible: true }

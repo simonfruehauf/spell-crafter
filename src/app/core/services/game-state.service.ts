@@ -26,6 +26,7 @@ import { PlayerService } from './player.service';
 import { EquipmentService } from './equipment.service';
 import { GardenService } from './garden.service';
 import { MarketService } from './market.service';
+import { EventBusService, FeatureUnlockedEvent } from './event-bus.service';
 
 @Injectable({ providedIn: 'root' })
 export class GameStateService implements OnDestroy {
@@ -40,6 +41,7 @@ export class GameStateService implements OnDestroy {
     private equipmentService = inject(EquipmentService);
     private gardenService = inject(GardenService);
     private marketService = inject(MarketService);
+    private eventBus = inject(EventBusService);
 
     // SIGNALS
     private readonly _player = signal<Player>(this.createInitialPlayer());
@@ -178,33 +180,13 @@ export class GameStateService implements OnDestroy {
             knownRunes: this._knownRunes,
             upgrades: this._upgrades,
         });
-        this.researchService.registerCallbacks({
-            spendMana: (amount) => this.spendMana(amount),
-            unlockAutoCombat: () => this.unlockAutoCombat(),
-            unlockPassiveManaRegen: () => this.unlockPassiveManaRegen(),
-            unlockUsePotions: () => this.unlockUsePotions(),
-            unlockGoblinApprentice: () => this.unlockGoblinApprentice(),
-            unlockSpellbook: () => this.unlockSpellbook(),
-            increaseMaxMana: (amount) => this.resourceService.increaseMaxMana(amount),
-            canAffordResources: (costs) => this.resourceService.canAffordResources(costs),
-            spendCraftingResources: (costs) => this.resourceService.spendCraftingResources(costs),
-        });
 
-        // Register combat service
+        // Register combat service signals
         this.combatService.registerSignals({
             combat: this._combat,
             player: this._player,
             craftedSpells: this._craftedSpells,
             idle: this._idle,
-        });
-        this.combatService.registerCallbacks({
-            spendMana: (amount) => this.spendMana(amount),
-            addMana: (amount) => this.addMana(amount),
-            addGold: (amount) => this.addGold(amount),
-            addCraftingResource: (id, amount) => this.addCraftingResource(id, amount),
-            getUpgradeBonus: (type) => this.getUpgradeBonus(type),
-            getEquipmentBonus: (type, stat) => this.getEquipmentBonus(type, stat as keyof PlayerStats),
-            addSpellExperience: (spellId, xp) => this.addSpellExperience(spellId, xp),
         });
 
         // Register window service
@@ -212,21 +194,9 @@ export class GameStateService implements OnDestroy {
 
         // Register spell service
         this.spellService.registerSignals({ craftedSpells: this._craftedSpells });
-        this.spellService.registerCallbacks({
-            spendCraftingResources: (costs) => this.resourceService.spendCraftingResources(costs),
-            addCraftingResource: (id, amount) => this.resourceService.addCraftingResource(id, amount),
-            getUpgradeBonus: (type) => this.getUpgradeBonus(type),
-            getPlayerARC: () => this._player().ARC,
-            addCombatLog: (msg, type) => this.combatService.addCombatLog(msg, type),
-        });
 
         // Register player service
         this.playerService.registerSignals({ player: this._player });
-        this.playerService.registerCallbacks({
-            addGold: (amount) => this.addGold(amount),
-            getResourceGold: () => this._resources().gold,
-            addCombatLog: (msg, type) => this.combatService.addCombatLog(msg, type),
-        });
 
         // Register equipment service
         this.equipmentService.registerSignals({
@@ -234,19 +204,9 @@ export class GameStateService implements OnDestroy {
             craftedEquipment: this._craftedEquipment,
             equipmentRecipes: this._equipmentRecipes,
         });
-        this.equipmentService.registerCallbacks({
-            canAffordResources: (costs) => this.resourceService.canAffordResources(costs),
-            spendCraftingResources: (costs) => this.resourceService.spendCraftingResources(costs),
-        });
 
         // Register garden service
         this.gardenService.registerSignals({ garden: this._garden });
-        this.gardenService.registerCallbacks({
-            getResourceAmount: (id) => this._resources().crafting[id] || 0,
-            spendCraftingResources: (costs) => this.resourceService.spendCraftingResources(costs),
-            addCraftingResource: (id, amount) => this.resourceService.addCraftingResource(id, amount),
-            getUpgradeBonus: (type) => this.getUpgradeBonus(type),
-        });
 
         // Register market service
         this.marketService.registerSignals({
@@ -254,9 +214,15 @@ export class GameStateService implements OnDestroy {
             resources: this._resources,
             themes: this._themes,
         });
-        this.marketService.registerCallbacks({
-            addGold: (amount) => this.addGold(amount),
-            addCraftingResource: (id, amount) => this.addCraftingResource(id, amount),
+
+        // Subscribe to EventBus: handle feature unlocks emitted by ResearchService
+        this.eventBus.on<FeatureUnlockedEvent>('FEATURE_UNLOCKED').pipe(takeUntil(this.destroy$)).subscribe(event => {
+            const { featureId } = event.payload;
+            if (featureId === 'autoCombat') this._idle.update(i => ({ ...i, autoCombatUnlocked: true }));
+            if (featureId === 'passiveManaRegen') this._idle.update(i => ({ ...i, passiveManaRegenUnlocked: true }));
+            if (featureId === 'usePotionUnlocked') this._idle.update(i => ({ ...i, usePotionUnlocked: true }));
+            if (featureId === 'goblinApprentice') this._idle.update(i => ({ ...i, goblinApprenticeUnlocked: true }));
+            if (featureId === 'spellbook') this._idle.update(i => ({ ...i, spellbookUnlocked: true }));
         });
     }
 
@@ -271,17 +237,18 @@ export class GameStateService implements OnDestroy {
         const combat = this._combat();
 
         // Passive mana regen (requires unlock)
-        if (idle.passiveManaRegenUnlocked && resources.mana < resources.maxMana) {
+        const effectiveMaxMana = this.effectiveMaxMana();
+        if (idle.passiveManaRegenUnlocked && resources.mana < effectiveMaxMana) {
             const manaRegenMult = 1 + this.getUpgradeBonus('manaRegen') / 100;
             // Base regen: WIS * 0.025 per tick
             const manaRegen = player.WIS * 0.025 * manaRegenMult;
-            this._resources.update(r => ({ ...r, mana: Math.min(r.maxMana, r.mana + manaRegen) }));
+            this._resources.update(r => ({ ...r, mana: Math.min(effectiveMaxMana, r.mana + manaRegen) }));
         }
 
         // Goblin Apprentice passive mana regen (1 mana/s = 0.1 mana per tick at 100ms tick rate)
-        if (idle.goblinApprenticeUnlocked && resources.mana < resources.maxMana) {
+        if (idle.goblinApprenticeUnlocked && resources.mana < effectiveMaxMana) {
             const goblinManaRegen = 0.1; // 1 mana/s at 100ms tick rate (10 ticks/s)
-            this._resources.update(r => ({ ...r, mana: Math.min(r.maxMana, r.mana + goblinManaRegen) }));
+            this._resources.update(r => ({ ...r, mana: Math.min(effectiveMaxMana, r.mana + goblinManaRegen) }));
         }
 
         // Auto-meditate removed (consolidated)
@@ -386,7 +353,8 @@ export class GameStateService implements OnDestroy {
     // MEDITATION
     meditate(): void {
         const manaGain = 1 + Math.floor(this._player().WIS * 0.25);
-        this.addMana(manaGain);
+        const cap = this.effectiveMaxMana();
+        this._resources.update(r => ({ ...r, mana: Math.min(cap, r.mana + manaGain) }));
     }
 
     // IDLE
@@ -549,7 +517,7 @@ export class GameStateService implements OnDestroy {
 
         if (inCombat) {
             // In combat: apply full effects and end turn
-            this.combatService.addCombatLog(`You drink ${potion.name}!`, 'heal');
+            this.eventBus.emit({ type: 'COMBAT_LOG', payload: { message: `You drink ${potion.name}!`, logType: 'heal' } });
             this.applyPotionEffects(potion);
 
             // End player turn and trigger enemy turn
@@ -627,7 +595,7 @@ export class GameStateService implements OnDestroy {
         }));
 
         // Log to combat
-        this.combatService.addCombatLog(`You drink ${potion.name}!`, 'heal');
+        this.eventBus.emit({ type: 'COMBAT_LOG', payload: { message: `You drink ${potion.name}!`, logType: 'heal' } });
 
         // Apply potion effects
         this.applyPotionEffects(potion);
@@ -657,7 +625,7 @@ export class GameStateService implements OnDestroy {
                         ...p,
                         currentHP: Math.min(p.maxHP, p.currentHP + heal)
                     }));
-                    this.combatService.addCombatLog(`  Restored ${heal} HP!`, 'heal');
+                    this.eventBus.emit({ type: 'COMBAT_LOG', payload: { message: `  Restored ${heal} HP!`, logType: 'heal' } });
                     break;
                 }
                 case 'healPercent': {
@@ -666,18 +634,18 @@ export class GameStateService implements OnDestroy {
                         ...p,
                         currentHP: Math.min(p.maxHP, p.currentHP + heal)
                     }));
-                    this.combatService.addCombatLog(`  Restored ${heal} HP (${effect.value}%)!`, 'heal');
+                    this.eventBus.emit({ type: 'COMBAT_LOG', payload: { message: `  Restored ${heal} HP (${effect.value}%)!`, logType: 'heal' } });
                     break;
                 }
                 case 'manaFlat': {
                     this.addMana(effect.value);
-                    this.combatService.addCombatLog(`  Restored ${effect.value} mana!`, 'heal');
+                    this.eventBus.emit({ type: 'COMBAT_LOG', payload: { message: `  Restored ${effect.value} mana!`, logType: 'heal' } });
                     break;
                 }
                 case 'manaPercent': {
                     const mana = Math.floor(resources.maxMana * (effect.value / 100));
                     this.addMana(mana);
-                    this.combatService.addCombatLog(`  Restored ${mana} mana (${effect.value}%)!`, 'heal');
+                    this.eventBus.emit({ type: 'COMBAT_LOG', payload: { message: `  Restored ${mana} mana (${effect.value}%)!`, logType: 'heal' } });
                     break;
                 }
                 case 'buffStat': {
@@ -694,7 +662,7 @@ export class GameStateService implements OnDestroy {
                                 targetStat: stat
                             }]
                         }));
-                        this.combatService.addCombatLog(`  +${effect.value} ${stat} for ${duration} turns!`, 'effect');
+                        this.eventBus.emit({ type: 'COMBAT_LOG', payload: { message: `  +${effect.value} ${stat} for ${duration} turns!`, logType: 'effect' } });
                     }
                     break;
                 }
@@ -710,7 +678,7 @@ export class GameStateService implements OnDestroy {
                                 remainingTurns: duration
                             }]
                         }));
-                        this.combatService.addCombatLog(`  Gained ${effect.value} shield for ${duration} turns!`, 'effect');
+                        this.eventBus.emit({ type: 'COMBAT_LOG', payload: { message: `  Gained ${effect.value} shield for ${duration} turns!`, logType: 'effect' } });
                     }
                     break;
                 }
@@ -727,7 +695,7 @@ export class GameStateService implements OnDestroy {
                                 targetStat: 'ARC' // Damage boost translates to ARC buff
                             }]
                         }));
-                        this.combatService.addCombatLog(`  +${effect.value}% damage for ${duration} turns!`, 'effect');
+                        this.eventBus.emit({ type: 'COMBAT_LOG', payload: { message: `  +${effect.value}% damage for ${duration} turns!`, logType: 'effect' } });
                     }
                     break;
                 }
@@ -762,7 +730,7 @@ export class GameStateService implements OnDestroy {
                 maxHP: p.maxHP + 10,
                 currentHP: Math.min(p.currentHP + 10, p.maxHP + 10)
             }));
-            this.combatService.addCombatLog(`Level Up! You are now level ${this._player().level}!`, 'victory');
+            this.eventBus.emit({ type: 'COMBAT_LOG', payload: { message: `Level Up! You are now level ${this._player().level}!`, logType: 'victory' } });
         }
     }
 

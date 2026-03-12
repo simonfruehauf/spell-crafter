@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { ThemeState, Player, Resources } from '../models/game.interfaces';
 import { SELL_PRICES, BUY_MULTIPLIERS, THEMES } from '../models/market.data';
 import { RESOURCE_DEFS } from '../models/resources.data';
@@ -9,18 +9,14 @@ export interface MarketSignals {
     themes: ReturnType<typeof signal<ThemeState>>;
 }
 
-export interface MarketCallbacks {
-    addGold: (amount: number) => void;
-    addCraftingResource: (id: string, amount: number) => void;
-}
+import { ResourceService } from './resource.service';
 
 @Injectable({ providedIn: 'root' })
 export class MarketService {
     private signals: MarketSignals | null = null;
-    private callbacks: MarketCallbacks | null = null;
+    private resourceService = inject(ResourceService);
 
     registerSignals(signals: MarketSignals): void { this.signals = signals; }
-    registerCallbacks(callbacks: MarketCallbacks): void { this.callbacks = callbacks; }
 
     getChaBonus(): number {
         if (!this.signals) return 0;
@@ -33,7 +29,7 @@ export class MarketService {
     }
 
     sellResource(resourceId: string, amount: number): boolean {
-        if (!this.signals || !this.callbacks) return false;
+        if (!this.signals) return false;
         amount = Math.floor(amount);
         if (amount <= 0) return false;
         const current = this.signals.resources().crafting[resourceId] || 0;
@@ -45,13 +41,13 @@ export class MarketService {
         const totalGold = Math.floor(basePrice * (1 + this.getChaBonus()) * amount);
         if (totalGold <= 0) return false;
 
-        this.callbacks.addCraftingResource(resourceId, -amount);
-        this.callbacks.addGold(totalGold);
+        if (!this.resourceService.spendCraftingResources([{ resourceId, amount }])) return false;
+        this.resourceService.addGold(totalGold);
         return true;
     }
 
     buyResource(resourceId: string, amount: number): boolean {
-        if (!this.signals || !this.callbacks) return false;
+        if (!this.signals) return false;
         const def = RESOURCE_DEFS[resourceId];
         if (!def) return false;
 
@@ -61,18 +57,18 @@ export class MarketService {
         const totalCost = finalPrice * amount;
 
         if (this.signals.resources().gold < totalCost) return false;
-        this.callbacks.addGold(-totalCost);
-        this.callbacks.addCraftingResource(resourceId, amount);
+        this.resourceService.addGold(-totalCost);
+        this.resourceService.addCraftingResource(resourceId, amount);
         return true;
     }
 
     buyTheme(themeId: string): boolean {
-        if (!this.signals || !this.callbacks) return false;
+        if (!this.signals) return false;
         const theme = THEMES.find(t => t.id === themeId);
         if (!theme || this.signals.themes().unlocked.includes(themeId)) return false;
         if (this.signals.resources().gold < theme.cost) return false;
 
-        this.callbacks.addGold(-theme.cost);
+        this.resourceService.addGold(-theme.cost);
         this.signals.themes.update(t => ({ ...t, unlocked: [...t.unlocked, themeId] }));
         return true;
     }

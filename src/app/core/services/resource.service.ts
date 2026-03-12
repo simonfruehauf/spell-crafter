@@ -1,10 +1,42 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { Resources, ResourceCost } from '../models/game.interfaces';
 import { INITIAL_CRAFTING_RESOURCES } from '../models/resources.data';
+import { EventBusService } from './event-bus.service';
 
 @Injectable({ providedIn: 'root' })
 export class ResourceService {
     private resourcesSignal: ReturnType<typeof signal<Resources>> | null = null;
+    private eventBus = inject(EventBusService);
+
+    constructor() {
+        // Listen to events that grant resources
+        this.eventBus.on('ENEMY_DEFEATED').subscribe(e => {
+            if (e.type === 'ENEMY_DEFEATED' && e.payload.goldReward > 0) {
+                this.addGold(e.payload.goldReward);
+            }
+        });
+
+        this.eventBus.on('RESOURCE_GAINED').subscribe(e => {
+            if (e.type === 'RESOURCE_GAINED') {
+                this.addCraftingResource(e.payload.resourceId, e.payload.amount);
+            }
+        });
+
+        // Handle requested spends
+        this.eventBus.on('MANA_SPEND_REQUESTED').subscribe(e => {
+            if (e.type === 'MANA_SPEND_REQUESTED') {
+                const success = this.spendMana(e.payload.amount);
+                e.payload.resolve(success);
+            }
+        });
+
+        this.eventBus.on('RESOURCE_SPEND_REQUESTED').subscribe(e => {
+            if (e.type === 'RESOURCE_SPEND_REQUESTED') {
+                const success = this.spendCraftingResources(e.payload.costs);
+                e.payload.resolve(success);
+            }
+        });
+    }
 
     registerSignal(resources: ReturnType<typeof signal<Resources>>): void {
         this.resourcesSignal = resources;

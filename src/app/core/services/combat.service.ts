@@ -1,10 +1,13 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import {
     CombatState, CombatLogEntry, Enemy, Player, Spell, Rune,
     ActiveEffect, LootDrop, IdleSettings
 } from '../models/game.interfaces';
 import { RESOURCE_NAMES } from '../models/resources.data';
 import { ENEMIES } from '../models/game.data';
+import { EventBusService } from './event-bus.service';
+import { ResearchService } from './research.service';
+import { EquipmentService } from './equipment.service';
 
 export interface CombatSignals {
     combat: ReturnType<typeof signal<CombatState>>;
@@ -13,27 +16,15 @@ export interface CombatSignals {
     idle: ReturnType<typeof signal<IdleSettings>>;
 }
 
-export interface CombatCallbacks {
-    spendMana: (amount: number) => boolean;
-    addMana: (amount: number) => void;
-    addGold: (amount: number) => void;
-    addCraftingResource: (id: string, amount: number) => void;
-    getUpgradeBonus: (type: string) => number;
-    getEquipmentBonus: (type: string, stat?: string) => number;
-    addSpellExperience: (spellId: string, xp: number) => void;
-}
-
 @Injectable({ providedIn: 'root' })
 export class CombatService {
     private signals: CombatSignals | null = null;
-    private callbacks: CombatCallbacks | null = null;
+    private eventBus = inject(EventBusService);
+    private researchService = inject(ResearchService);
+    private equipmentService = inject(EquipmentService);
 
     registerSignals(signals: CombatSignals): void {
         this.signals = signals;
-    }
-
-    registerCallbacks(callbacks: CombatCallbacks): void {
-        this.callbacks = callbacks;
     }
 
     createInitialCombatState(): CombatState {
@@ -89,12 +80,17 @@ export class CombatService {
     }
 
     castSpell(spell: Spell): void {
-        if (!this.signals || !this.callbacks) return;
+        if (!this.signals) return;
 
         const combat = this.signals.combat();
         if (!combat.inCombat || !combat.currentEnemy || !combat.playerTurn) return;
 
-        if (!this.callbacks.spendMana(spell.totalManaCost)) {
+        let manaSuccess = false;
+        this.eventBus.emit({
+            type: 'MANA_SPEND_REQUESTED',
+            payload: { amount: spell.totalManaCost, reason: 'cast_spell', resolve: (s) => manaSuccess = s }
+        });
+        if (!manaSuccess) {
             this.addCombatLog('Not enough mana!', 'info');
             return;
         }
@@ -128,7 +124,10 @@ export class CombatService {
         }
 
         // Award spell XP
-        this.callbacks.addSpellExperience(spell.id, 5 + spell.runes.length * 2);
+        this.eventBus.emit({
+            type: 'SPELL_EXPERIENCE_GAINED',
+            payload: { spellId: spell.id, amount: 5 + spell.runes.length * 2 }
+        });
 
         this.processEnemyEffects();
 
@@ -157,9 +156,9 @@ export class CombatService {
      * Calculate effective crit chance including LCK bonus and equipment (capped)
      */
     getEffectiveCritChance(player: Player): number {
-        const baseCrit = this.callbacks?.getUpgradeBonus('critChance') ?? 0;
-        const equipCrit = this.callbacks?.getEquipmentBonus('critChance') ?? 0;
-        const equipLCK = this.callbacks?.getEquipmentBonus('stat', 'LCK') ?? 0;
+        const baseCrit = this.researchService.getUpgradeBonus('critChance');
+        const equipCrit = this.equipmentService.getEquipmentBonus('critChance');
+        const equipLCK = this.equipmentService.getEquipmentBonus('stat', 'LCK');
         const effectiveLCK = player.LCK + equipLCK;
         const lckBonus = Math.min(effectiveLCK * 0.02, this.MAX_LCK_CRIT_BONUS); // 2% per LCK, max 25%
         return Math.min((baseCrit / 100) + (equipCrit / 100) + lckBonus, this.MAX_CRIT_CHANCE);
@@ -169,7 +168,7 @@ export class CombatService {
      * Calculate effective loot bonus from LCK (capped)
      */
     getEffectiveLootBonus(player: Player): number {
-        const equipLCK = this.callbacks?.getEquipmentBonus('stat', 'LCK') ?? 0;
+        const equipLCK = this.equipmentService.getEquipmentBonus('stat', 'LCK');
         const effectiveLCK = player.LCK + equipLCK;
         return Math.min(effectiveLCK * 0.03, this.MAX_LCK_LOOT_BONUS); // 3% per LCK, max 50%
     }
@@ -178,26 +177,26 @@ export class CombatService {
      * Calculate effective combat tick speed including SPD bonus (capped at minimum)
      */
     getEffectiveCombatSpeed(player: Player, baseCombatMs: number): number {
-        const upgradeReduction = this.callbacks?.getUpgradeBonus('combatSpeed') ?? 0;
-        const equipSPD = this.callbacks?.getEquipmentBonus('stat', 'SPD') ?? 0;
+        const upgradeReduction = this.researchService.getUpgradeBonus('combatSpeed');
+        const equipSPD = this.equipmentService.getEquipmentBonus('stat', 'SPD');
         const effectiveSPD = player.SPD + equipSPD;
         const spdReduction = effectiveSPD * this.SPD_TICK_REDUCTION_PER_POINT;
         return Math.max(this.MIN_COMBAT_TICK_MS, baseCombatMs - upgradeReduction - spdReduction);
     }
 
     private applyRuneEffect(rune: Rune, player: Player, enemy: Enemy, dmgMult: number, spellLevel = 1): void {
-        if (!this.signals || !this.callbacks) return;
+        if (!this.signals) return;
 
         const effect = rune.effect;
         const spellLevelMult = 1 + (spellLevel - 1) * 0.1; // +10% per level above 1
-        const upgradeDmgBonus = this.callbacks.getUpgradeBonus('damage') / 100;
-        const equipDmgBonus = this.callbacks.getEquipmentBonus('damagePercent') / 100;
-        const equipARC = this.callbacks.getEquipmentBonus('stat', 'ARC');
+        const upgradeDmgBonus = this.researchService.getUpgradeBonus('damage') / 100;
+        const equipDmgBonus = this.equipmentService.getEquipmentBonus('damagePercent') / 100;
+        const equipARC = this.equipmentService.getEquipmentBonus('stat', 'ARC');
         const effectiveARC = player.ARC + equipARC;
         const arc = (1 + effectiveARC * 0.1 + upgradeDmgBonus + equipDmgBonus) * spellLevelMult;
         const critChance = this.getEffectiveCritChance(player);
-        const equipCritDmg = this.callbacks.getEquipmentBonus('critDamage') / 100;
-        const critDmg = 1.5 + this.callbacks.getUpgradeBonus('critDamage') / 100 + equipCritDmg;
+        const equipCritDmg = this.equipmentService.getEquipmentBonus('critDamage') / 100;
+        const critDmg = 1.5 + this.researchService.getUpgradeBonus('critDamage') / 100 + equipCritDmg;
         const isCrit = Math.random() < critChance;
 
         // Helper to apply damage with optional armor penetration
@@ -318,7 +317,10 @@ export class CombatService {
             case 'manaDrain': {
                 const actual = applyDamage(Math.floor(effect.value * arc));
                 dealDamageToEnemy(actual);
-                this.callbacks.addMana(effect.secondaryValue || 5);
+                this.eventBus.emit({
+                    type: 'MANA_RESTORED',
+                    payload: { amount: effect.secondaryValue || 5, source: 'combat_drain' }
+                });
                 this.addCombatLog(`  ${rune.symbol} deals ${actual}, restores mana!`, 'damage');
                 break;
             }
@@ -517,7 +519,7 @@ export class CombatService {
 
         // Process player effects
         const remaining: ActiveEffect[] = [];
-        const equipMaxHP = this.callbacks?.getEquipmentBonus('maxHP') ?? 0;
+        const equipMaxHP = this.equipmentService.getEquipmentBonus('maxHP');
         for (const e of combat.playerEffects) {
             if (e.type === 'hot') {
                 this.signals.player.update(p => ({
@@ -541,7 +543,7 @@ export class CombatService {
             .filter(e => e.type === 'shield')
             .reduce((s, e) => s + e.value, 0);
         const baseDmg = enemy.ARC * 2;
-        const equipBAR = this.callbacks?.getEquipmentBonus('stat', 'BAR') ?? 0;
+        const equipBAR = this.equipmentService.getEquipmentBonus('stat', 'BAR');
         const effectiveBAR = player.BAR + equipBAR;
         let dmg = Math.max(1, baseDmg - Math.floor(effectiveBAR * 0.5));
 
@@ -583,7 +585,7 @@ export class CombatService {
     }
 
     private endCombat(victory: boolean): void {
-        if (!this.signals || !this.callbacks) return;
+        if (!this.signals) return;
 
         const combat = this.signals.combat();
         const enemy = combat.currentEnemy;
@@ -591,7 +593,10 @@ export class CombatService {
         const isAutoProgress = this.signals.idle().autoProgress;
 
         if (victory && enemy) {
-            this.callbacks.addGold(enemy.goldReward);
+            this.eventBus.emit({
+                type: 'ENEMY_DEFEATED',
+                payload: { enemyId: enemy.id, goldReward: enemy.goldReward, expReward: enemy.expReward }
+            });
             this.signals.player.update(p => ({
                 ...p,
                 experience: p.experience + enemy.expReward
@@ -669,23 +674,26 @@ export class CombatService {
     }
 
     private processLoot(table: LootDrop[]): void {
-        if (!this.callbacks || !this.signals) return;
+        if (!this.signals) return;
 
         const player = this.signals.player();
         const lckLootBonus = this.getEffectiveLootBonus(player);
-        const equipLootChance = this.callbacks.getEquipmentBonus('lootChance') / 100;
-        const equipLootQty = this.callbacks.getEquipmentBonus('lootQuantity') / 100;
+        const equipLootChance = this.equipmentService.getEquipmentBonus('lootChance') / 100;
+        const equipLootQty = this.equipmentService.getEquipmentBonus('lootQuantity') / 100;
 
         // LCK + upgrades + equipment affect both chance and quantity
-        const lootMult = 1 + this.callbacks.getUpgradeBonus('lootChance') / 100 + lckLootBonus + equipLootChance;
-        const qtyMult = 1 + this.callbacks.getUpgradeBonus('lootQuantity') / 100 + (lckLootBonus * 0.5) + equipLootQty;
+        const lootMult = 1 + this.researchService.getUpgradeBonus('lootChance') / 100 + lckLootBonus + equipLootChance;
+        const qtyMult = 1 + this.researchService.getUpgradeBonus('lootQuantity') / 100 + (lckLootBonus * 0.5) + equipLootQty;
 
         for (const drop of table) {
             if (Math.random() < drop.chance * lootMult) {
                 const amt = Math.ceil(
                     (Math.floor(Math.random() * (drop.maxAmount - drop.minAmount + 1)) + drop.minAmount) * qtyMult
                 );
-                this.callbacks.addCraftingResource(drop.resourceId, amt);
+                this.eventBus.emit({
+                    type: 'RESOURCE_GAINED',
+                    payload: { resourceId: drop.resourceId, amount: amt, source: 'loot' }
+                });
                 this.addCombatLog(
                     `  Loot: ${amt}x ${RESOURCE_NAMES[drop.resourceId] || drop.resourceId}`,
                     'loot'

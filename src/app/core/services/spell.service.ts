@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { Spell, Rune, ResourceCost } from '../models/game.interfaces';
 import { MAGIC_MISSILE } from '../models/game.data';
 import { RESOURCE_NAMES } from '../models/resources.data';
@@ -7,38 +7,36 @@ export interface SpellSignals {
     craftedSpells: ReturnType<typeof signal<Spell[]>>;
 }
 
-export interface SpellCallbacks {
-    spendCraftingResources: (costs: ResourceCost[]) => boolean;
-    addCraftingResource: (id: string, amount: number) => void;
-    getUpgradeBonus: (type: string) => number;
-    getPlayerARC: () => number;
-    addCombatLog: (msg: string, type: 'damage' | 'heal' | 'info' | 'victory' | 'defeat' | 'loot' | 'effect' | 'crit') => void;
-}
+import { EventBusService } from './event-bus.service';
+import { ResearchService } from './research.service';
+import { PlayerService } from './player.service';
 
 @Injectable({ providedIn: 'root' })
 export class SpellService {
     private signals: SpellSignals | null = null;
-    private callbacks: SpellCallbacks | null = null;
+    private eventBus = inject(EventBusService);
+    private researchService = inject(ResearchService);
+    private playerService = inject(PlayerService);
 
-    registerSignals(signals: SpellSignals): void {
-        this.signals = signals;
-    }
-
-    registerCallbacks(callbacks: SpellCallbacks): void {
-        this.callbacks = callbacks;
-    }
+    registerSignals(signals: SpellSignals): void { this.signals = signals; }
 
     createInitialSpells(): Spell[] {
         return [MAGIC_MISSILE];
     }
 
     craftSpell(name: string, runes: Rune[], materialCost: ResourceCost[], customSymbol?: string): Spell | null {
-        if (!this.signals || !this.callbacks) return null;
+        if (!this.signals) return null;
         if (runes.length === 0) return null;
-        if (!this.callbacks.spendCraftingResources(materialCost)) return null;
 
-        const playerARC = this.callbacks.getPlayerARC();
-        const damageBonus = this.callbacks.getUpgradeBonus('damage');
+        let success = false;
+        this.eventBus.emit({
+            type: 'RESOURCE_SPEND_REQUESTED',
+            payload: { costs: materialCost, reason: 'craft_spell', resolve: (s: boolean) => success = s }
+        });
+        if (!success) return null;
+
+        const playerARC = this.playerService.getPlayer()?.ARC ?? 1;
+        const damageBonus = this.researchService.getUpgradeBonus('damage');
         const totalMana = runes.reduce((s, r) => s + r.manaCost, 0);
         const baseDmg = runes.reduce((s, r) => s + r.baseDamage, 0);
         const dmgMult = 1 + playerARC * 0.1 + damageBonus / 100;
@@ -83,7 +81,7 @@ export class SpellService {
     }
 
     uncraftSpell(id: string): boolean {
-        if (!this.signals || !this.callbacks) return false;
+        if (!this.signals) return false;
         const spells = this.signals.craftedSpells();
         const spell = spells.find(s => s.id === id);
         if (!spell || spell.isDefault) return false;
@@ -95,14 +93,23 @@ export class SpellService {
         }
 
         for (const item of refund) {
-            this.callbacks.addCraftingResource(item.resourceId, item.amount);
+            this.eventBus.emit({
+                type: 'RESOURCE_GAINED',
+                payload: { resourceId: item.resourceId, amount: item.amount, source: 'uncraft_spell' }
+            });
         }
 
         if (refund.length > 0) {
             const refundText = refund.map(r => `${r.amount} ${RESOURCE_NAMES[r.resourceId] || r.resourceId}`).join(', ');
-            this.callbacks.addCombatLog(`Uncrafted ${spell.name}. Refunded: ${refundText}`, 'info');
+            this.eventBus.emit({
+                type: 'COMBAT_LOG',
+                payload: { message: `Uncrafted ${spell.name}. Refunded: ${refundText}`, logType: 'info' }
+            });
         } else {
-            this.callbacks.addCombatLog(`Uncrafted ${spell.name}. No resources salvaged.`, 'info');
+            this.eventBus.emit({
+                type: 'COMBAT_LOG',
+                payload: { message: `Uncrafted ${spell.name}. No resources salvaged.`, logType: 'info' }
+            });
         }
 
         this.deleteSpell(id);

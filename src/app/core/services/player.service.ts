@@ -1,27 +1,21 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { Player } from '../models/game.interfaces';
 
 export interface PlayerSignals {
     player: ReturnType<typeof signal<Player>>;
 }
 
-export interface PlayerCallbacks {
-    addGold: (amount: number) => void;
-    getResourceGold: () => number;
-    addCombatLog: (msg: string, type: 'damage' | 'heal' | 'info' | 'victory' | 'defeat' | 'loot' | 'effect' | 'crit') => void;
-}
+import { EventBusService } from './event-bus.service';
 
 @Injectable({ providedIn: 'root' })
 export class PlayerService {
     private signals: PlayerSignals | null = null;
-    private callbacks: PlayerCallbacks | null = null;
+    private eventBus = inject(EventBusService);
 
-    registerSignals(signals: PlayerSignals): void {
-        this.signals = signals;
-    }
+    registerSignals(signals: PlayerSignals): void { this.signals = signals; }
 
-    registerCallbacks(callbacks: PlayerCallbacks): void {
-        this.callbacks = callbacks;
+    getPlayer(): Player | null {
+        return this.signals ? this.signals.player() : null;
     }
 
     createInitialPlayer(): Player {
@@ -38,7 +32,7 @@ export class PlayerService {
     }
 
     checkLevelUp(): void {
-        if (!this.signals || !this.callbacks) return;
+        if (!this.signals) return;
         const player = this.signals.player();
         const expNeeded = player.experienceToLevel;
         if (player.experience >= expNeeded) {
@@ -51,7 +45,10 @@ export class PlayerService {
                 maxHP: p.maxHP + 10,
                 currentHP: Math.min(p.currentHP + 10, p.maxHP + 10)
             }));
-            this.callbacks.addCombatLog(`Level Up! You are now level ${this.signals.player().level}!`, 'victory');
+            this.eventBus.emit({
+                type: 'COMBAT_LOG',
+                payload: { message: `Level Up! You are now level ${this.signals.player().level}!`, logType: 'victory' }
+            });
         }
     }
 
@@ -64,18 +61,27 @@ export class PlayerService {
     }
 
     respecStats(): boolean {
-        if (!this.signals || !this.callbacks) return false;
+        if (!this.signals) return false;
         const p = this.signals.player();
         const cost = 100 + (p.level * 50);
-        if (this.callbacks.getResourceGold() < cost) return false;
 
-        this.callbacks.addGold(-cost);
+        let success = false;
+        this.eventBus.emit({
+            type: 'RESOURCE_SPEND_REQUESTED',
+            payload: { costs: [{ resourceId: 'gold', amount: cost }], reason: 'respec', resolve: (s: boolean) => success = s }
+        });
+        
+        if (!success) return false;
+
         const totalInvested = (p.WIS - 1) + (p.ARC - 1) + (p.VIT - 1) + (p.BAR - 0) + (p.LCK - 1) + (p.SPD - 1) + (p.CHA - 1);
         this.signals.player.update(prev => ({
             ...prev, WIS: 1, ARC: 1, VIT: 1, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
             attributePoints: prev.attributePoints + totalInvested
         }));
-        this.callbacks.addCombatLog('Stats reset! Points refunded.', 'info');
+        this.eventBus.emit({
+            type: 'COMBAT_LOG',
+            payload: { message: 'Stats reset! Points refunded.', logType: 'info' }
+        });
         return true;
     }
 
