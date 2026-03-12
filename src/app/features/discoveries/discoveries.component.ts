@@ -44,10 +44,12 @@ import { GameStateService } from '../../core/services/game-state.service';
         <div class="section-header mt-2">Unlocked Windows</div>
         <div class="discoveries-list">
           @for (win of unlockedWindows(); track win) {
-            <div class="discovery-item window">
+            <div class="discovery-item discovery-window">
               <span class="window-icon">{{ getWindowIcon(win) }}</span>
               <span class="window-name">{{ getWindowLabel(win) }}</span>
             </div>
+          } @empty {
+            <div class="empty-message">No windows unlocked...</div>
           }
         </div>
 
@@ -114,7 +116,7 @@ import { GameStateService } from '../../core/services/game-state.service';
         }
       }
 
-      &.window {
+      &.discovery-window {
         .window-icon {
           color: #008000;
         }
@@ -154,15 +156,24 @@ export class DiscoveriesComponent {
 
   readonly unlockedWindows = computed(() => {
     const w = this.windows();
-    return Object.entries(w)
-      .filter(([id, state]) => state.unlocked && id !== 'altar' && id !== 'research' && id !== 'stats' && id !== 'settings' && id !== 'discoveries')
+    const unlocked = Object.entries(w)
+      .filter(([id, state]) => state.unlocked && id !== 'altar' && id !== 'research' && id !== 'stats' && id !== 'settings')
       .map(([id]) => id);
+
+    if (!unlocked.includes('discoveries')) {
+      unlocked.push('discoveries');
+    }
+
+    return unlocked;
   });
 
   getWindowIcon(id: string): string {
     const icons: Record<string, string> = {
       scriptorium: '[R]', combat: '[C]', inventory: '[I]', workshop: '[W]',
       runebook: '[B]', grimoire: '[G]', bestiary: '[M]', chronicle: '[L]',
+      laboratory: '[D]', armory: '[A]', equipment: '[E]', alchemy: '[Y]',
+      apothecary: '[P]', goblinApprentice: '[G]', garden: '[H]', spellbook: '[S]',
+      market: '[K]', discoveries: '[X]'
     };
     return icons[id] || '[?]';
   }
@@ -171,7 +182,11 @@ export class DiscoveriesComponent {
     const labels: Record<string, string> = {
       scriptorium: 'Scriptorium', combat: 'Arena', inventory: 'Vault',
       workshop: 'Workshop', runebook: 'Runebook', grimoire: 'Grimoire',
-      bestiary: 'Bestiary', chronicle: 'Chronicle',
+      bestiary: 'Bestiary', chronicle: 'Chronicle', laboratory: 'Laboratory',
+      armory: 'Armory', equipment: 'Equipment', alchemy: 'Alchemy',
+      apothecary: 'Apothecary', goblinApprentice: 'Goblin Apprentice',
+      garden: 'Garden', spellbook: 'Spellbook', market: 'Market',
+      discoveries: 'Archives'
     };
     return labels[id] || id;
   }
