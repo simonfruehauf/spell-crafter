@@ -48,8 +48,8 @@ import { THEMES } from './core/models/market.data';
       <div class="header-bar">
         <span class="title" (click)="onTitleClick()">-=[ Spell-Crafter: Chronicles of the Arcane ]=-</span>
         <div class="header-right">
-          <span class="resource-text">&lt;&gt; {{ resources().mana | number:'1.0-0' }}/{{ resources().maxMana }}</span>
-          <span class="resource-text">(o) {{ resources().gold }}</span>
+          <span class="resource-text">&lt;&gt; {{ resources().mana | number:'1.0-0' }}/{{ resources().maxMana }} mana</span>
+          <span class="resource-text">(o) {{ resources().gold }} gold</span>
           
           <!-- Taskbar Buttons -->
           <div class="taskbar-buttons">
