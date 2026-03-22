@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { ResourceCost, PlayerStats } from '../models/game.interfaces';
+import { ResourceCost } from '../models/game.interfaces';
 
 // Event Types Base
 export interface GameEvent {
   type: string;
-  payload?: any;
+  payload?: unknown;
 }
 
 // Concrete Event Definitions

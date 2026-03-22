@@ -8,25 +8,25 @@ export { ALL_RESOURCES, RESOURCE_NAMES, INITIAL_CRAFTING_RESOURCES, RESOURCE_DEF
 // =============================================================================
 
 export const ASCII_ART = {
-    player: `
-  /\\
- /  \\
+    player: String.raw`
+  /\
+ /  \
 -------
 |O  O|
- \\__/`,
-    goblin: `  ,
- /&\\
+ \__/`,
+    goblin: String.raw`  ,
+ /&\
 (o o)
 `,
-    skeleton: ` ___
-/x x\\
+    skeleton: String.raw` ___
+/x x\
  |_|`,
     wraith: ` ~~~
 ~O O~
  ~~~`,
-    dragon: `  /\\
- /  \\__
-/ ^  \\>`,
+    dragon: String.raw`  /\
+ /  \__
+/ ^  \>`,
 };
 
 // =============================================================================
@@ -261,9 +261,9 @@ export const ENEMIES: Enemy[] = [
         id: 'wolf', name: 'Shadow Wolf', level: 1,
         WIS: 0, HP: 28, ARC: 1, VIT: 2, BAR: 0, LCK: 2, SPD: 3, CHA: 1,
         currentHP: 28, maxHP: 28, goldReward: 6, expReward: 12,
-        ascii: ` /\\___
+        ascii: String.raw` /\___
 (o   o)
- \\mmm/`, weakness: 'fire',
+ \mmm/`, weakness: 'fire',
         lootTable: [
             { resourceId: 'wolf_leather', minAmount: 1, maxAmount: 2, chance: 0.7 },
             { resourceId: 'healing_moss', minAmount: 1, maxAmount: 2, chance: 0.4 },
@@ -301,7 +301,7 @@ export const ENEMIES: Enemy[] = [
         id: 'fireImp', name: 'Fire Imp', level: 2,
         WIS: 2, HP: 25, ARC: 5, VIT: 1, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 25, maxHP: 25, goldReward: 10, expReward: 18,
-        ascii: ` \\^/
+        ascii: String.raw` \^/
  (o)
   Y`, weakness: 'ice', resistance: 'fire',
         lootTable: [
@@ -343,8 +343,8 @@ export const ENEMIES: Enemy[] = [
         id: 'stormElemental', name: 'Storm Elemental', level: 4,
         WIS: 4, HP: 45, ARC: 6, VIT: 2, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 45, maxHP: 45, goldReward: 18, expReward: 30,
-        ascii: ` /\\
-/~~\\
+        ascii: String.raw` /\
+/~~\
 |zZ|`, weakness: 'earth', resistance: 'lightning',
         lootTable: [
             { resourceId: 'lightning_essence', minAmount: 2, maxAmount: 4, chance: 0.6 },
@@ -457,8 +457,8 @@ export const ENEMIES: Enemy[] = [
         id: 'corruptedAngel', name: 'Corrupted Angel', level: 7,
         WIS: 5, HP: 58, ARC: 9, VIT: 4, BAR: 0, LCK: 2, SPD: 2, CHA: 1,
         currentHP: 58, maxHP: 58, goldReward: 45, expReward: 70,
-        ascii: `  †
- /|\\
+        ascii: String.raw`  †
+ /|\
   |`, weakness: 'dark', resistance: 'holy',
         lootTable: [
             { resourceId: 'holy_essence', minAmount: 2, maxAmount: 4, chance: 0.7 },
@@ -472,9 +472,9 @@ export const ENEMIES: Enemy[] = [
         id: 'demon', name: 'Lesser Demon', level: 8,
         WIS: 4, HP: 70, ARC: 9, VIT: 3, BAR: 0, LCK: 1, SPD: 1, CHA: 1,
         currentHP: 70, maxHP: 70, goldReward: 50, expReward: 80,
-        ascii: ` /^\\
+        ascii: String.raw` /^\
 |x x|
- \\V/`, weakness: 'holy', resistance: 'fire',
+ \V/`, weakness: 'holy', resistance: 'fire',
         lootTable: [
             { resourceId: 'dark_essence', minAmount: 2, maxAmount: 4, chance: 0.7 },
             { resourceId: 'demon_claw', minAmount: 1, maxAmount: 2, chance: 0.4 },
@@ -551,8 +551,8 @@ export const ENEMIES: Enemy[] = [
         id: 'cosmicHorror', name: 'Cosmic Horror', level: 15,
         WIS: 12, HP: 200, ARC: 15, VIT: 10, BAR: 3, LCK: 3, SPD: 2, CHA: 1,
         currentHP: 200, maxHP: 200, goldReward: 500, expReward: 500,
-        ascii: `  ?*?
- /???\\
+        ascii: String.raw`  ?*?
+ /???\
   ???`, resistance: 'arcane',
         lootTable: [
             { resourceId: 'void_essence', minAmount: 5, maxAmount: 10, chance: 0.9 },

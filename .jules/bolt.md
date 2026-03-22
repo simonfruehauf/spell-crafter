@@ -1,0 +1,3 @@
+## 2024-05-16 - Memoizing O(N) Array Scans in Angular Hot Loops
+**Learning:** In idle games with frequent tick rates (e.g. 100ms game loops), repeatedly computing derived values from large arrays via array scans causes severe performance degradation and unnecessary CPU usage over time. Specifically, `ResearchService.getUpgradeBonus` was iterating over all upgrades on *every tick* to sum bonuses.
+**Action:** Use Angular's `computed()` signals to eagerly cache and memoize derived game state (like aggregated upgrade bonuses). The computed value only updates when the underlying signals change (e.g., when an upgrade is purchased), turning O(N) operations executed 10x per second into O(1) lookups.
