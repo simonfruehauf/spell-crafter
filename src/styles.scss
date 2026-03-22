@@ -82,6 +82,22 @@ body.theme-contrast {
     --win95-gray-dark: #dddddd;
 }
 
+// =============================================================================
+// THEME: Sunset Orange
+// =============================================================================
+body.theme-sunset {
+    --win95-gray: #ffcc99; // Peach Puff base
+    --win95-dark-gray: #cc6600; // Dark Orange shadows
+    --win95-light-gray: #ffe4b5; // Moccasin highlight
+    --win95-white: #fff5ee; // Papaya Whip
+    --win95-black: #8b4513; // Saddle Brown text
+    --win95-blue: #ff7f50; // Coral selection
+    --win95-blue-start: #ff6347; // Tomato
+    --win95-blue-end: #ffa07a; // Light Salmon
+    --win95-teal: #ffcc33; // Goldenrod background
+    --win95-gray-dark: #e6b88c; // Slightly darker base
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -619,4 +635,8 @@ fieldset {
 
 .theme-contrast {
     background-color: #000000;
+}
+
+.theme-sunset {
+    background-color: #ff7f50;
 }

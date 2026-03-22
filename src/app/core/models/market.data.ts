@@ -64,5 +64,12 @@ export const THEMES: ThemeDef[] = [
         cost: 250,
         description: 'Maximum readability with stark blacks and whites.',
         cssClass: 'theme-contrast'
+    },
+    {
+        id: 'sunset_orange',
+        name: 'Sunset Orange',
+        cost: 1000,
+        description: 'Warm vibrant tones inspired by a summer sunset.',
+        cssClass: 'theme-sunset'
     }
 ];
