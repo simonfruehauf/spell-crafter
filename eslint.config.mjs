@@ -124,6 +124,8 @@ export default defineConfig([
             // unicorn/no-useless-spread - remove useless spreads
             // unicorn/no-useless-fallback-in-spread - remove empty object fallbacks
             // unicorn/no-nested-ternary - parenthesize nested ternaries
+
+            "unicorn/prefer-string-raw": "off",
         },
     },
     {

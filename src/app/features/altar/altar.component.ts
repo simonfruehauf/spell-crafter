@@ -8,7 +8,7 @@ import { GameStateService } from '../../core/services/game-state.service';
   standalone: true,
   imports: [CommonModule, WindowComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: String.raw`
+  template: `
     <app-window 
       title="The Altar" 
       windowId="altar"
@@ -34,9 +34,9 @@ import { GameStateService } from '../../core/services/game-state.service';
 
         <div class="altar-visual">
           <pre class="altar-ascii">
-/\
-/  \
-/ <span class="runes">{{ eyes() }}</span> \
+/\\
+/  \\
+/ <span class="runes">{{ eyes() }}</span> \\
 |______|
 @if (idle().passiveManaRegenUnlocked || idle().goblinApprenticeUnlocked) {
 {{ manaRegenPerSecond() | number:'1.2-2' }}/s}</pre>
