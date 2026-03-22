@@ -252,6 +252,18 @@ export class SaveService {
             const decoded = atob(data);
             let state = JSON.parse(decoded);
 
+            // Validate that state is a valid object before proceeding
+            if (!state || typeof state !== 'object' || Array.isArray(state)) {
+                console.error('Invalid save data: must be a JSON object');
+                return false;
+            }
+
+            // Ensure critical properties exist
+            if (!('version' in state) || !('player' in state) || !('resources' in state)) {
+                console.error('Invalid save data: missing critical fields');
+                return false;
+            }
+
             // Reject saves from newer versions (can't downgrade)
             if (state.version > SAVE_VERSION) {
                 console.warn('Cannot import save from newer version');
