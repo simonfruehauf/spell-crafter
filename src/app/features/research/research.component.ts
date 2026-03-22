@@ -320,13 +320,20 @@ export class ResearchComponent {
       return 'Idle';
     }
     switch (node.unlockEffect.type) {
-      case 'window': return 'Feature';
-      case 'rune': return 'Rune';
-      case 'stat': return 'Stat';
-      case 'maxMana': return 'Mana';
-      case 'idle': return 'Idle';
-      case 'upgrade': return 'Upgrade';
-      default: return '';
+      case 'window': { return 'Feature';
+      }
+      case 'rune': { return 'Rune';
+      }
+      case 'stat': { return 'Stat';
+      }
+      case 'maxMana': { return 'Mana';
+      }
+      case 'idle': { return 'Idle';
+      }
+      case 'upgrade': { return 'Upgrade';
+      }
+      default: { return '';
+      }
     }
   }
 
@@ -335,12 +342,18 @@ export class ResearchComponent {
       return 'tag-idle';
     }
     switch (node.unlockEffect.type) {
-      case 'window': return 'tag-window';
-      case 'rune': return 'tag-rune';
-      case 'stat': return 'tag-stat';
-      case 'maxMana': return 'tag-maxMana';
-      case 'idle': return 'tag-idle';
-      default: return '';
+      case 'window': { return 'tag-window';
+      }
+      case 'rune': { return 'tag-rune';
+      }
+      case 'stat': { return 'tag-stat';
+      }
+      case 'maxMana': { return 'tag-maxMana';
+      }
+      case 'idle': { return 'tag-idle';
+      }
+      default: { return '';
+      }
     }
   }
 }

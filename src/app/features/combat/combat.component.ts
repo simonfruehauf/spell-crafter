@@ -14,7 +14,7 @@ import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
   imports: [CommonModule, FormsModule, WindowComponent],
   animations: [fadeSlide, pulse, shake],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+  template: String.raw`
     <app-window title="The Arena" windowId="combat" [initialX]="480" [initialY]="40" [width]="380" (closed)="onClose()">
         <div class="combat-container" @fadeSlide>
 
@@ -102,11 +102,11 @@ import { fadeSlide, pulse, shake } from '../../shared/animations/animations';
                 <!-- Player Display -->
                 <div class="entity-display" [@shake]="playerShakeState()">
                     <pre class="ascii-art">
-    /\\
-   /  \\
-__/____\\__
+    /\
+   /  \
+__/____\__
   |O  O|
-   \\__/
+   \__/
           </pre>
                     @if (totalShield() > 0) {
                     <div class="hp-bar-container">

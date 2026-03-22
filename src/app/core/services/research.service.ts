@@ -1,4 +1,4 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal, computed, Signal, inject } from '@angular/core';
 import {
     ResearchNode, WindowStates, Player, Rune, Upgrade, ResourceCost
 } from '../models/game.interfaces';
@@ -20,9 +20,28 @@ export class ResearchService {
     private signals: ResearchSignals | null = null;
     private resourceService = inject(ResourceService);
     private eventBus = inject(EventBusService);
+    private upgradeBonusesCache: Signal<Record<string, number>> | null = null;
 
     registerSignals(signals: ResearchSignals): void {
         this.signals = signals;
+        this.upgradeBonusesCache = computed(() => {
+            const cache: Record<string, number> = {};
+            for (const upgrade of signals.upgrades()) {
+                if (upgrade.level > 0) {
+                    const effect = upgrade.effect;
+                    if (effect.type === 'manaRegen') cache['manaRegen'] = (cache['manaRegen'] || 0) + effect.percentPerLevel * upgrade.level;
+                    if (effect.type === 'combatSpeed') cache['combatSpeed'] = (cache['combatSpeed'] || 0) + effect.msReductionPerLevel * upgrade.level;
+                    if (effect.type === 'damage') cache['damage'] = (cache['damage'] || 0) + effect.percentPerLevel * upgrade.level;
+                    if (effect.type === 'critChance') cache['critChance'] = (cache['critChance'] || 0) + effect.percentPerLevel * upgrade.level;
+                    if (effect.type === 'critDamage') cache['critDamage'] = (cache['critDamage'] || 0) + effect.percentPerLevel * upgrade.level;
+                    if (effect.type === 'lootChance') cache['lootChance'] = (cache['lootChance'] || 0) + effect.percentPerLevel * upgrade.level;
+                    if (effect.type === 'lootQuantity') cache['lootQuantity'] = (cache['lootQuantity'] || 0) + effect.percentPerLevel * upgrade.level;
+                    if (effect.type === 'maxRunes') cache['maxRunes'] = (cache['maxRunes'] || 0) + effect.valuePerLevel * upgrade.level;
+                    if (effect.type === 'gardenPlot') cache['gardenPlot'] = (cache['gardenPlot'] || 0) + effect.valuePerLevel * upgrade.level;
+                }
+            }
+            return cache;
+        });
     }
 
     createInitialResearchTree(): ResearchNode[] {
@@ -147,33 +166,8 @@ export class ResearchService {
 
     // Upgrade methods
     getUpgradeBonus(type: string): number {
-        if (!this.signals) return 0;
-
-        let total = 0;
-        for (const upgrade of this.signals.upgrades()) {
-            if (upgrade.level > 0) {
-                const effect = upgrade.effect;
-                if (effect.type === 'manaRegen' && type === 'manaRegen')
-                    total += effect.percentPerLevel * upgrade.level;
-                if (effect.type === 'combatSpeed' && type === 'combatSpeed')
-                    total += effect.msReductionPerLevel * upgrade.level;
-                if (effect.type === 'damage' && type === 'damage')
-                    total += effect.percentPerLevel * upgrade.level;
-                if (effect.type === 'critChance' && type === 'critChance')
-                    total += effect.percentPerLevel * upgrade.level;
-                if (effect.type === 'critDamage' && type === 'critDamage')
-                    total += effect.percentPerLevel * upgrade.level;
-                if (effect.type === 'lootChance' && type === 'lootChance')
-                    total += effect.percentPerLevel * upgrade.level;
-                if (effect.type === 'lootQuantity' && type === 'lootQuantity')
-                    total += effect.percentPerLevel * upgrade.level;
-                if (effect.type === 'maxRunes' && type === 'maxRunes')
-                    total += effect.valuePerLevel * upgrade.level;
-                if (effect.type === 'gardenPlot' && type === 'gardenPlot')
-                    total += effect.valuePerLevel * upgrade.level;
-            }
-        }
-        return total;
+        if (!this.upgradeBonusesCache) return 0;
+        return this.upgradeBonusesCache()[type] || 0;
     }
 
     getMaxRunesPerSpell(): number {

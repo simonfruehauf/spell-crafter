@@ -1,5 +1,5 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { GardenState, ResourceCost } from '../models/game.interfaces';
+import { GardenState } from '../models/game.interfaces';
 import { RESOURCE_DEFS } from '../models/resources.data';
 import { ResourceService } from './resource.service';
 import { ResearchService } from './research.service';

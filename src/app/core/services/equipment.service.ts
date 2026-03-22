@@ -1,5 +1,5 @@
 import { Injectable, signal, computed, Signal, inject } from '@angular/core';
-import { EquipmentItem, EquipmentRecipe, EquippedItems, EquipmentSlot, PlayerStats, ResourceCost } from '../models/game.interfaces';
+import { EquipmentItem, EquipmentRecipe, EquippedItems, EquipmentSlot, PlayerStats } from '../models/game.interfaces';
 import { INITIAL_EQUIPMENT_RECIPES } from '../models/equipment.data';
 import { deepClone } from '../../shared/utils/clone.utils';
 

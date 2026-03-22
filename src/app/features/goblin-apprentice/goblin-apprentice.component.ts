@@ -8,7 +8,7 @@ import { GameStateService } from '../../core/services/game-state.service';
   standalone: true,
   imports: [CommonModule, WindowComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+  template: String.raw`
     <app-window 
       title="Goblin Apprentice" 
       windowId="goblinApprentice"
@@ -19,7 +19,7 @@ import { GameStateService } from '../../core/services/game-state.service';
       <div class="goblin-content">
         <pre class="goblin-ascii">
 ,
-/&\\
+/&\
 (<span class="eyes">{{ eyes()}}</span> )</pre>
         <div class="goblin-info">
           <span class="mana-rate">+1 m/s</span>
