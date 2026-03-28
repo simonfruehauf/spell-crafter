@@ -9,6 +9,12 @@ import {
 } from '@angular/animations';
 
 /**
+ * Utility to check for reduced motion
+ * Note: In Angular animations, we can't easily check window.matchMedia
+ * but we can provide alternative transitions.
+ */
+
+/**
  * Fade and slide animation for content entering/leaving
  */
 export const fadeSlide: AnimationTriggerMetadata = trigger('fadeSlide', [
@@ -65,10 +71,18 @@ export const slideInRight: AnimationTriggerMetadata = trigger('slideInRight', [
  */
 export const pulse: AnimationTriggerMetadata = trigger('pulse', [
     transition(':enter', [
+        style({ opacity: 0 }),
         animate('600ms ease-in-out', keyframes([
             style({ opacity: 0, transform: 'scale(0.9)', offset: 0 }),
             style({ opacity: 1, transform: 'scale(1.05)', offset: 0.5 }),
             style({ opacity: 1, transform: 'scale(1)', offset: 1 })
+        ]))
+    ]),
+    transition('* => *', [
+        animate('200ms ease-in-out', keyframes([
+            style({ transform: 'scale(1)', offset: 0 }),
+            style({ transform: 'scale(1.05)', offset: 0.5 }),
+            style({ transform: 'scale(1)', offset: 1 })
         ]))
     ])
 ]);
@@ -143,6 +157,21 @@ export const windowAnimation: AnimationTriggerMetadata = trigger('windowAnimatio
 ]);
 
 /**
+ * Floating feedback animation for gains
+ */
+export const floatUp: AnimationTriggerMetadata = trigger('floatUp', [
+    transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('800ms ease-out', keyframes([
+            style({ opacity: 0, transform: 'translateY(0)', offset: 0 }),
+            style({ opacity: 1, transform: 'translateY(-20px)', offset: 0.2 }),
+            style({ opacity: 1, transform: 'translateY(-40px)', offset: 0.8 }),
+            style({ opacity: 0, transform: 'translateY(-50px)', offset: 1 })
+        ]))
+    ])
+]);
+
+/**
  * All animations exported as array for easy importing
  */
 export const gameAnimations = [
@@ -154,5 +183,6 @@ export const gameAnimations = [
     hitFlash,
     shake,
     listItem,
-    windowAnimation
+    windowAnimation,
+    floatUp
 ];

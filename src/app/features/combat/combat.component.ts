@@ -263,7 +263,8 @@ __/____\\__
     }
     .hp-bar-fill {
       height: 100%;
-      transition: width 0.2s ease-linear;
+      /* Snappy, responsive transition for resource changes */
+      transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
     }
     .hp-bar-fill.hp { background-color: #00aa00; }
     .hp-bar-fill.mp { background-color: #0066cc; }

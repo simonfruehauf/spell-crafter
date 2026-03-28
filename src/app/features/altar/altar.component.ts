@@ -2,11 +2,13 @@ import { Component, inject, output, ChangeDetectionStrategy, computed, OnInit, O
 import { CommonModule } from '@angular/common';
 import { WindowComponent } from '../../shared/components/window/window.component';
 import { GameStateService } from '../../core/services/game-state.service';
+import { floatUp, pulse } from '../../shared/animations/animations';
 
 @Component({
   selector: 'app-altar',
   standalone: true,
   imports: [CommonModule, WindowComponent],
+  animations: [floatUp, pulse],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-window 
@@ -33,13 +35,19 @@ import { GameStateService } from '../../core/services/game-state.service';
         </div>
 
         <div class="altar-visual">
-          <pre class="altar-ascii">
+          <pre class="altar-ascii" [@pulse]="pulseState()">
 /\\
 /  \\
 / <span class="runes">{{ eyes() }}</span> \\
 |______|
 @if (idle().passiveManaRegenUnlocked || idle().goblinApprenticeUnlocked) {
 {{ manaRegenPerSecond() | number:'1.2-2' }}/s}</pre>
+
+          @for (gain of manaGains(); track gain.id) {
+            <div class="mana-float" @floatUp (@floatUp.done)="removeGain(gain.id)">
+              +{{ gain.amount }}
+            </div>
+          }
         </div>
         <div class="mana-display">
           <div class="bar-container">
@@ -83,6 +91,23 @@ import { GameStateService } from '../../core/services/game-state.service';
     .altar-visual {
       text-align: center;
       padding: 8px;
+      position: relative;
+    }
+
+    .mana-float {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--win95-blue);
+      font-weight: bold;
+      font-family: var(--win95-font-mono);
+      pointer-events: none;
+      z-index: 10;
+
+      @media (prefers-reduced-motion: reduce) {
+        display: none;
+      }
     }
 
     .altar-ascii {
@@ -90,6 +115,11 @@ import { GameStateService } from '../../core/services/game-state.service';
       font-size: 14px;
       color: var(--win95-blue); // was #000080
       margin: 0;
+
+      @media (prefers-reduced-motion: reduce) {
+        animation: none !important;
+        transform: none !important;
+      }
     }
 
     /* Fixed width for eyes to prevent jitter */
@@ -146,6 +176,10 @@ export class AltarComponent implements OnInit, OnDestroy {
   readonly eyes = signal<string>('::');
   private blinkTimer: ReturnType<typeof setTimeout> | undefined;
   private isBlinking = false;
+
+  readonly pulseState = signal<number>(0);
+  readonly manaGains = signal<{ id: number, amount: number }[]>([]);
+  private gainIdCounter = 0;
 
   readonly manaPerClick = computed(() => {
     return 1 + Math.floor(this.player().WIS * 0.25);
@@ -219,7 +253,19 @@ export class AltarComponent implements OnInit, OnDestroy {
   }
 
   meditate(): void {
+    const amount = this.manaPerClick();
     this.gameState.meditate();
+
+    // Visual feedback: pulse the altar
+    this.pulseState.update(v => v + 1);
+
+    // Visual feedback: floating text (limit to 5 concurrent for performance/visual clarity)
+    const id = this.gainIdCounter++;
+    this.manaGains.update(gains => [...gains.slice(-4), { id, amount }]);
+  }
+
+  removeGain(id: number): void {
+    this.manaGains.update(gains => gains.filter(g => g.id !== id));
   }
 
   onClose(): void {
