@@ -533,7 +533,8 @@ fieldset {
 
     .bar-fill {
         height: 100%;
-        transition: width 0.2s ease;
+        /* Snappy, responsive transition for resource changes */
+        transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 
         &.health {
             background-color: #00aa00;
